@@ -115,12 +115,22 @@ public class CLIController {
 	
 	private void executeInsertComputer() throws SQLException {
 		String name = asker.askComputerName();
-		LocalDate addDate = asker.askAddDate();
+		LocalDate addDate = null;
+		while (true) {
+			addDate = asker.askAddDate();
+			if (addDate != null && (addDate.isBefore(LocalDate.parse("1970-01-01")) || addDate.isAfter(LocalDate.parse("2038-01-19")))) {
+				System.out.println("La date de retrait de l'ordianteur doit être comprise entre le 1er Janvier 1970 et le 19 janvier 2038");
+			} else {
+				break;
+			}
+		}
 		LocalDate removeDate = null;
 		while (true) {
 			removeDate = asker.askRemoveDate();
-			if (removeDate != null && addDate != null && removeDate.isBefore(addDate)) {
-				System.out.println("La date de retrait ne peut être antérieure à la date d'ajout de l'ordinateur");
+			if (removeDate != null && (removeDate.isBefore(LocalDate.parse("1970-01-01")) || (removeDate.isAfter(LocalDate.parse("2038-01-19"))))) {
+				System.out.println("La date de retrait de l'ordianteur doit être comprise entre le 1er Janvier 1970 et le 19 janvier 2038");
+			} else if (removeDate != null && addDate != null && removeDate.isBefore(addDate)) {
+				System.out.println("La date de retrait de l'ordinateur ne peut être antérieure à la date d'ajout de l'ordinateur");
 			} else {
 				break;
 			}
