@@ -1,13 +1,14 @@
 package com.excilys.cdb.ui;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.Scanner;
 
-import com.excilys.cdb.dao.CompanyDAO;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.persistence.CompanyDAO;
 
 public class CLIAsker {
 	
@@ -83,7 +84,7 @@ public class CLIAsker {
 		}
 	}
 
-	public Company askCompany() throws SQLException {
+	public Company askCompany() throws SQLException, IOException {
 		System.out.println("Veuillez entrer l'id du fabricant (optionel)");
 		String input = scanner.nextLine();
 		if (input.equals("")) {

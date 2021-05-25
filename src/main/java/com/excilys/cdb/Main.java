@@ -6,9 +6,7 @@ import com.excilys.cdb.ui.CLI;
 
 public class Main {
 
-	private Main() { };
-
-	public static void main(String[] args) throws SQLException {
+	public static void main(String[] args) {
 		CLI cli = new CLI();
 		cli.runCLI();
 	}

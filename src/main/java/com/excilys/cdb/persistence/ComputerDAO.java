@@ -1,5 +1,6 @@
-package com.excilys.cdb.dao;
+package com.excilys.cdb.persistence;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -11,7 +12,6 @@ import java.util.Optional;
 
 import com.excilys.cdb.mapper.ComputerMapper;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.persistence.Database;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,17 +22,16 @@ public class ComputerDAO {
 	
 	private static Database db;
 	private static ComputerDAO computerDAO;
-	private Logger logger;
+	private static Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
 	
-	public static ComputerDAO getInstance() {
+	public static ComputerDAO getInstance() throws IOException {
 		if (computerDAO == null)
 			computerDAO = new ComputerDAO();
 		return computerDAO;
 	}
 	
-	private ComputerDAO() {
+	private ComputerDAO() throws IOException {
 		db = Database.getDB();
-		logger = LoggerFactory.getLogger(getClass());
 	}
 	
 	public ArrayList<Computer> getSomeComputers(int n, int offset) throws SQLException {

@@ -1,29 +1,42 @@
 package com.excilys.cdb.persistence;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.dbcp.BasicDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 //singleton
 public class Database {
-	private static Database db = null;
-	private static final String URL = "jdbc:mysql://localhost/computer-database-db";
-	private static final String USER = "admincdb";
-	private static final String PASSWORD = "qwerty1234";
+	private static Logger logger = LoggerFactory.getLogger(Database.class);
 	
-	private Database() {
-		
+	private static final String DB_PROPERTIES_FILE_PATH = "/database.properties";
+	private static final String DB_PROPERTY_DRIVER = "jdbc.driver";
+	private static final String DB_PROPERTY_URL = "jdbc.url";
+	private static final String DB_PROPERTY_LOGIN = "jdbc.username";
+	private static final String DB_PROPERTY_PASSWORD = "jdbc.password";
+	
+	private static Database db = null;
+	private DataSource ds = null;
+	
+	private Database() throws IOException {
 		try {
-			Class.forName("com.mysql.cj.jdbc.Driver");
-		}catch (Exception ex) {
-			ex.printStackTrace();
+			loadProperties();
+			logger.info("Database successfully created");
+		} catch (IOException e) {
+			logger.error("Error during DataSource creation", e);
+			throw new IOException("Une erreur fatale est survenue");
 		}
-		
 	}
 	
-	public static Database getDB() {
+	public static Database getDB() throws IOException {
 		if(db == null) {
 			db = new Database();
 		}
@@ -31,6 +44,18 @@ public class Database {
 	}
 	
 	public Connection getConnection() throws SQLException {
-		return DriverManager.getConnection(URL, USER, PASSWORD);
+		return ds.getConnection();
+	}
+	
+	private void loadProperties() throws IOException {
+		Properties properties = new Properties();
+		properties.load(Database.class.getResourceAsStream(DB_PROPERTIES_FILE_PATH));
+		BasicDataSource ds = new BasicDataSource();
+		ds.setDriverClassName(properties.getProperty(DB_PROPERTY_DRIVER));
+		ds.setUrl(properties.getProperty(DB_PROPERTY_URL));
+		ds.setUsername(properties.getProperty(DB_PROPERTY_LOGIN));
+		ds.setPassword(properties.getProperty(DB_PROPERTY_PASSWORD));
+		logger.info(ds.getUrl());
+		this.ds = ds;
 	}
 }

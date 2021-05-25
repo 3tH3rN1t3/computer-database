@@ -1,13 +1,14 @@
 package com.excilys.cdb.controller;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-import com.excilys.cdb.dao.CompanyDAO;
-import com.excilys.cdb.dao.ComputerDAO;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
+import com.excilys.cdb.persistence.CompanyDAO;
+import com.excilys.cdb.persistence.ComputerDAO;
 import com.excilys.cdb.ui.CLIAsker;
 import com.excilys.cdb.ui.CLIView;
 import com.excilys.cdb.ui.MenuOption;
@@ -30,7 +31,7 @@ public class CLIController {
 		return asker;
 	}
 
-	public void executeChoice(int choiceId) throws SQLException {
+	public void executeChoice(int choiceId) throws SQLException, IOException {
 		MenuOption choice = MenuOption.values()[choiceId - 1];
 		switch (choice) {
 		case LIST_COMPUTERS:
@@ -61,7 +62,7 @@ public class CLIController {
 			break;
 		}
 	}
-	private void executeListComputers() throws SQLException {
+	private void executeListComputers() throws SQLException, IOException {
 		ComputerDAO dao = ComputerDAO.getInstance();
 		int computersCount = dao.CountComputers();
 		int pagesCount = computersCount / Page.MAX_ITEMS;
@@ -84,9 +85,9 @@ public class CLIController {
 		}
 	}
 
-	private void executeListCompanies() throws SQLException {
+	private void executeListCompanies() throws SQLException, IOException {
 		CompanyDAO dao = CompanyDAO.getInstance();
-		int companiesCount = dao.CountCompanies();
+		int companiesCount = dao.countCompanies();
 		int pagesCount = companiesCount / Page.MAX_ITEMS;
 		if (companiesCount % Page.MAX_ITEMS != 0)
 			pagesCount++;
@@ -113,7 +114,7 @@ public class CLIController {
 		
 	}
 	
-	private void executeInsertComputer() throws SQLException {
+	private void executeInsertComputer() throws SQLException, IOException {
 		String name = asker.askComputerName();
 		LocalDate addDate = null;
 		while (true) {
@@ -140,7 +141,7 @@ public class CLIController {
 		System.out.println("L'ordinateur a été créé avec l'ID " + id);
 	}
 
-	private void executeUpdateComputer() throws SQLException {
+	private void executeUpdateComputer() throws SQLException, IOException {
 		int id = asker.askComputerId();
 		String name = asker.askComputerName();
 		LocalDate addDate = asker.askAddDate();
@@ -159,7 +160,7 @@ public class CLIController {
 		
 	}
 
-	private void executeDeleteComputer() throws SQLException {
+	private void executeDeleteComputer() throws SQLException, IOException {
 		int id = asker.askComputerId();
 		int deleteCount = ComputerDAO.getInstance().deleteComputer(id);
 		System.out.println(deleteCount + " ligne(s) a/ont été supprimée(s)");

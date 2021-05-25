@@ -1,5 +1,6 @@
 package com.excilys.cdb.ui;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 import com.excilys.cdb.controller.CLIController;
@@ -11,12 +12,20 @@ public class CLI {
 		ctrl = new CLIController();
 	}
 	
-	public void runCLI() throws SQLException {
-		int choice;
-		do {
-			ctrl.getView().printMenu();
-			choice = ctrl.getAsker().askChoice();
-			ctrl.executeChoice(choice);
-		} while (choice != MenuOption.EXIT.getNumber());
+	public void runCLI() {
+		int choice = 0;
+		try {
+			do {
+				try {
+					ctrl.getView().printMenu();
+					choice = ctrl.getAsker().askChoice();
+					ctrl.executeChoice(choice);
+				} catch (SQLException e) {
+					System.out.println(e.getMessage());
+				}
+			} while (choice != MenuOption.EXIT.getNumber());
+		}catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 }

@@ -1,6 +1,7 @@
-package com.excilys.cdb.dao;
+package com.excilys.cdb.persistence;
 
 import java.sql.Statement;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.model.Company;
-import com.excilys.cdb.persistence.Database;
 
 //singleton
 public class CompanyDAO {
@@ -22,13 +22,13 @@ public class CompanyDAO {
 	private static CompanyDAO companyDAO;
 	private static Logger logger;
 	
-	public static CompanyDAO getInstance() {
+	public static CompanyDAO getInstance() throws IOException {
 		if (companyDAO == null)
 			companyDAO = new CompanyDAO();
 		return companyDAO;
 	}
 	
-	private CompanyDAO() {
+	private CompanyDAO() throws IOException {
 		db = Database.getDB();
 		logger = LoggerFactory.getLogger(getClass());
 	}
