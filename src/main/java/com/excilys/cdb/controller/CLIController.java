@@ -11,6 +11,7 @@ import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Pagination;
 import com.excilys.cdb.persistence.CompanyDAO;
 import com.excilys.cdb.persistence.ComputerDAO;
+import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.ui.CLIAsker;
 import com.excilys.cdb.ui.CLIView;
 import com.excilys.cdb.ui.MenuOption;
@@ -19,10 +20,12 @@ public class CLIController {
 
 	private CLIView view;
 	private CLIAsker asker;
+	private ComputerService computerService;
 
-	public CLIController() {
+	public CLIController() throws IOException {
 		this.view = new CLIView();
 		this.asker = new CLIAsker();
+		this.computerService = ComputerService.getInstance();
 	}
 
 	public CLIView getView() {
@@ -65,11 +68,10 @@ public class CLIController {
 		}
 	}
 	private void executeListComputers() throws SQLException, IOException {
-		ComputerDAO dao = ComputerDAO.getInstance();
-		Pagination p = new Pagination(dao.CountComputers());
+		Pagination p = new Pagination(computerService.countComputers());
 		ArrayList<Computer> coms = new ArrayList<Computer>();
 		while (p.getNumPage() <= p.getMaxPage()) {
-			coms = dao.getComputersPerPage(p);
+			coms = computerService.getComputers(p);
 			view.printComputers(coms);
 			String choice = asker.askPage(p.getNumPage(), p.getMaxPage());
 			if ("q".equalsIgnoreCase(choice)) {
@@ -103,10 +105,9 @@ public class CLIController {
 
 	private void executeShowDetails() throws IOException, SQLException {
 		int id = asker.askComputerId();
-		ComputerDAO dao = ComputerDAO.getInstance();
-		Optional<Computer> com = dao.getComputerById(id);
-		if (com.isPresent()) {
-			System.out.println(com.get());
+		Computer com = computerService.getComputer(id);
+		if (com != null) {
+			System.out.println(com);
 		} else {
 			System.out.println("L'ordianteur n'existe pas");
 		}
@@ -135,8 +136,8 @@ public class CLIController {
 			}
 		}
 		Company company = asker.askCompany();
-		int id = ComputerDAO.getInstance().insertComputer(new Computer(0, name, addDate, removeDate, company));
-		System.out.println("L'ordinateur a été créé avec l'ID " + id);
+		computerService.addComputer(null);
+		System.out.println("L'ordinateur a été créé");
 	}
 
 	private void executeUpdateComputer() throws SQLException, IOException {
@@ -153,7 +154,7 @@ public class CLIController {
 			}
 		}
 		Company company = asker.askCompany();
-		int updateCount = ComputerDAO.getInstance().updateComputer(new Computer(id, name, addDate, removeDate, company));
+		int updateCount = computerService.updateComputer(null);
 		System.out.println(updateCount + " ligne(s) a/ont été mise(s) à jour");
 		
 	}

@@ -15,18 +15,18 @@ import  org.apache.logging.log4j.Logger;
 
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Pagination;
-import com.excilys.cdb.persistence.ComputerDAO;
+import com.excilys.cdb.service.ComputerService;
 
 @WebServlet("/dashboard")
 public class DashBoardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private ComputerDAO dao;
+	private ComputerService service;
 	private String search;
 	private Pagination page;
 	private static final Logger LOGGER = LogManager.getLogger(DashBoardServlet.class);
 	
     public DashBoardServlet() throws IOException {
-        dao = ComputerDAO.getInstance();
+        service = ComputerService.getInstance();
         search = "";
         page = new Pagination();
     }
@@ -64,7 +64,6 @@ public class DashBoardServlet extends HttpServlet {
 		if (this.page.getNumPage() <= 0 || this.page.getNumPage() > this.page.getMaxPage()) {
 			this.page.setNumPage(1);
 		}
-		System.out.println(page.getNumPage());
 	}
 	
 	private void setItemsPerPage(String string) {
@@ -87,11 +86,11 @@ public class DashBoardServlet extends HttpServlet {
 		
 		
 		if (this.search == "") {
-			page.setTotalItems(dao.CountComputers());
-			listcomputer = dao.getComputersPerPage(page);
+			page.setTotalItems(service.countComputers());
+			listcomputer = service.getComputers(page);
 		}else {
-			page.setTotalItems(dao.CountComputers(search));
-			listcomputer = dao.getComputersBySearch(search, page);
+			page.setTotalItems(service.countComputers(search));
+			listcomputer = service.search(search, page);
 			
 		}
 		return listcomputer;

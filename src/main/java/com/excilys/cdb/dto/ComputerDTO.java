@@ -1,6 +1,6 @@
 package com.excilys.cdb.dto;
 
-public class ComputerSQLDTO {
+public class ComputerDTO {
 	private String id;
 	private String name;
 	private String introduced;
@@ -8,7 +8,7 @@ public class ComputerSQLDTO {
 	private String companyId;
 	private String companyName;
 	
-	public ComputerSQLDTO (ComputerSQLDTOBuilder builder) {
+	public ComputerDTO (ComputerDTOBuilder builder) {
 		this.id = builder.id;
 		this.name = builder.name;
 		this.introduced = builder.introduced;
@@ -40,15 +40,8 @@ public class ComputerSQLDTO {
 	public String getCompanyName() {
 		return companyName;
 	}
-
-	@Override
-	public String toString() {
-		return "ComputerDTO [id:" + id + ", name:" + name +
-				", introduced:" + introduced + ", discontinued:" + discontinued +
-				", companyId:" + companyId + ", companyName:" + companyName + "]";
-	}
 	
-	public static class ComputerSQLDTOBuilder {
+	public static class ComputerDTOBuilder {
 		private String id;
 		private String name;
 		private String introduced;
@@ -56,33 +49,33 @@ public class ComputerSQLDTO {
 		private String companyId;
 		private String companyName;
 		
-		public ComputerSQLDTOBuilder(String id, String name) {
+		public ComputerDTOBuilder(String id, String name) {
 			this.id = id;
 			this.name = name;
 		}
 		
-		public ComputerSQLDTOBuilder withIntroduced(String introduced) {
+		public ComputerDTOBuilder withIntroduced(String introduced) {
 			this.introduced = introduced;
 			return this;
 		}
 		
-		public ComputerSQLDTOBuilder withDiscontinued(String discontinued) {
+		public ComputerDTOBuilder withDiscontinued(String discontinued) {
 			this.discontinued = discontinued;
 			return this;
 		}
 		
-		public ComputerSQLDTOBuilder withCompanyId(String companyId) {
+		public ComputerDTOBuilder withCompanyId(String companyId) {
 			this.companyId = companyId;
 			return this;
 		}
 		
-		public ComputerSQLDTOBuilder withCompanyName(String companyName) {
+		public ComputerDTOBuilder withCompanyName(String companyName) {
 			this.companyName = companyName;
 			return this;
 		}
 		
-		public ComputerSQLDTO build() {
-			return new ComputerSQLDTO(this);
+		public ComputerDTO build() {
+			return new ComputerDTO(this);
 		}
 	}
 }

@@ -8,7 +8,7 @@ import com.excilys.cdb.controller.CLIController;
 public class CLI {
 	private CLIController ctrl;
 	
-	public CLI() {
+	public CLI() throws IOException {
 		ctrl = new CLIController();
 	}
 	

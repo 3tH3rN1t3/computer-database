@@ -11,33 +11,12 @@ public class Computer {
 	private LocalDate discontinued;
 	private Company company;
 	
-	public Computer(int id, String name) {
-		this.id = id;
-		this.name = name;
-	}
-	
-	public Computer(int id, String name, LocalDate addDate, LocalDate removeDate, Company company) {
-		this.id = id;
-		this.name = name;
-		this.introduced = addDate;
-		this.discontinued = removeDate;
-		this.company = company;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public void setIntroduced(LocalDate addDate) {
-		this.introduced = addDate;
-	}
-	
-	public void setDiscontinued(LocalDate removeDate) {
-		this.discontinued = removeDate;
-	}
-	
-	public void setCompany(Company company) {
-		this.company = company;
+	public Computer(ComputerBuilder builder) {
+		this.id = builder.id;
+		this.name = builder.name;
+		this.introduced = builder.introduced;
+		this.discontinued = builder.discontinued;
+		this.company = builder.company;
 	}
 	
 	public int getID() {
@@ -82,5 +61,37 @@ public class Computer {
 			info += "-";
 		}
 		return info;
+	}
+	
+	public static class ComputerBuilder {
+		private int id;
+		private String name;
+		private LocalDate introduced;
+		private LocalDate discontinued;
+		private Company company;
+		
+		public ComputerBuilder(int id, String name) {
+			this.id = id;
+			this.name = name;
+		}
+		
+		public ComputerBuilder withIntroduced(LocalDate introduced) {
+			this.introduced = introduced;
+			return this;
+		}
+		
+		public ComputerBuilder withDiscontinued(LocalDate discontinued) {
+			this.discontinued = discontinued;
+			return this;
+		}
+		
+		public ComputerBuilder withCompany(Company company) {
+			this.company = company;
+			return this;
+		}
+		
+		public Computer build() {
+			return new Computer(this);
+		}
 	}
 }
