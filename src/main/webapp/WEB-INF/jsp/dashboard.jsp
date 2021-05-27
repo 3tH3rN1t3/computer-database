@@ -156,7 +156,7 @@
 				</li>
 				
 				<li>
-					<a href="?page=0" aria-label="Next">
+					<a href="?page=${page.getMaxPage()}" aria-label="Next">
 						<span aria-hidden="true">&raquo;</span>
 					</a>
 				</li>
@@ -164,9 +164,9 @@
 
 		<div class="btn-group btn-group-sm pull-right" role="group" >
 		<form id="nombreElementPage" action="#" method="GET" >
-			<button type="submit" class="btn btn-default" name="nombreElementPage" value="10">10</button>
-			<button type="submit" class="btn btn-default" name="nombreElementPage" value="50">50</button>
-			<button type="submit" class="btn btn-default" name="nombreElementPage" value="100">100</button>
+			<button type="submit" class="btn btn-default" name="itemsPerPage" value="10">10</button>
+			<button type="submit" class="btn btn-default" name="itemsPerPage" value="50">50</button>
+			<button type="submit" class="btn btn-default" name="itemsPerPage" value="100">100</button>
 		</form>
 		</div>
 	</div>

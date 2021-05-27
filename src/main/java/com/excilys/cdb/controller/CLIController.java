@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
@@ -100,8 +101,15 @@ public class CLIController {
 		
 	}
 
-	private void executeShowDetails() {
-		
+	private void executeShowDetails() throws IOException, SQLException {
+		int id = asker.askComputerId();
+		ComputerDAO dao = ComputerDAO.getInstance();
+		Optional<Computer> com = dao.getComputerById(id);
+		if (com.isPresent()) {
+			System.out.println(com.get());
+		} else {
+			System.out.println("L'ordianteur n'existe pas");
+		}
 	}
 	
 	private void executeInsertComputer() throws SQLException, IOException {

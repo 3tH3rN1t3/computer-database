@@ -33,9 +33,9 @@ public class DashBoardServlet extends HttpServlet {
     
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		this.setPage( request.getParameter("page"));
+		this.setItemsPerPage(request.getParameter("itemsPerPage"));
+		this.setPage(request.getParameter("page"));
 		
-		this.setItemsPerPage(request.getParameter("nombreElementPage"));
 		ArrayList<Computer> computers = new ArrayList<Computer>();
 		try {
 			computers = this.getComputers(request.getParameter("search"));
@@ -58,18 +58,20 @@ public class DashBoardServlet extends HttpServlet {
 	private void setPage(String string) {
 		try {
 			int page = Integer.parseInt(string);
-			if (page <= 0 || page > this.page.getMaxPage()) {
-				page = this.page.getMaxPage();
-			}
 			this.page.setNumPage(page);
 		} catch (Exception e) {
 		}
+		if (this.page.getNumPage() <= 0 || this.page.getNumPage() > this.page.getMaxPage()) {
+			this.page.setNumPage(1);
+		}
+		System.out.println(page.getNumPage());
 	}
 	
 	private void setItemsPerPage(String string) {
 		try {
 			int items = Integer.parseInt(string);
 			if (items > 0) {
+				page.setNumPage(1);
 				page.setMaxItems(items);
 			}
 		} catch (Exception e) {

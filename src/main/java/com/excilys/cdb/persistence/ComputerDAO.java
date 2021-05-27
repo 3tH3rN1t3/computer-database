@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.excilys.cdb.mapper.ComputerMapper;
+import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Pagination;
 
@@ -131,21 +132,11 @@ public class ComputerDAO {
 			 PreparedStatement stmt = conn.prepareStatement(INSERT_COMPUTER_REQUEST, Statement.RETURN_GENERATED_KEYS);) {
 			
 			stmt.setString(1, com.getName());
-			if (com.getIntroduced().isPresent()) {
-				stmt.setDate(2, Date.valueOf(com.getIntroduced().get()));
-			} else {
-				stmt.setDate(2, null);
-			}
-			if (com.getDiscontinued().isPresent()) {
-				stmt.setDate(3, Date.valueOf(com.getDiscontinued().get()));
-			} else {
-				stmt.setDate(3, null);
-			}
-			if (com.getCompany().isPresent()) {
-				stmt.setInt(4, com.getCompany().get().getID());
-			} else {
-				stmt.setString(4, null);
-			}
+			//J'adore ce bout de code
+			stmt.setDate(2, com.getIntroduced().map(Date::valueOf).orElse(null));
+			stmt.setDate(3, com.getDiscontinued().map(Date::valueOf).orElse(null));
+			stmt.setString(4, com.getCompany().map(Company::getID).map(String::valueOf).orElse(null));
+			//C'est fini
 			stmt.executeUpdate();
 			ResultSet rs = stmt.getGeneratedKeys();
 			rs.first();
@@ -164,21 +155,9 @@ public class ComputerDAO {
 				PreparedStatement stmt = conn.prepareStatement(UPDATE_COMPUTER_REQUEST);) {
 			
 			stmt.setString(1, com.getName());
-			if (com.getIntroduced().isPresent()) {
-				stmt.setDate(2, Date.valueOf(com.getIntroduced().get()));
-			} else {
-				stmt.setDate(2, null);
-			}
-			if (com.getDiscontinued().isPresent()) {
-				stmt.setDate(3, Date.valueOf(com.getDiscontinued().get()));
-			} else {
-				stmt.setDate(3, null);
-			}
-			if (com.getCompany().isPresent()) {
-				stmt.setInt(4, com.getCompany().get().getID());
-			} else {
-				stmt.setString(4, null);
-			}
+			stmt.setDate(2, com.getIntroduced().map(Date::valueOf).orElse(null));
+			stmt.setDate(3, com.getDiscontinued().map(Date::valueOf).orElse(null));
+			stmt.setString(4, com.getCompany().map(Company::getID).map(String::valueOf).orElse(null));
 			stmt.setInt(5, com.getID());
 			edits = stmt.executeUpdate();
 		} catch (SQLException e) {
