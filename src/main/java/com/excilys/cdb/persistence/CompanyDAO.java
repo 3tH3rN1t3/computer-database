@@ -9,18 +9,28 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.excilys.cdb.mapper.CompanyMapper;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.model.Pagination;
 
 //singleton
 public class CompanyDAO {
 	
+	private static final String GET_COMPANIES_PER_PAGE_REQUEST = "SELECT id, name FROM company LIMIT ? OFFSET ?";
+	
+	private static final String GET_COMPANY_BY_ID = "SELECT id, name FROM company WHERE id = ?";
+	
+	private static final String COUNT_COMPANIES_REQUEST = "SELECT COUNT(id) AS count FROM company";
+	
 	private static Database db;
+	
 	private static CompanyDAO companyDAO;
+	
 	private static Logger logger;
+	
 	
 	public static CompanyDAO getInstance() throws IOException {
 		if (companyDAO == null)
@@ -29,76 +39,38 @@ public class CompanyDAO {
 	}
 	
 	private CompanyDAO() throws IOException {
-		db = Database.getDB();
-		logger = LoggerFactory.getLogger(getClass());
+		db = Database.getInstance();
+		logger = LogManager.getLogger(getClass());
 	}
 	
-	public ArrayList<Company> getSomeCompanies(int n, int offset) throws SQLException {
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
+	public ArrayList<Company> getCompaniesPerPage(Pagination p) throws SQLException {
 		ArrayList<Company> coms = new ArrayList<Company>();
-		try {
-			conn = db.getConnection();
-			stmt = conn.prepareStatement("SELECT id, name FROM company LIMIT ? OFFSET ?");
-			stmt.setInt(1, n);
-			stmt.setInt(2, offset);
-			rs = stmt.executeQuery();
+		try (Connection conn = db.getConnection();
+			 PreparedStatement stmt = conn.prepareStatement(GET_COMPANIES_PER_PAGE_REQUEST);) {
+			
+			stmt.setInt(1, p.getMaxItems());
+			stmt.setInt(2, (p.getNumPage()-1)*p.getMaxItems());
+			ResultSet rs = stmt.executeQuery();
 			coms = CompanyMapper.getMapper().map(rs);
 		} catch (SQLException e) {
 			logger.error("Error in CompanyDAO.getSomeCompanies", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) { }
-			}
-			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) { }
-			}
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) { }
-			}
 		}
 		logger.info("Retreived " + coms.size() + " lines from the database\n");
 		return coms;
 	}
 
 	public Optional<Company> getCompanyById(int id) throws SQLException{
-		Connection conn = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
 		Optional<Company> com;
-		try {
-			conn = db.getConnection();
-			stmt = conn.prepareStatement("SELECT id, name FROM company WHERE id = ?");
+		try (Connection conn = db.getConnection();
+				PreparedStatement stmt = conn.prepareStatement(GET_COMPANY_BY_ID);){
+			
 			stmt.setInt(1, id);
-			rs = stmt.executeQuery();
+			ResultSet rs = stmt.executeQuery();
 			com = CompanyMapper.getMapper().mapOne(rs);
 		} catch (SQLException e) {
 			logger.error("Error in CompanyDAO.getCompanyById", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) { }
-			}
-			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) { }
-			}
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) { }
-			}
 		}
 		if (com.isPresent()) {
 			logger.info("Retreived company with ID " + id + " from the database\n");
@@ -109,35 +81,16 @@ public class CompanyDAO {
 	}
 	
 	public int countCompanies() throws SQLException {
-		Connection conn = null;
-		Statement stmt = null;
-		ResultSet rs = null;
 		int count = 0;
-		try {
-			conn = db.getConnection();
-			stmt = conn.createStatement();
-			rs = stmt.executeQuery("SELECT COUNT(id) AS elements FROM company");
+		try (Connection conn = db.getConnection();
+				Statement stmt = conn.createStatement();){
+			
+			ResultSet rs = stmt.executeQuery(COUNT_COMPANIES_REQUEST);
 			rs.next();
-			count = rs.getInt("elements");
+			count = rs.getInt("count");
 		} catch (SQLException e) {
 			logger.error("Error in CompanyDAO.countCompanies", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
-		} finally {
-			if (rs != null) {
-				try {
-					rs.close();
-				} catch (SQLException e) { }
-			}
-			if (stmt != null) {
-				try {
-					stmt.close();
-				} catch (SQLException e) { }
-			}
-			if (conn != null) {
-				try {
-					conn.close();
-				} catch (SQLException e) { }
-			}
 		}
 		return count;
 	}

@@ -5,7 +5,7 @@
 	<groupId>com.excilys.cdb</groupId>
 	<artifactId>cdb</artifactId>
 	<version>1.0-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 	
 	<name>cdb</name>
 	<url>https://github.com/3tH3rN1t3/computer-database.git</url>
@@ -15,31 +15,38 @@
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
     
+		<mysql.version>8.0.25</mysql.version>
 		<servlet-api.version>4.0.0</servlet-api.version>
-		<maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
-		<mysql.version>8.0.24</mysql.version>
+		<jstl.version>1.2</jstl.version>
 		<commons-dbcp.version>1.4</commons-dbcp.version>
-		<h2.version>1.4.199</h2.version>
 		<junit.version>4.12</junit.version>
+		<h2.version>1.4.199</h2.version>
 		<mockito.version>1.10.19</mockito.version>
-		<slf4j-log4j12.version>1.7.25</slf4j-log4j12.version>
+		<maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
 	</properties>
 	
 	<dependencies>
+		
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${servlet-api.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>8.0.25</version>
-			<scope>runtime</scope>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>${jstl.version}</version>
 		</dependency>
-    
+
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
@@ -53,13 +60,6 @@
 			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
-		
-		<dependency>
-			<groupId>org.mockito</groupId>
-			<artifactId>mockito-all</artifactId>
-			<version>${mockito.version}</version>
-			<scope>test</scope>
-		</dependency>
 	
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -68,17 +68,22 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
-			<scope>compile</scope>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>${mockito.version}</version>
+			<scope>test</scope>
 		</dependency>
 		
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.28</version>
-			<scope>runtime</scope>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>2.13.3</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.13.3</version>
 		</dependency>
 	</dependencies>
 

@@ -3,10 +3,11 @@ package com.excilys.cdb.controller;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.Page;
+import com.excilys.cdb.model.Pagination;
 import com.excilys.cdb.persistence.CompanyDAO;
 import com.excilys.cdb.persistence.ComputerDAO;
 import com.excilys.cdb.ui.CLIAsker;
@@ -64,47 +65,36 @@ public class CLIController {
 	}
 	private void executeListComputers() throws SQLException, IOException {
 		ComputerDAO dao = ComputerDAO.getInstance();
-		int computersCount = dao.CountComputers();
-		int pagesCount = computersCount / Page.MAX_ITEMS;
-		if (computersCount % Page.MAX_ITEMS != 0) {
-			pagesCount++;
-		}
-		int pageNum = 1;
-		while (pageNum <= pagesCount) {
-			Page<Computer> p = new Page<Computer>(pageNum, pagesCount);
-			p.setItems(dao.getSomeComputers(Page.MAX_ITEMS, (pageNum-1) * Page.MAX_ITEMS));
-			view.printPage(p);
-			String choice = asker.askPage(pageNum, pagesCount);
+		Pagination p = new Pagination(dao.CountComputers());
+		ArrayList<Computer> coms = new ArrayList<Computer>();
+		while (p.getNumPage() <= p.getMaxPage()) {
+			coms = dao.getComputersPerPage(p);
+			view.printComputers(coms);
+			String choice = asker.askPage(p.getNumPage(), p.getMaxPage());
 			if ("q".equalsIgnoreCase(choice)) {
 				break;
 			} else if ("a".equalsIgnoreCase(choice)) {
-				pageNum = ((pageNum + pagesCount - 2) % pagesCount) + 1;
+				p.setNumPage(((p.getNumPage() + p.getMaxPage() - 2) % p.getMaxPage()) + 1);
 			} else {
-				pageNum = (pageNum % pagesCount) + 1;
+				p.setNumPage((p.getNumPage() % p.getMaxPage()) + 1);
 			}
 		}
 	}
 
 	private void executeListCompanies() throws SQLException, IOException {
 		CompanyDAO dao = CompanyDAO.getInstance();
-		int companiesCount = dao.countCompanies();
-		int pagesCount = companiesCount / Page.MAX_ITEMS;
-		if (companiesCount % Page.MAX_ITEMS != 0)
-			pagesCount++;
-		int pageNum = 1;
-		while (pageNum <= pagesCount) {
-			if (pageNum == 0)
-				pageNum = pagesCount;
-			Page<Company> p = new Page<Company>(pageNum, pagesCount);
-			p.setItems(dao.getSomeCompanies(Page.MAX_ITEMS, (pageNum-1) * Page.MAX_ITEMS));
-			view.printPage(p);
-			String choice = asker.askPage(pageNum, pagesCount);
-			if ("q".equals(choice))
+		Pagination p = new Pagination(dao.countCompanies());
+		ArrayList<Company> coms = new ArrayList<Company>();
+		while (p.getNumPage() <= p.getMaxPage()) {
+			coms = dao.getCompaniesPerPage(p);
+			view.printCompanies(coms);
+			String choice = asker.askPage(p.getNumPage(), p.getMaxPage());
+			if ("q".equalsIgnoreCase(choice)) {
 				break;
-			else if ("a".equals(choice)) {
-				pageNum = ((pageNum + pagesCount - 2) % pagesCount) + 1;
+			} else if ("a".equalsIgnoreCase(choice)) {
+				p.setNumPage(((p.getNumPage() + p.getMaxPage() - 2) % p.getMaxPage()) + 1);
 			} else {
-				pageNum = (pageNum % pagesCount) + 1;
+				p.setNumPage((p.getNumPage() % p.getMaxPage()) + 1);
 			}
 		}
 		

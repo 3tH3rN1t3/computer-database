@@ -1,7 +1,5 @@
 package com.excilys.cdb;
 
-import java.sql.SQLException;
-
 import com.excilys.cdb.ui.CLI;
 
 public class Main {

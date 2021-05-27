@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.Page;
 
 public class CLIView {
 	void printMenu() {
@@ -28,9 +27,5 @@ public class CLIView {
 		for (Computer com : coms) {
 			System.out.println(com);
 		}
-	}
-	
-	public <T> void printPage(Page<T> p) {
-		System.out.println(p);
 	}
 }

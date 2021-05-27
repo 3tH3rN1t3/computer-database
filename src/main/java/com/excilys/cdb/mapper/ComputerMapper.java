@@ -13,7 +13,7 @@ import com.excilys.cdb.model.Computer;
 public class ComputerMapper {
 	private static ComputerMapper mapper;
 	
-	public static ComputerMapper getMapper() {
+	public static ComputerMapper getInstance() {
 		if (mapper == null)
 			mapper = new ComputerMapper();
 		return mapper;

@@ -7,8 +7,8 @@ import java.util.Optional;
 public class Computer {
 	private String name;
 	private int id;
-	private LocalDate addDate;
-	private LocalDate removeDate;
+	private LocalDate introduced;
+	private LocalDate discontinued;
 	private Company company;
 	
 	public Computer(int id, String name) {
@@ -19,8 +19,8 @@ public class Computer {
 	public Computer(int id, String name, LocalDate addDate, LocalDate removeDate, Company company) {
 		this.id = id;
 		this.name = name;
-		this.addDate = addDate;
-		this.removeDate = removeDate;
+		this.introduced = addDate;
+		this.discontinued = removeDate;
 		this.company = company;
 	}
 	
@@ -28,15 +28,15 @@ public class Computer {
 		this.name = name;
 	}
 	
-	public void setAddDate(LocalDate addDate) {
-		this.addDate = addDate;
+	public void setIntroduced(LocalDate addDate) {
+		this.introduced = addDate;
 	}
 	
-	public void setRemoveDate(LocalDate removeDate) {
-		this.removeDate = removeDate;
+	public void setDiscontinued(LocalDate removeDate) {
+		this.discontinued = removeDate;
 	}
 	
-	public void setCompanyID(Company company) {
+	public void setCompany(Company company) {
 		this.company = company;
 	}
 	
@@ -48,12 +48,12 @@ public class Computer {
 		return name;
 	}
 	
-	public Optional<LocalDate> getAddDate() {
-		return Optional.ofNullable(addDate);
+	public Optional<LocalDate> getIntroduced() {
+		return Optional.ofNullable(introduced);
 	}
 	
-	public Optional<LocalDate> getRemoveDate() {
-		return Optional.ofNullable(removeDate);
+	public Optional<LocalDate> getDiscontinued() {
+		return Optional.ofNullable(discontinued);
 	}
 	
 	public Optional<Company> getCompany() {
@@ -64,14 +64,14 @@ public class Computer {
 		String info = "ID:" + id + " | Name: " + name;
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("YYYY-MM-dd");
 		info += " | added: ";
-		if (addDate != null) {
-			info += addDate.format(formatter);
+		if (introduced != null) {
+			info += introduced.format(formatter);
 		} else {
 			info += "-";
 		}
 		info += " | removed: ";
-		if (removeDate != null) {
-			info += removeDate.format(formatter);
+		if (discontinued != null) {
+			info += discontinued.format(formatter);
 		} else {
 			info += "-";
 		}

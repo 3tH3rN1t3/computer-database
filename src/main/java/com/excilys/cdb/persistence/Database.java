@@ -2,20 +2,19 @@ package com.excilys.cdb.persistence;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 //singleton
 public class Database {
-	private static Logger logger = LoggerFactory.getLogger(Database.class);
+	private static Logger logger = LogManager.getLogger(Database.class);
 	
 	private static final String DB_PROPERTIES_FILE_PATH = "/database.properties";
 	private static final String DB_PROPERTY_DRIVER = "jdbc.driver";
@@ -31,12 +30,12 @@ public class Database {
 			loadProperties();
 			logger.info("Database successfully created");
 		} catch (IOException e) {
-			logger.error("Error during DataSource creation", e);
+			logger.fatal("Error during DataSource creation", e);
 			throw new IOException("Une erreur fatale est survenue");
 		}
 	}
 	
-	public static Database getDB() throws IOException {
+	public static Database getInstance() throws IOException {
 		if(db == null) {
 			db = new Database();
 		}
