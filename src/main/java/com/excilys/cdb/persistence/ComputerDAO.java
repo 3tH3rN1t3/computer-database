@@ -13,8 +13,9 @@ import java.util.Optional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.excilys.cdb.dto.ComputerDTO;
-import com.excilys.cdb.mapper.ComputerMapper;
+import com.excilys.cdb.dto.DBCompanyDTO;
+import com.excilys.cdb.dto.DBComputerDTO;
+import com.excilys.cdb.mapper.DBComputerMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Pagination;
@@ -25,16 +26,16 @@ import com.excilys.cdb.model.Pagination;
 public class ComputerDAO {
 	
 	private static final String GET_COMPUTERS_BY_PAGE_REQUEST = "SELECT computer.id, computer.name, "
-			+ "introduced, discontinued, company_id, company.name "
+			+ "introduced, discontinued, company.id, company.name "
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id LIMIT ? OFFSET ?";
 	
 	private static final String GET_COMPUTER_BY_ID_REQUEST = "SELECT id, name, "
-			+ "introduced, discontinued, company_id, company.name "
+			+ "introduced, discontinued, company.id, company.name "
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
 			+ "WHERE computer.id = ?";
 	
 	private static final String GET_COMPUTERS_BY_SEARCH_REQUEST = "SELECT computer.id, computer.name, "
-			+ "introduced, discontinued, company_id, company.name "
+			+ "introduced, discontinued, company.id, company.name "
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
 			+ "WHERE computer.name LIKE CONCAT('%', ?, '%') LIMIT ? OFFSET ?";
 	
@@ -70,26 +71,26 @@ public class ComputerDAO {
 	}
 	
 	
-	public ArrayList<ComputerDTO> getComputersPerPage(Pagination p) {
-		ArrayList<ComputerDTO> coms = new ArrayList<ComputerDTO>();
+	public ArrayList<DBComputerDTO> getComputersPerPage(Pagination p) throws SQLException {
+		ArrayList<DBComputerDTO> coms = new ArrayList<DBComputerDTO>();
 		try (Connection conn = db.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(GET_COMPUTERS_BY_PAGE_REQUEST);) {
 			
 			stmt.setInt(1, p.getMaxItems());
 			stmt.setInt(2, (p.getNumPage()-1)*p.getMaxItems());
 			ResultSet rs = stmt.executeQuery();
-			coms = ComputerMapper.getInstance().toComputerDTOs(rs);
+			coms = DBComputerMapper.getInstance().toComputerDTOs(rs);
 			
 		} catch (SQLException e) {
 			logger.error("Error in ComputerDAO.getSomeComputers", e);
-			//TODO throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
+			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
 		logger.info("Retreived " + coms.size() + " lines from the database\n");
 		return coms;
 	}
 	
-	public ArrayList<ComputerDTO> search(String pattern, Pagination p) {
-		ArrayList<ComputerDTO> coms = new ArrayList<ComputerDTO>();
+	public ArrayList<DBComputerDTO> search(String pattern, Pagination p) throws SQLException {
+		ArrayList<DBComputerDTO> coms = new ArrayList<DBComputerDTO>();
 		try (Connection conn = db.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(GET_COMPUTERS_BY_SEARCH_REQUEST);) {
 			
@@ -97,27 +98,27 @@ public class ComputerDAO {
 			stmt.setInt(2, p.getMaxItems());
 			stmt.setInt(3, (p.getNumPage()-1)*p.getMaxItems());
 			ResultSet rs = stmt.executeQuery();
-			coms = ComputerMapper.getInstance().toComputerDTOs(rs);
+			coms = DBComputerMapper.getInstance().toComputerDTOs(rs);
 			
 		} catch (SQLException e) {
 			logger.error("Error in ComputerDAO.getSomeComputers", e);
-			//TODO throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
+			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
 		logger.info("Retreived " + coms.size() + " lines from the database\n");
 		return coms;
 	}
 
-	public Optional<ComputerDTO> getComputerById(int id) {
-		Optional<ComputerDTO> com = Optional.empty();
+	public Optional<DBComputerDTO> find(int id) throws SQLException {
+		Optional<DBComputerDTO> com = Optional.empty();
 		try (Connection conn = db.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(GET_COMPUTER_BY_ID_REQUEST);) {
 			
 			stmt.setInt(1, id);
 			ResultSet rs = stmt.executeQuery();
-			com = ComputerMapper.getInstance().toComputerDTO(rs);
+			com = DBComputerMapper.getInstance().toComputerDTO(rs);
 		} catch (SQLException e) {
 			logger.error("Error in ComputerDAO.getSomeComputers", e);
-			//TODO throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
+			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
 		if (com.isPresent()) {
 			logger.info("Retreived computer with ID " + id + " from the database\n");
@@ -127,49 +128,51 @@ public class ComputerDAO {
 		return com;
 	}
 	
-	public int insertComputer(Computer com) {
+	public int insertComputer(DBComputerDTO dbComputerDTO) throws SQLException {
 		int id = 0;
 		try (Connection conn = db.getConnection();
 			 PreparedStatement stmt = conn.prepareStatement(INSERT_COMPUTER_REQUEST, Statement.RETURN_GENERATED_KEYS);) {
 			
-			stmt.setString(1, com.getName());
-			//J'adore ce bout de code
-			stmt.setDate(2, com.getIntroduced().map(Date::valueOf).orElse(null));
-			stmt.setDate(3, com.getDiscontinued().map(Date::valueOf).orElse(null));
-			stmt.setString(4, com.getCompany().map(Company::getID).map(String::valueOf).orElse(null));
-			//C'est fini
+			stmt.setString(1, dbComputerDTO.getName());
+			stmt.setString(2, dbComputerDTO.getIntroduced().orElse(null));
+			stmt.setString(3, dbComputerDTO.getDiscontinued().orElse(null));
+			stmt.setString(4, dbComputerDTO.getCompany().map(DBCompanyDTO::getId).orElse(null));
 			stmt.executeUpdate();
 			ResultSet rs = stmt.getGeneratedKeys();
 			rs.first();
 			id = rs.getInt(1);
 		} catch (SQLException e) {
 			logger.error("Error in ComputerDAO.getSomeComputers", e);
-			//TODO throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
+			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
 		logger.info("Inserted computer with ID " + id + " into the database\n");
 		return id;
 	}
 	
-	public int updateComputer(Computer com) {
+	public int updateComputer(DBComputerDTO dbComputerDTO) throws SQLException {
 		int edits = 0;
 		try (Connection conn = db.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(UPDATE_COMPUTER_REQUEST);) {
-			
-			stmt.setString(1, com.getName());
-			stmt.setDate(2, com.getIntroduced().map(Date::valueOf).orElse(null));
-			stmt.setDate(3, com.getDiscontinued().map(Date::valueOf).orElse(null));
-			stmt.setString(4, com.getCompany().map(Company::getID).map(String::valueOf).orElse(null));
-			stmt.setInt(5, com.getID());
+
+			stmt.setString(1, dbComputerDTO.getName());
+			stmt.setString(2, dbComputerDTO.getIntroduced().orElse(null));
+			stmt.setString(3, dbComputerDTO.getDiscontinued().orElse(null));
+			stmt.setString(4, dbComputerDTO.getCompany().map(DBCompanyDTO::getId).orElse(null));
+			stmt.setString(5, dbComputerDTO.getId());
 			edits = stmt.executeUpdate();
 		} catch (SQLException e) {
 			logger.error("Error in ComputerDAO.getSomeComputers", e);
-			//TODO throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
+			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
-		logger.info("Updated computer with ID " + com.getID() + " in the database\n");
+		if (edits == 1) {
+			logger.info("Updated computer with ID " + dbComputerDTO.getId() + " in the database");
+		} else {
+			logger.info("Could not update computer with ID " + dbComputerDTO.getId());
+		}
 		return edits;
 	}
 	
-	public int deleteComputer(int id) {
+	public int deleteComputer(int id) throws SQLException {
 		int deletes = 0;
 		try (Connection conn = db.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(DELETE_COMPUTER_REQUEST);) {
@@ -178,13 +181,13 @@ public class ComputerDAO {
 			deletes = stmt.executeUpdate();
 		} catch (SQLException e) {
 			logger.error("Error in ComputerDAO.getSomeComputers", e);
-			//TODO throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
+			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
 		logger.info("Deleted computer with ID " + id + " from the database\n");
 		return deletes;
 	}
 	
-	public int CountComputers() {
+	public int CountComputers() throws SQLException {
 		int count = 0;
 		try (Connection conn = db.getConnection();
 				Statement stmt = conn.createStatement();) {
@@ -194,12 +197,12 @@ public class ComputerDAO {
 			count = rs.getInt("count");
 		} catch (SQLException e) {
 			logger.error("Error in ComputerDAO.getSomeComputers", e);
-			//TODO throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
+			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
 		return count;
 	}
 	
-	public int CountComputers(String search) {
+	public int CountComputers(String search) throws SQLException {
 		int count = 0;
 		try (Connection conn = db.getConnection();
 				PreparedStatement stmt = conn.prepareStatement(COUNT_COMPUTERS_BY_SEARCH_REQUEST);) {
@@ -210,9 +213,10 @@ public class ComputerDAO {
 			count = rs.getInt("count");
 		} catch (SQLException e) {
 			logger.error("Error in ComputerDAO.getSomeComputers", e);
-			//TODO throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
+			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
-		return count;
+		return count;//8, 19, 30, 44, 46, II-33
+		//36, 37, 42, II-15, II-21
 	}
 
 }

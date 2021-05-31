@@ -7,6 +7,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.Scanner;
 
+import com.excilys.cdb.mapper.DBCompanyMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.CompanyDAO;
 
@@ -91,7 +92,7 @@ public class CLIAsker {
 			return null;
 		}
 		try {
-			Optional<Company> com = CompanyDAO.getInstance().getCompanyById(Integer.valueOf(input));
+			Optional<Company> com = DBCompanyMapper.getMapper().toCompany(CompanyDAO.getInstance().getCompanyById(Integer.valueOf(input)));
 			if (com.isPresent()) {
 				return com.get();
 			} else {

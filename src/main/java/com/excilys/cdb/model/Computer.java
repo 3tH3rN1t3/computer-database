@@ -11,7 +11,7 @@ public class Computer {
 	private LocalDate discontinued;
 	private Company company;
 	
-	public Computer(ComputerBuilder builder) {
+	private Computer(ComputerBuilder builder) {
 		this.id = builder.id;
 		this.name = builder.name;
 		this.introduced = builder.introduced;

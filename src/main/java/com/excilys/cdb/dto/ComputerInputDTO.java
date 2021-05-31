@@ -1,20 +1,18 @@
 package com.excilys.cdb.dto;
 
-public class ComputerDTO {
+public class ComputerInputDTO {
 	private String id;
 	private String name;
 	private String introduced;
 	private String discontinued;
-	private String companyId;
-	private String companyName;
+	private DBCompanyDTO company;
 	
-	public ComputerDTO (ComputerDTOBuilder builder) {
+	private ComputerInputDTO (ComputerDTOBuilder builder) {
 		this.id = builder.id;
 		this.name = builder.name;
 		this.introduced = builder.introduced;
 		this.discontinued = builder.discontinued;
-		this.companyId = builder.companyId;
-		this.companyName = builder.companyName;
+		this.company = builder.company;
 	}
 	
 	public String getId() {
@@ -33,12 +31,8 @@ public class ComputerDTO {
 		return discontinued;
 	}
 	
-	public String getCompnyId() {
-		return companyId;
-	}
-	
-	public String getCompanyName() {
-		return companyName;
+	public DBCompanyDTO getCompany() {
+		return company;
 	}
 	
 	public static class ComputerDTOBuilder {
@@ -46,8 +40,7 @@ public class ComputerDTO {
 		private String name;
 		private String introduced;
 		private String discontinued;
-		private String companyId;
-		private String companyName;
+		private DBCompanyDTO company;
 		
 		public ComputerDTOBuilder(String id, String name) {
 			this.id = id;
@@ -64,18 +57,21 @@ public class ComputerDTO {
 			return this;
 		}
 		
-		public ComputerDTOBuilder withCompanyId(String companyId) {
-			this.companyId = companyId;
+		public ComputerDTOBuilder withCompany(DBCompanyDTO company) {
+			this.company = company;
 			return this;
 		}
 		
-		public ComputerDTOBuilder withCompanyName(String companyName) {
-			this.companyName = companyName;
-			return this;
+		public ComputerInputDTO build() {
+			return new ComputerInputDTO(this);
 		}
-		
-		public ComputerDTO build() {
-			return new ComputerDTO(this);
-		}
+	}
+	
+	public String toString() {
+		String info = "ID:" + id + " | Name: " + name;
+		info += " | added: " + introduced;
+		info += " | removed: " + discontinued;
+		info += " | Company: " + company.getId() + " " + company.getName();
+		return info;
 	}
 }

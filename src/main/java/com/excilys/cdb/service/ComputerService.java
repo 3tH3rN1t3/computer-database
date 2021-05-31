@@ -1,24 +1,25 @@
 package com.excilys.cdb.service;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import com.excilys.cdb.dto.ComputerDTO;
-import com.excilys.cdb.mapper.ComputerMapper;
+import com.excilys.cdb.controller.DBController;
+import com.excilys.cdb.dto.DBComputerDTO;
+import com.excilys.cdb.mapper.DBComputerMapper;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Pagination;
 import com.excilys.cdb.persistence.ComputerDAO;
 
 public class ComputerService {
 	
-	private static ComputerService instance ;	
-	private ComputerDAO dao;
-	private ComputerMapper computerMapper;
+	private static ComputerService instance ;
+	
+	private static DBController controller;
 		
 		private ComputerService() throws IOException {
-			this.dao = ComputerDAO.getInstance();
-			this.computerMapper = ComputerMapper.getInstance();
+			controller = DBController.getInstance();
 		}
 
 		public static ComputerService getInstance() throws IOException  {
@@ -28,48 +29,38 @@ public class ComputerService {
 			return instance;
 		}
 		
-		public ArrayList<Computer> getComputers(Pagination page) {
-			return this.computerMapper.toComputers(dao.getComputersPerPage(page));
+		public ArrayList<Computer> getComputers(Pagination page) throws SQLException {
+			return controller.getComputers(page);
 		}
 		
-		public int countComputers(){
-			return dao.CountComputers();
+		public int countComputers() throws SQLException{
+			return controller.countComputers();
 		}
 		
 		
-		public ArrayList<Computer>  search(String search, Pagination page) {
+		public ArrayList<Computer>  search(String search, Pagination page) throws SQLException {
 			
-			return this.computerMapper.toComputers(dao.search(search, page));		
+			return controller.search(search, page);		
 		}
 		
-		public int countComputers(String search){
-			return dao.CountComputers(search);
+		public int countComputers(String search) throws SQLException{
+			return controller.countComputers(search);
 		}
 		
 		
-		public Computer getComputer(int id) {
-			return this.computerMapper.toComputer(dao.getComputerById(id));	
+		public Computer getComputer(int id) throws SQLException {
+			return controller.getComputer(id);	
 		}
 
-		public void addComputer(ComputerDTO computerDTO) {
-			Computer computer = this.computerMapper.toComputer(Optional.of(computerDTO));
-			dao.insertComputer(computer);
+		public void addComputer(Computer computer) throws SQLException {
+			controller.addComputer(computer);
 		}
 
-		public int updateComputer(ComputerDTO computerDTO) {
-			Computer computer = this.computerMapper.toComputer(Optional.of(computerDTO));
-			System.out.println("Logg ComputerService update :"+ computer);
-
-			if (computer != null) {
-				return dao.updateComputer(computer);
-			}else {
-				System.out.println("Logg ComputerService update : Model Computer not valid");
-			}
-			return 0;
-			
+		public int updateComputer(Computer computer) throws SQLException {
+			return controller.updateComputer(computer);
 		}
 
-		public void deletComputer(int id) {
-			dao.deleteComputer(id);
+		public void deleteComputer(int id) throws SQLException {
+			controller.deleteComputer(id);
 		}
 }

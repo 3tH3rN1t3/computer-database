@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.excilys.cdb.mapper.DBCompanyMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Pagination;
@@ -89,7 +90,7 @@ public class CLIController {
 		Pagination p = new Pagination(dao.countCompanies());
 		ArrayList<Company> coms = new ArrayList<Company>();
 		while (p.getNumPage() <= p.getMaxPage()) {
-			coms = dao.getCompaniesPerPage(p);
+			coms = DBCompanyMapper.getMapper().toCompanies(dao.getCompaniesPerPage(p));
 			view.printCompanies(coms);
 			String choice = asker.askPage(p.getNumPage(), p.getMaxPage());
 			if ("q".equalsIgnoreCase(choice)) {
@@ -136,11 +137,15 @@ public class CLIController {
 			}
 		}
 		Company company = asker.askCompany();
-		computerService.addComputer(null);
+		computerService.addComputer(new Computer.ComputerBuilder(0, name)
+				.withIntroduced(addDate)
+				.withDiscontinued(removeDate)
+				.withCompany(company)
+				.build());
 		System.out.println("L'ordinateur a été créé");
 	}
 
-	private void executeUpdateComputer() throws SQLException, IOException {
+	private int executeUpdateComputer() throws SQLException, IOException {
 		int id = asker.askComputerId();
 		String name = asker.askComputerName();
 		LocalDate addDate = asker.askAddDate();
@@ -154,9 +159,13 @@ public class CLIController {
 			}
 		}
 		Company company = asker.askCompany();
-		int updateCount = computerService.updateComputer(null);
+		int updateCount = computerService.updateComputer(new Computer.ComputerBuilder(id, name)
+				.withIntroduced(addDate)
+				.withDiscontinued(removeDate)
+				.withCompany(company)
+				.build());
 		System.out.println(updateCount + " ligne(s) a/ont été mise(s) à jour");
-		
+		return updateCount;
 	}
 
 	private void executeDeleteComputer() throws SQLException, IOException {
