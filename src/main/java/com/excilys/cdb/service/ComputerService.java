@@ -29,14 +29,6 @@ public class ComputerService {
 			return instance;
 		}
 		
-		public ArrayList<Computer> getComputers(Pagination page) throws SQLException {
-			return controller.getComputers(page);
-		}
-		
-		public int countComputers() throws SQLException{
-			return controller.countComputers();
-		}
-		
 		
 		public ArrayList<Computer>  search(String search, Pagination page) throws SQLException {
 			
@@ -48,7 +40,7 @@ public class ComputerService {
 		}
 		
 		
-		public Computer getComputer(int id) throws SQLException {
+		public Optional<Computer> getComputer(int id) throws SQLException {
 			return controller.getComputer(id);	
 		}
 

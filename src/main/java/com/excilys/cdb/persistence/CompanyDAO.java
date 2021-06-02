@@ -49,7 +49,7 @@ public class CompanyDAO {
 		try (Connection conn = db.getConnection(); ) {
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(GET_ALL_COMPANIES_REQUEST);
-			coms = DBCompanyMapper.getMapper().toCompanyDTOs(rs);
+			coms = DBCompanyMapper.getInstance().toCompanyDTOs(rs);
 		} catch (SQLException e) {
 			logger.error("Error in CompanyDAO.getSomeCompanies", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
@@ -66,7 +66,7 @@ public class CompanyDAO {
 			stmt.setInt(1, p.getMaxItems());
 			stmt.setInt(2, (p.getNumPage()-1)*p.getMaxItems());
 			ResultSet rs = stmt.executeQuery();
-			coms = DBCompanyMapper.getMapper().toCompanyDTOs(rs);
+			coms = DBCompanyMapper.getInstance().toCompanyDTOs(rs);
 		} catch (SQLException e) {
 			logger.error("Error in CompanyDAO.getSomeCompanies", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
@@ -82,7 +82,7 @@ public class CompanyDAO {
 			
 			stmt.setInt(1, id);
 			ResultSet rs = stmt.executeQuery();
-			com = DBCompanyMapper.getMapper().toCompanyDTO(rs);
+			com = DBCompanyMapper.getInstance().toCompanyDTO(rs);
 		} catch (SQLException e) {
 			logger.error("Error in CompanyDAO.getCompanyById", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");

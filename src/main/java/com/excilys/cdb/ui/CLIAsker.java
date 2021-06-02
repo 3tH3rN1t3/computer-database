@@ -92,7 +92,7 @@ public class CLIAsker {
 			return null;
 		}
 		try {
-			Optional<Company> com = DBCompanyMapper.getMapper().toCompany(CompanyDAO.getInstance().getCompanyById(Integer.valueOf(input)));
+			Optional<Company> com = DBCompanyMapper.getInstance().toCompany(CompanyDAO.getInstance().getCompanyById(Integer.valueOf(input)));
 			if (com.isPresent()) {
 				return com.get();
 			} else {

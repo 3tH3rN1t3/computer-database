@@ -69,10 +69,10 @@ public class CLIController {
 		}
 	}
 	private void executeListComputers() throws SQLException, IOException {
-		Pagination p = new Pagination(computerService.countComputers());
+		Pagination p = new Pagination(computerService.countComputers(""));
 		ArrayList<Computer> coms = new ArrayList<Computer>();
 		while (p.getNumPage() <= p.getMaxPage()) {
-			coms = computerService.getComputers(p);
+			coms = computerService.search("", p);
 			view.printComputers(coms);
 			String choice = asker.askPage(p.getNumPage(), p.getMaxPage());
 			if ("q".equalsIgnoreCase(choice)) {
@@ -90,7 +90,7 @@ public class CLIController {
 		Pagination p = new Pagination(dao.countCompanies());
 		ArrayList<Company> coms = new ArrayList<Company>();
 		while (p.getNumPage() <= p.getMaxPage()) {
-			coms = DBCompanyMapper.getMapper().toCompanies(dao.getCompaniesPerPage(p));
+			coms = DBCompanyMapper.getInstance().toCompanies(dao.getCompaniesPerPage(p));
 			view.printCompanies(coms);
 			String choice = asker.askPage(p.getNumPage(), p.getMaxPage());
 			if ("q".equalsIgnoreCase(choice)) {
@@ -106,8 +106,8 @@ public class CLIController {
 
 	private void executeShowDetails() throws IOException, SQLException {
 		int id = asker.askComputerId();
-		Computer com = computerService.getComputer(id);
-		if (com != null) {
+		Optional<Computer> com = computerService.getComputer(id);
+		if (com.isPresent()) {
 			System.out.println(com);
 		} else {
 			System.out.println("L'ordianteur n'existe pas");

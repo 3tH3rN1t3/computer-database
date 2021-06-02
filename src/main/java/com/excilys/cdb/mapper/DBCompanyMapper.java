@@ -17,7 +17,11 @@ public class DBCompanyMapper {
 
 	private static DBCompanyMapper mapper;
 	
-	public static DBCompanyMapper getMapper() {
+	private DBCompanyMapper() {
+		
+	}
+	
+	public static DBCompanyMapper getInstance() {
 		if (mapper == null)
 			mapper = new DBCompanyMapper();
 		return mapper;
@@ -25,6 +29,9 @@ public class DBCompanyMapper {
 	
 	public Optional<DBCompanyDTO> toCompanyDTO(ResultSet rs) {
 		try {
+			if (rs.isBeforeFirst()) {
+				rs.next();
+			}
 			if (rs.getString(COLONNE_COMPANY_ID) != null) {
 				return Optional.of(new DBCompanyDTO(rs.getString(COLONNE_COMPANY_ID), rs.getString(COLONNE_COMPANY_NAME)));
 			} else {
@@ -39,7 +46,7 @@ public class DBCompanyMapper {
 		if (!com.isPresent()) {
 			return Optional.empty();
 		} else {
-			return Optional.of(new DBCompanyDTO(com.get().getID()+"", com.get().getName()));
+			return Optional.of(new DBCompanyDTO(com.get().getId()+"", com.get().getName()));
 		}
 	}
 	

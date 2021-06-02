@@ -23,24 +23,31 @@
 	<section id="main">
 		<div class="container">
 			<h1 id="homeTitle">
-				<c:out value="${page.totalItems}" /> Computers found
+				<c:choose>
+					<c:when test="${search == null || search.isEmpty()}">
+						<c:out value="${page.totalItems}" /> Computers found
+					</c:when>
+					<c:otherwise>
+						<c:out value="${page.totalItems}" /> Computers found for &laquo<c:out value="${search}" />&raquo
+					</c:otherwise>
+				</c:choose>
 			</h1>
 			<div id="actions" class="form-horizontal">
 				<div class="pull-left">
 					<form id="searchForm" action="#" method="GET" class="form-inline">
-						<input type="search" id="searchbox" name="search" class="form-control" placeholder="${search != "" && search != null ? search : 'Search name'}" />
+						<input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" />
                         <input type="submit" id="searchsubmit" value="Filter by name"
                         class="btn btn-primary" />
 					</form>
 				</div>
 				<div class="pull-right">
-					<a class="btn btn-success" id="addComputer" href="/cdb/views/addComputer.html">Add Computer</a> 
+					<a class="btn btn-success" id="addComputer" href="editComputer">Add Computer</a> 
 					<a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Edit</a>
 				</div>
 			</div>
 		</div>
 
-		<form id="deleteForm" action="#" method="POST">
+		<form id="deleteForm" action="deleteComputer" method="POST">
 			<input type="hidden" name="selection" value="">
 		</form>
 
@@ -54,24 +61,24 @@
 						<th class="editMode" style="width: 60px; height: 22px;">
 							<input type="checkbox" id="selectall" /> 
 							<span style="vertical-align: top;">
-								<a href="#" id="deleteSelected" onclick="$.fn.deleteSelected();">
+								<a href="" id="deleteSelected" onclick="$.fn.deleteSelected();">
 									<i class="fa fa-trash-o fa-lg"></i>
 								</a>
 							</span>
 						</th>
 						<th>
-							Computer name
+							<a href="dashboard?orderby=${page.orderBy.string ne 'computer.name' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.string eq 'computer.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Computer name</a>
 						</th>
 						<th>
-							Introduced date
+							<a href="dashboard?orderby=${page.orderBy.string ne 'introduced' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.string eq 'introduced' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Introduced date</a>
 						</th>
 						<!-- Table header for Discontinued Date -->
 						<th>
-							Discontinued date
+							<a href="dashboard?orderby=${page.orderBy.string ne 'discontinued' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.string eq 'discontinued' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Discontinued date</a>
 						</th>
 						<!-- Table header for Company -->
 						<th>
-							Company
+							<a href="dashboard?orderby=${page.orderBy.string ne 'company.name' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.string eq 'company.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Company</a>
 						</th>
 
 					</tr>
@@ -81,10 +88,10 @@
 					<c:forEach var = "computer" items = "${computers}">
 						<tr>
 							<td class="editMode">
-								<input type="checkbox" name="cb" class="cb" value="0">
+								<input type="checkbox" name="cb" class="cb" value="${computer.id}">
 							</td>
 							<td>
-								<a href="editComputer.html" onclick="">${computer.name}</a>
+								<a href="editComputer?id=${computer.id}#" onclick="">${computer.name}</a>
 							</td>
 							<td>
 								<c:if test="${computer.introduced.isPresent()}" var="variable">

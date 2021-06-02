@@ -9,20 +9,23 @@ import java.util.Optional;
 
 import com.excilys.cdb.dto.DBComputerDTO;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.validator.ComputerValidator;
 
 //id | name | introduced | discontinued | company_id
 public class DBComputerMapper {
 	
-	static final String COLONNE_ID = "id";
+	static final String COLONNE_ID = "computer.id";
 	
-	static final String COLONNE_NAME = "name";
+	static final String COLONNE_NAME = "computer.name";
 	
 	static final String COLONNE_INTRODUCED = "introduced";
 	
 	static final String COLONNE_DISCONTINUED = "discontinued";
 	
 	static DBComputerMapper mapper;
+	
+	private DBComputerMapper() {
+		
+	}
 	
 	public static DBComputerMapper getInstance() {
 		if (mapper == null)
@@ -32,12 +35,15 @@ public class DBComputerMapper {
 	
 	public Optional<DBComputerDTO> toComputerDTO(ResultSet rs) {
 		try {
+			if (rs.isBeforeFirst()) {
+				rs.next();
+			}
 			return Optional.of(new DBComputerDTO.ComputerDTOBuilder(
 					rs.getString(COLONNE_ID), rs.getString(COLONNE_NAME)
 					)
 					.withIntroduced(rs.getDate(COLONNE_INTRODUCED) == null ? null : rs.getDate(COLONNE_INTRODUCED).toString())
 					.withDiscontinued(rs.getDate(COLONNE_DISCONTINUED) == null ? null : rs.getDate(COLONNE_DISCONTINUED).toString())
-					.withCompany(DBCompanyMapper.getMapper().toCompanyDTO(rs).orElse(null))
+					.withCompany(DBCompanyMapper.getInstance().toCompanyDTO(rs).orElse(null))
 					.build() );
 		} catch(SQLException e) {
 			return Optional.empty();
@@ -45,10 +51,10 @@ public class DBComputerMapper {
 	}
 	
 	public DBComputerDTO toComputerDTO(Computer com) {
-		return new DBComputerDTO.ComputerDTOBuilder(com.getID()+"", com.getName())
+		return new DBComputerDTO.ComputerDTOBuilder(com.getId()+"", com.getName())
 				.withIntroduced(com.getIntroduced().map(Date::valueOf).map(Date::toString).orElse(null))
-				.withIntroduced(com.getDiscontinued().map(Date::valueOf).map(Date::toString).orElse(null))
-				.withCompany(DBCompanyMapper.getMapper().toCompanyDTO(com.getCompany()).orElse(null))
+				.withDiscontinued(com.getDiscontinued().map(Date::valueOf).map(Date::toString).orElse(null))
+				.withCompany(DBCompanyMapper.getInstance().toCompanyDTO(com.getCompany()).orElse(null))
 				.build();
 	}
 	
@@ -73,7 +79,7 @@ public class DBComputerMapper {
 		return Optional.of(new Computer.ComputerBuilder(Integer.parseInt(dto.get().getId()), dto.get().getName())
 				.withIntroduced(dto.get().getIntroduced().map(LocalDate::parse).orElse(null))
 				.withDiscontinued(dto.get().getDiscontinued().map(LocalDate::parse).orElse(null))
-				.withCompany(DBCompanyMapper.getMapper().toCompany(dto.get().getCompany()).orElse(null))
+				.withCompany(DBCompanyMapper.getInstance().toCompany(dto.get().getCompany()).orElse(null))
 				.build() );
 	}
 	

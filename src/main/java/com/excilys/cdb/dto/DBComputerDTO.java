@@ -5,11 +5,11 @@ import java.util.Optional;
 public class DBComputerDTO {
 	private String id;
 	private String name;
-	private Optional<String> introduced;
-	private Optional<String> discontinued;
-	private Optional<DBCompanyDTO> company;
+	private String introduced;
+	private String discontinued;
+	private DBCompanyDTO company;
 	
-	private DBComputerDTO (ComputerDTOBuilder builder) {
+	private DBComputerDTO(ComputerDTOBuilder builder) {
 		this.id = builder.id;
 		this.name = builder.name;
 		this.introduced = builder.introduced;
@@ -26,23 +26,23 @@ public class DBComputerDTO {
 	}
 	
 	public Optional<String> getIntroduced() {
-		return introduced;
+		return Optional.ofNullable(introduced);
 	}
 	
 	public Optional<String> getDiscontinued() {
-		return discontinued;
+		return Optional.ofNullable(discontinued);
 	}
 	
 	public Optional<DBCompanyDTO> getCompany() {
-		return company;
+		return Optional.ofNullable(company);
 	}
 	
 	public static class ComputerDTOBuilder {
 		private String id;
 		private String name;
-		private Optional<String> introduced;
-		private Optional<String> discontinued;
-		private Optional<DBCompanyDTO> company;
+		private String introduced;
+		private String discontinued;
+		private DBCompanyDTO company;
 		
 		public ComputerDTOBuilder(String id, String name) {
 			this.id = id;
@@ -50,30 +50,22 @@ public class DBComputerDTO {
 		}
 		
 		public ComputerDTOBuilder withIntroduced(String introduced) {
-			this.introduced = Optional.ofNullable(introduced);
+			this.introduced = introduced;
 			return this;
 		}
 		
 		public ComputerDTOBuilder withDiscontinued(String discontinued) {
-			this.discontinued = Optional.ofNullable(discontinued);
+			this.discontinued = discontinued;
 			return this;
 		}
 		
 		public ComputerDTOBuilder withCompany(DBCompanyDTO company) {
-			this.company = Optional.ofNullable(company);
+			this.company = company;
 			return this;
 		}
 		
 		public DBComputerDTO build() {
 			return new DBComputerDTO(this);
 		}
-	}
-	
-	public String toString() {
-		String info = "ID:" + id + " | Name: " + name;
-		info += " | added: " + introduced.orElse(null);
-		info += " | removed: " + discontinued.orElse(null);
-		info += " | Company: " + company.map(DBCompanyDTO::getId).orElse(null) + " " + company.map(DBCompanyDTO::getName).orElse(null);
-		return info;
 	}
 }

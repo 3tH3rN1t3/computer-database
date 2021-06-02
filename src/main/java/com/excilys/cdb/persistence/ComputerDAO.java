@@ -2,7 +2,6 @@ package com.excilys.cdb.persistence;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -16,8 +15,6 @@ import org.apache.logging.log4j.Logger;
 import com.excilys.cdb.dto.DBCompanyDTO;
 import com.excilys.cdb.dto.DBComputerDTO;
 import com.excilys.cdb.mapper.DBComputerMapper;
-import com.excilys.cdb.model.Company;
-import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Pagination;
 
 
@@ -25,11 +22,7 @@ import com.excilys.cdb.model.Pagination;
 //id | name | introduced | discontinued | company_id
 public class ComputerDAO {
 	
-	private static final String GET_COMPUTERS_BY_PAGE_REQUEST = "SELECT computer.id, computer.name, "
-			+ "introduced, discontinued, company.id, company.name "
-			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id LIMIT ? OFFSET ?";
-	
-	private static final String GET_COMPUTER_BY_ID_REQUEST = "SELECT id, name, "
+	private static final String GET_COMPUTER_BY_ID_REQUEST = "SELECT computer.id, computer.name, "
 			+ "introduced, discontinued, company.id, company.name "
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
 			+ "WHERE computer.id = ?";
@@ -37,7 +30,7 @@ public class ComputerDAO {
 	private static final String GET_COMPUTERS_BY_SEARCH_REQUEST = "SELECT computer.id, computer.name, "
 			+ "introduced, discontinued, company.id, company.name "
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
-			+ "WHERE computer.name LIKE CONCAT('%', ?, '%') LIMIT ? OFFSET ?";
+			+ "WHERE computer.name LIKE CONCAT('%%', ?, '%%') ORDER BY %s %s LIMIT ? OFFSET ?";
 	
 	private static final String INSERT_COMPUTER_REQUEST = "INSERT INTO computer "
 			+ "(name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
@@ -47,8 +40,6 @@ public class ComputerDAO {
 			+ "WHERE id = ?";
 	
 	private static final String DELETE_COMPUTER_REQUEST = "DELETE FROM computer WHERE id = ?";
-	
-	private static final String COUNT_COMPUTERS_REQUEST = "SELECT COUNT(id) AS count FROM computer";
 	
 	private static final String COUNT_COMPUTERS_BY_SEARCH_REQUEST = "SELECT COUNT(id) AS count FROM computer "
 			+ "WHERE name LIKE CONCAT('%', ?, '%')";
@@ -71,29 +62,10 @@ public class ComputerDAO {
 	}
 	
 	
-	public ArrayList<DBComputerDTO> getComputersPerPage(Pagination p) throws SQLException {
-		ArrayList<DBComputerDTO> coms = new ArrayList<DBComputerDTO>();
-		try (Connection conn = db.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(GET_COMPUTERS_BY_PAGE_REQUEST);) {
-			
-			stmt.setInt(1, p.getMaxItems());
-			stmt.setInt(2, (p.getNumPage()-1)*p.getMaxItems());
-			ResultSet rs = stmt.executeQuery();
-			coms = DBComputerMapper.getInstance().toComputerDTOs(rs);
-			
-		} catch (SQLException e) {
-			logger.error("Error in ComputerDAO.getSomeComputers", e);
-			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
-		}
-		logger.info("Retreived " + coms.size() + " lines from the database\n");
-		return coms;
-	}
-	
 	public ArrayList<DBComputerDTO> search(String pattern, Pagination p) throws SQLException {
 		ArrayList<DBComputerDTO> coms = new ArrayList<DBComputerDTO>();
-		try (Connection conn = db.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(GET_COMPUTERS_BY_SEARCH_REQUEST);) {
-			
+		try (Connection conn = db.getConnection();) {
+			PreparedStatement stmt = conn.prepareStatement(String.format(GET_COMPUTERS_BY_SEARCH_REQUEST, p.getOrderBy().getString(), p.getOrder()));
 			stmt.setString(1, pattern);
 			stmt.setInt(2, p.getMaxItems());
 			stmt.setInt(3, (p.getNumPage()-1)*p.getMaxItems());
@@ -185,21 +157,6 @@ public class ComputerDAO {
 		}
 		logger.info("Deleted computer with ID " + id + " from the database\n");
 		return deletes;
-	}
-	
-	public int CountComputers() throws SQLException {
-		int count = 0;
-		try (Connection conn = db.getConnection();
-				Statement stmt = conn.createStatement();) {
-			
-			ResultSet rs = stmt.executeQuery(COUNT_COMPUTERS_REQUEST);
-			rs.next();
-			count = rs.getInt("count");
-		} catch (SQLException e) {
-			logger.error("Error in ComputerDAO.getSomeComputers", e);
-			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
-		}
-		return count;
 	}
 	
 	public int CountComputers(String search) throws SQLException {

@@ -9,7 +9,7 @@ public class Company implements Comparable<Company> {
 		this.name = name;
 	}
 	
-	public int getID() {
+	public int getId() {
 		return id;
 	}
 	

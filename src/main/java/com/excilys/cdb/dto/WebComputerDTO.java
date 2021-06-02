@@ -1,13 +1,15 @@
 package com.excilys.cdb.dto;
 
-public class ComputerInputDTO {
+import java.util.Optional;
+
+public class WebComputerDTO {
 	private String id;
 	private String name;
 	private String introduced;
 	private String discontinued;
-	private DBCompanyDTO company;
+	private WebCompanyDTO company;
 	
-	private ComputerInputDTO (ComputerDTOBuilder builder) {
+	private WebComputerDTO (ComputerDTOBuilder builder) {
 		this.id = builder.id;
 		this.name = builder.name;
 		this.introduced = builder.introduced;
@@ -23,16 +25,16 @@ public class ComputerInputDTO {
 		return name;
 	}
 	
-	public String getIntroduced() {
-		return introduced;
+	public Optional<String> getIntroduced() {
+		return Optional.ofNullable(introduced);
 	}
 	
-	public String getDiscontinued() {
-		return discontinued;
+	public Optional<String> getDiscontinued() {
+		return Optional.ofNullable(discontinued);
 	}
 	
-	public DBCompanyDTO getCompany() {
-		return company;
+	public Optional<WebCompanyDTO> getCompany() {
+		return Optional.ofNullable(company);
 	}
 	
 	public static class ComputerDTOBuilder {
@@ -40,7 +42,7 @@ public class ComputerInputDTO {
 		private String name;
 		private String introduced;
 		private String discontinued;
-		private DBCompanyDTO company;
+		private WebCompanyDTO company;
 		
 		public ComputerDTOBuilder(String id, String name) {
 			this.id = id;
@@ -57,21 +59,13 @@ public class ComputerInputDTO {
 			return this;
 		}
 		
-		public ComputerDTOBuilder withCompany(DBCompanyDTO company) {
+		public ComputerDTOBuilder withCompany(WebCompanyDTO company) {
 			this.company = company;
 			return this;
 		}
 		
-		public ComputerInputDTO build() {
-			return new ComputerInputDTO(this);
+		public WebComputerDTO build() {
+			return new WebComputerDTO(this);
 		}
-	}
-	
-	public String toString() {
-		String info = "ID:" + id + " | Name: " + name;
-		info += " | added: " + introduced;
-		info += " | removed: " + discontinued;
-		info += " | Company: " + company.getId() + " " + company.getName();
-		return info;
 	}
 }

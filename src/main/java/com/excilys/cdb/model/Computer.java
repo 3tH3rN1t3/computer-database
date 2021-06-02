@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 public class Computer {
-	private String name;
 	private int id;
+	private String name;
 	private LocalDate introduced;
 	private LocalDate discontinued;
 	private Company company;
@@ -19,7 +19,7 @@ public class Computer {
 		this.company = builder.company;
 	}
 	
-	public int getID() {
+	public int getId() {
 		return id;
 	}
 	

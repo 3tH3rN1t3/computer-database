@@ -9,11 +9,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import  org.apache.logging.log4j.Logger;
 
+import com.excilys.cdb.mapper.WebComputerMapper;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.model.Order;
+import com.excilys.cdb.model.OrderBy;
 import com.excilys.cdb.model.Pagination;
 import com.excilys.cdb.service.ComputerService;
 
@@ -21,78 +25,99 @@ import com.excilys.cdb.service.ComputerService;
 public class DashBoardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private ComputerService service;
-	private String search;
-	private Pagination page;
 	private static final Logger LOGGER = LogManager.getLogger(DashBoardServlet.class);
 	
     public DashBoardServlet() throws IOException {
         service = ComputerService.getInstance();
-        search = "";
-        page = new Pagination();
     }
     
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		this.setItemsPerPage(request.getParameter("itemsPerPage"));
-		this.setPage(request.getParameter("page"));
-		
-		ArrayList<Computer> computers = new ArrayList<Computer>();
 		try {
-			computers = this.getComputers(request.getParameter("search"));
+			HttpSession session = request.getSession(true);
+			
+			String search = (String) session.getAttribute("search");
+			if (search == null) {
+				search = "";
+			}
+			if (request.getParameter("search") != null) {
+				search = request.getParameter("search");
+			}
+			
+			Pagination page = (Pagination) session.getAttribute("page");
+			if (page == null) {
+				page = new Pagination(service.countComputers(search));
+			}
+			
+			this.setItemsPerPage(page, request.getParameter("itemsPerPage"));
+			this.setPage(page, request.getParameter("page"));
+			
+			this.setOrder(page, request.getParameter("orderby"), request.getParameter("order"));
+			
+			ArrayList<Computer> computers = new ArrayList<Computer>();
+			computers = this.getComputers(page, search);
+			
+			session.setAttribute("page", page);
+			session.setAttribute("search", search);
+			
+			request.setAttribute( "nombrePageMax", page.getMaxPage() );
+			request.setAttribute( "computers", WebComputerMapper.getInstance().toComputerDTOs(computers));
+			request.setAttribute( "page", page);//Trnasformation en DTO?
+			request.setAttribute("search", search);
+			
+			this.getServletContext().getRequestDispatcher("/WEB-INF/jsp/dashboard.jsp").forward(request, response);
 		} catch (SQLException e) {
-			LOGGER.error("Oups erreur sql", e);;
+			LOGGER.error("Oups erreur SQL", e);;
 		}
-		
-		
-		request.setAttribute( "nombrePageMax", page.getMaxPage() );
-		request.setAttribute( "computers", computers );
-		request.setAttribute( "page", page);
-		request.setAttribute("search", search);
-		this.getServletContext().getRequestDispatcher("/WEB-INF/jsp/dashboard.jsp").forward(request, response);
 	}
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-	}
-	
-	private void setPage(String string) {
+	private void setPage(Pagination p, String pageNumber) {
 		try {
-			int page = Integer.parseInt(string);
-			this.page.setNumPage(page);
+			int page = Integer.parseInt(pageNumber);
+			p.setNumPage(page);
 		} catch (Exception e) {
 		}
-		if (this.page.getNumPage() <= 0 || this.page.getNumPage() > this.page.getMaxPage()) {
-			this.page.setNumPage(1);
+		if (p.getNumPage() <= 0 || p.getNumPage() > p.getMaxPage()) {
+			p.setNumPage(1);
 		}
 	}
 	
-	private void setItemsPerPage(String string) {
+	private void setOrder(Pagination p, String orderBy, String order) {
+		if (orderBy != null && !p.getOrderBy().toString().equalsIgnoreCase(orderBy)) {
+			p.setNumPage(1);
+			try {
+				p.setOrderBy(OrderBy.valueOf(orderBy.toUpperCase()));
+			} catch (IllegalArgumentException e) {
+				p.setOrderBy(OrderBy.ID);
+			}
+		}
+		if (order != null) {
+			try {
+				p.setOrder(Order.valueOf(order.toUpperCase()));
+			} catch (IllegalArgumentException e) {
+				p.setOrder(Order.ASC);;
+			}
+		}
+	}
+	
+	private void setItemsPerPage(Pagination p, String itemsPerPage) {
 		try {
-			int items = Integer.parseInt(string);
+			int items = Integer.parseInt(itemsPerPage);
 			if (items > 0) {
-				page.setNumPage(1);
-				page.setMaxItems(items);
+				p.setNumPage(1);
+				p.setMaxItems(items);
 			}
 		} catch (Exception e) {
 		}
 	}
 	
-	private ArrayList<Computer> getComputers(String paramSearch) throws SQLException {
-		ArrayList<Computer> listcomputer = new ArrayList<Computer>(); 
-		if (paramSearch != null) {
-			page.setNumPage(1);
-			search = paramSearch;
-		}
+	private ArrayList<Computer> getComputers(Pagination p, String search) throws SQLException {
+		ArrayList<Computer> listcomputer = new ArrayList<Computer>();
 		
-		
-		if (this.search == "") {
-			page.setTotalItems(service.countComputers());
-			listcomputer = service.getComputers(page);
-		}else {
-			page.setTotalItems(service.countComputers(search));
-			listcomputer = service.search(search, page);
-			
+		if (search != null && !"".equals(search)) {
+			p.setNumPage(1);
 		}
+		p.setTotalItems(service.countComputers(search));
+		listcomputer = service.search(search, p);
 		return listcomputer;
 	
 	}

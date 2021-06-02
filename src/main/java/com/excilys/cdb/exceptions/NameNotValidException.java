@@ -1,11 +1,9 @@
 package com.excilys.cdb.exceptions;
 
-public class NameNotValidException extends RuntimeException{
-	
-	private static final long serialVersionUID = 1L;
-	
-	public  NameNotValidException(String message) {
-        super(message);
-    }
+public class NameNotValidException extends ValidatorException {
+	public NameNotValidException(String string) {
+		super(string);
+	}
 
+	private static final long serialVersionUID = 1L;
 }
