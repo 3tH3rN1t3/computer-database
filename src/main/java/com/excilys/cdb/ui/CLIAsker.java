@@ -11,7 +11,7 @@ import com.excilys.cdb.mapper.DBCompanyMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.CompanyDAO;
 
-public class CLIAsker {
+public class CLIAsker {//TODO retravailler cette daube
 	
 	private Scanner scanner;
 	
@@ -103,6 +103,12 @@ public class CLIAsker {
 			System.out.println("Veuillez entrer un entier !");
 			return askCompany();
 		}
+	}
+
+	public String askCompanyNameOrId() throws SQLException, IOException {
+		System.out.println("Veuillez entrer l'id ou le nom du fabricant");
+		return scanner.nextLine();
+		
 	}
 	
 	public String askPage(int pageNum, int PagesCount) {

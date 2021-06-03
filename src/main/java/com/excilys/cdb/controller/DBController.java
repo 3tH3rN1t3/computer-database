@@ -9,7 +9,7 @@ import com.excilys.cdb.mapper.DBCompanyMapper;
 import com.excilys.cdb.mapper.DBComputerMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.Pagination;
+import com.excilys.cdb.model.Page;
 import com.excilys.cdb.persistence.CompanyDAO;
 import com.excilys.cdb.persistence.ComputerDAO;
 
@@ -36,12 +36,12 @@ public class DBController {
 	}
 	
 	
-	public ArrayList<Computer> search(String search, Pagination page) throws SQLException {
-		return this.computerMapper.toComputers(computerDAO.search(search, page));
+	public ArrayList<Computer> search(Page page) throws SQLException {
+		return this.computerMapper.toComputers(computerDAO.search(page));
 	}
 	
-	public int countComputers(String search) throws SQLException{
-		return computerDAO.CountComputers(search);
+	public int countComputers(Page page) throws SQLException{
+		return computerDAO.CountComputers(page);
 	}
 	
 	
@@ -65,12 +65,20 @@ public class DBController {
 		return this.companyMapper.toCompanies(companyDAO.getAllCompanies());
 	}
 	
-	public ArrayList<Company> getCompaniesPerPage(Pagination p) throws SQLException {
+	public ArrayList<Company> getCompaniesPerPage(Page p) throws SQLException {
 		return this.companyMapper.toCompanies(companyDAO.getCompaniesPerPage(p));
 	}
 	
 	public Optional<Company> getCompanyById(int id) throws SQLException {
 		return this.companyMapper.toCompany(companyDAO.getCompanyById(id));
+	}
+	
+	public Optional<Company> getCompanyByName(String name) throws SQLException {
+		return this.companyMapper.toCompany(companyDAO.getCompanyByName(name));
+	}
+	
+	public int deleteCompany(int id) throws SQLException, IOException {
+		return this.companyDAO.deleteCompany(id);
 	}
 	
 	public int countCompanies() throws SQLException {

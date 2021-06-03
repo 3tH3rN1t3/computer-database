@@ -24,11 +24,11 @@
 		<div class="container">
 			<h1 id="homeTitle">
 				<c:choose>
-					<c:when test="${search == null || search.isEmpty()}">
+					<c:when test="${page.search == null || page.search.isEmpty()}">
 						<c:out value="${page.totalItems}" /> Computers found
 					</c:when>
 					<c:otherwise>
-						<c:out value="${page.totalItems}" /> Computers found for &laquo<c:out value="${search}" />&raquo
+						<c:out value="${page.totalItems}" /> Computers found for &laquo<c:out value="${page.search}" />&raquo
 					</c:otherwise>
 				</c:choose>
 			</h1>
@@ -67,18 +67,18 @@
 							</span>
 						</th>
 						<th>
-							<a href="dashboard?orderby=${page.orderBy.string ne 'computer.name' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.string eq 'computer.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Computer name</a>
+							<a href="dashboard?orderby=${page.orderBy.column ne 'computer.name' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.column eq 'computer.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Computer name</a>
 						</th>
 						<th>
-							<a href="dashboard?orderby=${page.orderBy.string ne 'introduced' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.string eq 'introduced' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Introduced date</a>
+							<a href="dashboard?orderby=${page.orderBy.column ne 'introduced' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.column eq 'introduced' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Introduced date</a>
 						</th>
 						<!-- Table header for Discontinued Date -->
 						<th>
-							<a href="dashboard?orderby=${page.orderBy.string ne 'discontinued' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.string eq 'discontinued' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Discontinued date</a>
+							<a href="dashboard?orderby=${page.orderBy.column ne 'discontinued' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.column eq 'discontinued' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Discontinued date</a>
 						</th>
 						<!-- Table header for Company -->
 						<th>
-							<a href="dashboard?orderby=${page.orderBy.string ne 'company.name' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.string eq 'company.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Company</a>
+							<a href="dashboard?orderby=${page.orderBy.column ne 'company.name' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.column eq 'company.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Company</a>
 						</th>
 
 					</tr>

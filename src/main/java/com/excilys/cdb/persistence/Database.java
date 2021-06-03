@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.concurrent.locks.ReentrantLock;
 
 import javax.sql.DataSource;
 
@@ -25,6 +26,9 @@ public class Database {
 	private static Database db = null;
 	private DataSource ds = null;
 	
+	public final ReentrantLock COMPUTER_LOCK;
+	public final ReentrantLock COMPANY_LOCK;
+	
 	private Database() throws IOException {
 		try {
 			loadProperties();
@@ -33,6 +37,8 @@ public class Database {
 			logger.fatal("Error during DataSource creation", e);
 			throw new IOException("Une erreur fatale est survenue");
 		}
+		COMPUTER_LOCK = new ReentrantLock();
+		COMPANY_LOCK = new ReentrantLock();
 	}
 	
 	public static Database getInstance() throws IOException {

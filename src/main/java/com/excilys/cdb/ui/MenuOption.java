@@ -4,7 +4,8 @@ public enum MenuOption {
 	LIST_COMPUTERS(1), LIST_COMPANIES(2),
 	SHOW_DETAILS(3),
 	CREATE_COMPUTER(4), UPDATE_COMPUTER(5), DELETE_COMPUTER(6),
-	EXIT(7);
+	DELETE_COMPANY(7),
+	EXIT(8);
 	
 	private int number;
 	

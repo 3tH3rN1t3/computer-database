@@ -1,22 +1,24 @@
 package com.excilys.cdb.model;
 
-public class Pagination {
+public class Page {
 	
 	private int maxItems = 10;
 	private int numPage = 1;
 	private int totalItems = 0;
+	private SearchBy searchBy = SearchBy.NAME;
+	private String search = "";
 	private OrderBy orderBy = OrderBy.ID;
 	private Order order = Order.ASC;
 	
-	public Pagination() {
+	public Page() {
 		
 	}
 	
-	public Pagination(int totalItems) {
+	public Page(int totalItems) {
 		this.totalItems = totalItems;
 	}
 	
-	public Pagination(int maxItems, int numPage, int totalItems) {
+	public Page(int maxItems, int numPage, int totalItems) {
 		this.maxItems = maxItems;
 		this.numPage = numPage;
 		this.totalItems = totalItems;
@@ -32,6 +34,14 @@ public class Pagination {
 	
 	public void setTotalItems(int totalItems) {
 		this.totalItems = totalItems;
+	}
+	
+	public void setSearchBy(SearchBy searchBy) {
+		this.searchBy = searchBy;
+	}
+	
+	public void setSearch(String search) {
+		this.search = search;
 	}
 	
 	public void setOrderBy(OrderBy order) {
@@ -54,6 +64,14 @@ public class Pagination {
 		return totalItems;
 	}
 	
+	public SearchBy getSearchBy() {
+		return searchBy;
+	}
+	
+	public String getSearch() {
+		return search;
+	}
+	
 	public OrderBy getOrderBy() {
 		return orderBy;
 	}
@@ -67,7 +85,7 @@ public class Pagination {
 	}
 	
 	public String toString() {
-		return "Max items: "+this.maxItems+" Page "+this.numPage+"/"+this.getMaxPage()+"Ordered by "+this.getOrderBy()+" "+this.order;
+		return "Searching "+search+" by "+searchBy.toString().toLowerCase()+" Max items: "+this.maxItems+" Page "+this.numPage+"/"+this.getMaxPage()+" Ordered by "+this.getOrderBy()+" "+this.order;
 		
 	}
 }

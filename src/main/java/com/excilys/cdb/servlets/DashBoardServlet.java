@@ -18,7 +18,8 @@ import com.excilys.cdb.mapper.WebComputerMapper;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Order;
 import com.excilys.cdb.model.OrderBy;
-import com.excilys.cdb.model.Pagination;
+import com.excilys.cdb.model.Page;
+import com.excilys.cdb.model.SearchBy;
 import com.excilys.cdb.service.ComputerService;
 
 @WebServlet("/dashboard")
@@ -35,34 +36,24 @@ public class DashBoardServlet extends HttpServlet {
 		try {
 			HttpSession session = request.getSession(true);
 			
-			String search = (String) session.getAttribute("search");
-			if (search == null) {
-				search = "";
-			}
-			if (request.getParameter("search") != null) {
-				search = request.getParameter("search");
-			}
-			
-			Pagination page = (Pagination) session.getAttribute("page");
+			Page page = (Page) session.getAttribute("page");
 			if (page == null) {
-				page = new Pagination(service.countComputers(search));
+				page = new Page();
 			}
 			
+			this.setSearch(page, request.getParameter("searchby"), request.getParameter("search"));
 			this.setItemsPerPage(page, request.getParameter("itemsPerPage"));
+			this.setOrder(page, request.getParameter("orderby"), request.getParameter("order"));
 			this.setPage(page, request.getParameter("page"));
 			
-			this.setOrder(page, request.getParameter("orderby"), request.getParameter("order"));
-			
 			ArrayList<Computer> computers = new ArrayList<Computer>();
-			computers = this.getComputers(page, search);
+			computers = this.getComputers(page);
 			
 			session.setAttribute("page", page);
-			session.setAttribute("search", search);
 			
 			request.setAttribute( "nombrePageMax", page.getMaxPage() );
 			request.setAttribute( "computers", WebComputerMapper.getInstance().toComputerDTOs(computers));
 			request.setAttribute( "page", page);//Trnasformation en DTO?
-			request.setAttribute("search", search);
 			
 			this.getServletContext().getRequestDispatcher("/WEB-INF/jsp/dashboard.jsp").forward(request, response);
 		} catch (SQLException e) {
@@ -70,7 +61,23 @@ public class DashBoardServlet extends HttpServlet {
 		}
 	}
 	
-	private void setPage(Pagination p, String pageNumber) {
+	private void setSearch(Page p, String searchBy, String search) throws SQLException {
+		if (searchBy != null) {
+			p.setNumPage(1);
+			try {
+				p.setSearchBy(SearchBy.valueOf(searchBy.toUpperCase()));
+			} catch (IllegalArgumentException e) {
+				p.setSearchBy(SearchBy.NAME);
+			}
+		}
+		if (search != null) {
+			p.setNumPage(1);
+			p.setSearch(search);
+		}
+		p.setTotalItems(service.countComputers(p));
+	}
+	
+	private void setPage(Page p, String pageNumber) {
 		try {
 			int page = Integer.parseInt(pageNumber);
 			p.setNumPage(page);
@@ -81,7 +88,25 @@ public class DashBoardServlet extends HttpServlet {
 		}
 	}
 	
-	private void setOrder(Pagination p, String orderBy, String order) {
+	private void setItemsPerPage(Page p, String itemsPerPage) {
+		try {
+			int items = Integer.parseInt(itemsPerPage);
+			if (items > 0) {
+				p.setNumPage(1);
+				p.setMaxItems(items);
+			}
+		} catch (Exception e) {
+		}
+	}
+	
+	private ArrayList<Computer> getComputers(Page p) throws SQLException {
+		ArrayList<Computer> listcomputer = new ArrayList<Computer>();
+		listcomputer = service.search(p);
+		return listcomputer;
+	
+	}
+	
+	private void setOrder(Page p, String orderBy, String order) {
 		if (orderBy != null && !p.getOrderBy().toString().equalsIgnoreCase(orderBy)) {
 			p.setNumPage(1);
 			try {
@@ -97,29 +122,6 @@ public class DashBoardServlet extends HttpServlet {
 				p.setOrder(Order.ASC);;
 			}
 		}
-	}
-	
-	private void setItemsPerPage(Pagination p, String itemsPerPage) {
-		try {
-			int items = Integer.parseInt(itemsPerPage);
-			if (items > 0) {
-				p.setNumPage(1);
-				p.setMaxItems(items);
-			}
-		} catch (Exception e) {
-		}
-	}
-	
-	private ArrayList<Computer> getComputers(Pagination p, String search) throws SQLException {
-		ArrayList<Computer> listcomputer = new ArrayList<Computer>();
-		
-		if (search != null && !"".equals(search)) {
-			p.setNumPage(1);
-		}
-		p.setTotalItems(service.countComputers(search));
-		listcomputer = service.search(search, p);
-		return listcomputer;
-	
 	}
 
 }

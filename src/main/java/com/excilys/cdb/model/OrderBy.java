@@ -3,13 +3,13 @@ package com.excilys.cdb.model;
 public enum OrderBy {
 	ID("computer.id"), NAME("computer.name"), INTRODUCED("introduced"), DISCONTINUED("discontinued"), COMPANY("company.name");
 	
-	private final String string;
+	private final String column;
 	
-	private OrderBy(String s) {
-		this.string = s;
+	private OrderBy(String columnName) {
+		this.column = columnName;
 	}
 	
-	public String getString() {
-		return string;
+	public String getColumn() {
+		return column;
 	}
 }

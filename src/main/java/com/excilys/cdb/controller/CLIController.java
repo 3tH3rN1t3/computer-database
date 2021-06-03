@@ -6,27 +6,31 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import com.excilys.cdb.exceptions.AmbiguousNameException;
 import com.excilys.cdb.mapper.DBCompanyMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.Pagination;
+import com.excilys.cdb.model.Page;
 import com.excilys.cdb.persistence.CompanyDAO;
 import com.excilys.cdb.persistence.ComputerDAO;
+import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.ui.CLIAsker;
 import com.excilys.cdb.ui.CLIView;
 import com.excilys.cdb.ui.MenuOption;
 
-public class CLIController {
+public class CLIController {//TODO passer en singleton
 
 	private CLIView view;
 	private CLIAsker asker;
 	private ComputerService computerService;
+	private CompanyService companyService;
 
 	public CLIController() throws IOException {
 		this.view = new CLIView();
 		this.asker = new CLIAsker();
 		this.computerService = ComputerService.getInstance();
+		this.companyService = CompanyService.getInstance();
 	}
 
 	public CLIView getView() {
@@ -63,16 +67,20 @@ public class CLIController {
 		case DELETE_COMPUTER:
 			executeDeleteComputer();
 			break;
+			
+		case DELETE_COMPANY:
+			executeDeleteCompany();
+			break;
 
 		default:
 			break;
 		}
 	}
 	private void executeListComputers() throws SQLException, IOException {
-		Pagination p = new Pagination(computerService.countComputers(""));
+		Page p = new Page(computerService.countComputers(new Page()));
 		ArrayList<Computer> coms = new ArrayList<Computer>();
 		while (p.getNumPage() <= p.getMaxPage()) {
-			coms = computerService.search("", p);
+			coms = computerService.search(p);
 			view.printComputers(coms);
 			String choice = asker.askPage(p.getNumPage(), p.getMaxPage());
 			if ("q".equalsIgnoreCase(choice)) {
@@ -87,7 +95,7 @@ public class CLIController {
 
 	private void executeListCompanies() throws SQLException, IOException {
 		CompanyDAO dao = CompanyDAO.getInstance();
-		Pagination p = new Pagination(dao.countCompanies());
+		Page p = new Page(dao.countCompanies());
 		ArrayList<Company> coms = new ArrayList<Company>();
 		while (p.getNumPage() <= p.getMaxPage()) {
 			coms = DBCompanyMapper.getInstance().toCompanies(dao.getCompaniesPerPage(p));
@@ -171,6 +179,29 @@ public class CLIController {
 	private void executeDeleteComputer() throws SQLException, IOException {
 		int id = asker.askComputerId();
 		int deleteCount = ComputerDAO.getInstance().deleteComputer(id);
+		System.out.println(deleteCount + " ligne(s) a/ont été supprimée(s)");
+	}
+	
+	private void executeDeleteCompany() throws SQLException, IOException {
+		String nameOrId;
+		Company company = null;
+		do {
+			nameOrId = asker.askCompanyNameOrId();
+			try {
+				int id = Integer.parseInt(nameOrId);
+				company = companyService.getCompanyById(id).orElse(null);
+			} catch (NumberFormatException e){
+				try {
+					company = companyService.getCompanyByName(nameOrId).orElse(null);
+				} catch (AmbiguousNameException ex) {
+					System.out.println(ex.getMessage());
+				}
+			}
+			if (company == null) {
+				System.out.println("Aucune companie n'a été trouvée");
+			}
+		} while (company == null);
+		int deleteCount = companyService.deleteCompany(company.getId());
 		System.out.println(deleteCount + " ligne(s) a/ont été supprimée(s)");
 	}
 

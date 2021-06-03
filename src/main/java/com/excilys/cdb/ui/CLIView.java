@@ -14,7 +14,8 @@ public class CLIView {
 		System.out.println("4 - Créer un ordinateur");
 		System.out.println("5 - Mettre à jour les informations d'un ordinateur");
 		System.out.println("6 - Supprimer un ordinateur");
-		System.out.println("7 - quitter\n");
+		System.out.println("7 - Supprimer une companie");
+		System.out.println("8 - quitter\n");
 	}
 	
 	public void printCompanies(ArrayList<Company> coms) {

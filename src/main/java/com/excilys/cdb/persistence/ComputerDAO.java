@@ -15,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 import com.excilys.cdb.dto.DBCompanyDTO;
 import com.excilys.cdb.dto.DBComputerDTO;
 import com.excilys.cdb.mapper.DBComputerMapper;
-import com.excilys.cdb.model.Pagination;
+import com.excilys.cdb.model.Page;
 
 
 //singleton
@@ -30,7 +30,7 @@ public class ComputerDAO {
 	private static final String GET_COMPUTERS_BY_SEARCH_REQUEST = "SELECT computer.id, computer.name, "
 			+ "introduced, discontinued, company.id, company.name "
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
-			+ "WHERE computer.name LIKE CONCAT('%%', ?, '%%') ORDER BY %s %s LIMIT ? OFFSET ?";
+			+ "WHERE %s LIKE CONCAT('%%', ?, '%%') ORDER BY %s %s LIMIT ? OFFSET ?";
 	
 	private static final String INSERT_COMPUTER_REQUEST = "INSERT INTO computer "
 			+ "(name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
@@ -41,14 +41,15 @@ public class ComputerDAO {
 	
 	private static final String DELETE_COMPUTER_REQUEST = "DELETE FROM computer WHERE id = ?";
 	
-	private static final String COUNT_COMPUTERS_BY_SEARCH_REQUEST = "SELECT COUNT(id) AS count FROM computer "
-			+ "WHERE name LIKE CONCAT('%', ?, '%')";
+	private static final String DELETE_COMPUTER_BUNCH_REQUEST = "DELETE FROM computer WHERE company_id = ?";
 	
-	private static Database db;
-	
+	private static final String COUNT_COMPUTERS_BY_SEARCH_REQUEST = "SELECT COUNT(computer.id) AS count "
+			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
+			+ "WHERE %s LIKE CONCAT('%%', ?, '%%')";
+
 	private static ComputerDAO instance;
-	
-	private static Logger logger = LogManager.getLogger(ComputerDAO.class);
+	private Database db;
+	private Logger logger = LogManager.getLogger(ComputerDAO.class);
 	
 	
 	private ComputerDAO() throws IOException {
@@ -62,18 +63,23 @@ public class ComputerDAO {
 	}
 	
 	
-	public ArrayList<DBComputerDTO> search(String pattern, Pagination p) throws SQLException {
+	public ArrayList<DBComputerDTO> search(Page p) throws SQLException {
+		db.COMPUTER_LOCK.lock();
+		db.COMPANY_LOCK.lock();
+		db.COMPUTER_LOCK.unlock();
+		db.COMPANY_LOCK.unlock();
 		ArrayList<DBComputerDTO> coms = new ArrayList<DBComputerDTO>();
 		try (Connection conn = db.getConnection();) {
-			PreparedStatement stmt = conn.prepareStatement(String.format(GET_COMPUTERS_BY_SEARCH_REQUEST, p.getOrderBy().getString(), p.getOrder()));
-			stmt.setString(1, pattern);
+			
+			PreparedStatement stmt = conn.prepareStatement(String.format(GET_COMPUTERS_BY_SEARCH_REQUEST,p.getSearchBy().getColumn(), p.getOrderBy().getColumn(), p.getOrder()));
+			stmt.setString(1, p.getSearch());
 			stmt.setInt(2, p.getMaxItems());
 			stmt.setInt(3, (p.getNumPage()-1)*p.getMaxItems());
 			ResultSet rs = stmt.executeQuery();
 			coms = DBComputerMapper.getInstance().toComputerDTOs(rs);
 			
 		} catch (SQLException e) {
-			logger.error("Error in ComputerDAO.getSomeComputers", e);
+			logger.error("Error in ComputerDAO.search", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
 		logger.info("Retreived " + coms.size() + " lines from the database\n");
@@ -82,14 +88,14 @@ public class ComputerDAO {
 
 	public Optional<DBComputerDTO> find(int id) throws SQLException {
 		Optional<DBComputerDTO> com = Optional.empty();
-		try (Connection conn = db.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(GET_COMPUTER_BY_ID_REQUEST);) {
-			
+		try (Connection conn = db.getConnection();) {
+
+			PreparedStatement stmt = conn.prepareStatement(GET_COMPUTER_BY_ID_REQUEST);
 			stmt.setInt(1, id);
 			ResultSet rs = stmt.executeQuery();
 			com = DBComputerMapper.getInstance().toComputerDTO(rs);
 		} catch (SQLException e) {
-			logger.error("Error in ComputerDAO.getSomeComputers", e);
+			logger.error("Error in ComputerDAO.find", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
 		if (com.isPresent()) {
@@ -102,9 +108,9 @@ public class ComputerDAO {
 	
 	public int insertComputer(DBComputerDTO dbComputerDTO) throws SQLException {
 		int id = 0;
-		try (Connection conn = db.getConnection();
-			 PreparedStatement stmt = conn.prepareStatement(INSERT_COMPUTER_REQUEST, Statement.RETURN_GENERATED_KEYS);) {
-			
+		try (Connection conn = db.getConnection();) {
+
+			PreparedStatement stmt = conn.prepareStatement(INSERT_COMPUTER_REQUEST, Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, dbComputerDTO.getName());
 			stmt.setString(2, dbComputerDTO.getIntroduced().orElse(null));
 			stmt.setString(3, dbComputerDTO.getDiscontinued().orElse(null));
@@ -114,7 +120,7 @@ public class ComputerDAO {
 			rs.first();
 			id = rs.getInt(1);
 		} catch (SQLException e) {
-			logger.error("Error in ComputerDAO.getSomeComputers", e);
+			logger.error("Error in ComputerDAO.insertComputer", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
 		logger.info("Inserted computer with ID " + id + " into the database\n");
@@ -123,9 +129,9 @@ public class ComputerDAO {
 	
 	public int updateComputer(DBComputerDTO dbComputerDTO) throws SQLException {
 		int edits = 0;
-		try (Connection conn = db.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(UPDATE_COMPUTER_REQUEST);) {
+		try (Connection conn = db.getConnection();) {
 
+			PreparedStatement stmt = conn.prepareStatement(UPDATE_COMPUTER_REQUEST);
 			stmt.setString(1, dbComputerDTO.getName());
 			stmt.setString(2, dbComputerDTO.getIntroduced().orElse(null));
 			stmt.setString(3, dbComputerDTO.getDiscontinued().orElse(null));
@@ -133,7 +139,7 @@ public class ComputerDAO {
 			stmt.setString(5, dbComputerDTO.getId());
 			edits = stmt.executeUpdate();
 		} catch (SQLException e) {
-			logger.error("Error in ComputerDAO.getSomeComputers", e);
+			logger.error("Error in ComputerDAO.updateComputer", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
 		if (edits == 1) {
@@ -146,25 +152,36 @@ public class ComputerDAO {
 	
 	public int deleteComputer(int id) throws SQLException {
 		int deletes = 0;
-		try (Connection conn = db.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(DELETE_COMPUTER_REQUEST);) {
-			
+		try (Connection conn = db.getConnection();) {
+
+			PreparedStatement stmt = conn.prepareStatement(DELETE_COMPUTER_REQUEST);
 			stmt.setInt(1, id);
 			deletes = stmt.executeUpdate();
 		} catch (SQLException e) {
-			logger.error("Error in ComputerDAO.getSomeComputers", e);
+			logger.error("Error in ComputerDAO.deleteComputer", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
 		logger.info("Deleted computer with ID " + id + " from the database\n");
 		return deletes;
 	}
 	
-	public int CountComputers(String search) throws SQLException {
+	public int deleteComputerBunch(int companyId, Connection conn) throws SQLException {
+		try {
+			PreparedStatement stmt = conn.prepareStatement(DELETE_COMPUTER_BUNCH_REQUEST);
+			stmt.setInt(1, companyId);
+			return stmt.executeUpdate();
+		} catch (SQLException e) {
+			logger.error("Error in ComputerDAO.deleteComputerBunch", e);
+			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
+		}
+	}
+	
+	public int CountComputers(Page page) throws SQLException {
 		int count = 0;
-		try (Connection conn = db.getConnection();
-				PreparedStatement stmt = conn.prepareStatement(COUNT_COMPUTERS_BY_SEARCH_REQUEST);) {
-			
-			stmt.setString(1, search);
+		try (Connection conn = db.getConnection();) {
+
+			PreparedStatement stmt = conn.prepareStatement(String.format(COUNT_COMPUTERS_BY_SEARCH_REQUEST, page.getSearchBy().getColumn()));
+			stmt.setString(1, page.getSearch());
 			ResultSet rs = stmt.executeQuery();
 			rs.next();
 			count = rs.getInt("count");
@@ -172,8 +189,7 @@ public class ComputerDAO {
 			logger.error("Error in ComputerDAO.getSomeComputers", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
 		}
-		return count;//8, 19, 30, 44, 46, II-33
-		//36, 37, 42, II-15, II-21
+		return count;
 	}
 
 }

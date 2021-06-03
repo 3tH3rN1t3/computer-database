@@ -6,17 +6,14 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import com.excilys.cdb.controller.DBController;
-import com.excilys.cdb.dto.DBComputerDTO;
-import com.excilys.cdb.mapper.DBComputerMapper;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.Pagination;
-import com.excilys.cdb.persistence.ComputerDAO;
+import com.excilys.cdb.model.Page;
 
 public class ComputerService {
 	
 	private static ComputerService instance ;
 	
-	private static DBController controller;
+	private DBController controller;
 		
 		private ComputerService() throws IOException {
 			controller = DBController.getInstance();
@@ -30,13 +27,13 @@ public class ComputerService {
 		}
 		
 		
-		public ArrayList<Computer>  search(String search, Pagination page) throws SQLException {
+		public ArrayList<Computer>  search(Page page) throws SQLException {
 			
-			return controller.search(search, page);		
+			return controller.search(page);		
 		}
 		
-		public int countComputers(String search) throws SQLException{
-			return controller.countComputers(search);
+		public int countComputers(Page p) throws SQLException{
+			return controller.countComputers(p);
 		}
 		
 		
