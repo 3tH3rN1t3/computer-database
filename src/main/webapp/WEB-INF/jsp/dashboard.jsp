@@ -35,8 +35,21 @@
 			<div id="actions" class="form-horizontal">
 				<div class="pull-left">
 					<form id="searchForm" action="#" method="GET" class="form-inline">
-						<input type="search" id="searchbox" name="search" class="form-control" placeholder="Search name" />
-                        <input type="submit" id="searchsubmit" value="Filter by name"
+						<input type="search" id="searchbox" name="search" class="form-control" placeholder="Search" />
+						<label for="searchby"> by </label>
+						<select class="form-control" id="searchby" name="searchby" onchange="$.fn.updateSearch();">
+							<c:forEach var = "search" items = "${searches}">
+								<c:choose>
+									<c:when test="${page.searchBy eq search}">
+										<option value="${search.toString()}" selected>${search.toString().toLowerCase()}</option>
+									</c:when>
+									<c:otherwise>
+										<option value="${search.toString()}">${search.toString().toLowerCase()}</option>
+									</c:otherwise>
+								</c:choose>
+							</c:forEach>
+						</select>
+                        <input type="submit" id="searchsubmit" value="Search"
                         class="btn btn-primary" />
 					</form>
 				</div>

@@ -21,6 +21,11 @@ $(function() {
             $("#deleteSelected").disable();
         }
     });
+	
+	$("input#searchsubmit").attr("value", "Search by "+$("#searchby option:selected").text());
+	$("#searchby").change(function() {
+		$("input#searchsubmit").attr("value", "Search by "+$("#searchby option:selected").text());
+	})
 
 });
 
@@ -68,8 +73,6 @@ $(function() {
         }
     };
 }( jQuery ));
-
-
 
 //Event handling
 //Onkeydown

@@ -54,6 +54,7 @@ public class DashBoardServlet extends HttpServlet {
 			request.setAttribute( "nombrePageMax", page.getMaxPage() );
 			request.setAttribute( "computers", WebComputerMapper.getInstance().toComputerDTOs(computers));
 			request.setAttribute( "page", page);//Trnasformation en DTO?
+			request.setAttribute("searches", SearchBy.values());
 			
 			this.getServletContext().getRequestDispatcher("/WEB-INF/jsp/dashboard.jsp").forward(request, response);
 		} catch (SQLException e) {
