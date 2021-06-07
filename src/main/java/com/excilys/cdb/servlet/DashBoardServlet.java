@@ -1,4 +1,4 @@
-package com.excilys.cdb.servlets;
+package com.excilys.cdb.servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -13,7 +13,10 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import  org.apache.logging.log4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import com.excilys.cdb.config.TestConfig;
 import com.excilys.cdb.mapper.WebComputerMapper;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Order;
@@ -25,11 +28,20 @@ import com.excilys.cdb.service.ComputerService;
 @WebServlet("/dashboard")
 public class DashBoardServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
 	private ComputerService service;
+	
+	private WebComputerMapper computerMapper;
+	
 	private static final Logger LOGGER = LogManager.getLogger(DashBoardServlet.class);
 	
-    public DashBoardServlet() throws IOException {
-        service = ComputerService.getInstance();
+    public DashBoardServlet() {
+    }
+    
+    public void init() {
+    	ApplicationContext ctx = new AnnotationConfigApplicationContext(TestConfig.class);
+    	service = (ComputerService) ctx.getBean("computerService");
+    	computerMapper = (WebComputerMapper) ctx.getBean("webComputerMapper");
     }
     
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -52,7 +64,7 @@ public class DashBoardServlet extends HttpServlet {
 			session.setAttribute("page", page);
 			
 			request.setAttribute( "nombrePageMax", page.getMaxPage() );
-			request.setAttribute( "computers", WebComputerMapper.getInstance().toComputerDTOs(computers));
+			request.setAttribute( "computers", computerMapper.toComputerDTOArray(computers));
 			request.setAttribute( "page", page);//Trnasformation en DTO?
 			request.setAttribute("searches", SearchBy.values());
 			
@@ -120,7 +132,7 @@ public class DashBoardServlet extends HttpServlet {
 			try {
 				p.setOrder(Order.valueOf(order.toUpperCase()));
 			} catch (IllegalArgumentException e) {
-				p.setOrder(Order.ASC);;
+				p.setOrder(Order.ASC);
 			}
 		}
 	}

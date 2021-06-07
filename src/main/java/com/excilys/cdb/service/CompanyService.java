@@ -1,29 +1,25 @@
 package com.excilys.cdb.service;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.controller.DBController;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Page;
 
+@Component
+@Scope("singleton")
 public class CompanyService {
 	
-	private static CompanyService instance ;
-	
+	@Autowired
 	private DBController controller;
 		
-	private CompanyService() throws IOException {
-		controller = DBController.getInstance();
-	}
-	
-	public static CompanyService getInstance() throws IOException  {
-		if (instance == null) {
-			instance = new CompanyService();
-		}
-		return instance;
+	private CompanyService() {
 	}
 	
 	public ArrayList<Company> getAllCompanies() throws SQLException {
@@ -42,7 +38,7 @@ public class CompanyService {
 		return controller.getCompanyByName(name);
 	}
 	
-	public int deleteCompany(int id) throws SQLException, IOException {
+	public int deleteCompany(int id) throws SQLException {
 		return controller.deleteCompany(id);
 	}
 	

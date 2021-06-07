@@ -1,36 +1,41 @@
 package com.excilys.cdb.controller;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.excilys.cdb.exceptions.AmbiguousNameException;
-import com.excilys.cdb.mapper.DBCompanyMapper;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
-import com.excilys.cdb.persistence.CompanyDAO;
-import com.excilys.cdb.persistence.ComputerDAO;
 import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.ui.CLIAsker;
 import com.excilys.cdb.ui.CLIView;
 import com.excilys.cdb.ui.MenuOption;
 
-public class CLIController {//TODO passer en singleton
-
+@Component
+@Scope("singleton")
+public class CLIController {
+	
+	@Autowired
 	private CLIView view;
+	
+	@Autowired
 	private CLIAsker asker;
+	
+	@Autowired
 	private ComputerService computerService;
+	
+	@Autowired
 	private CompanyService companyService;
 
-	public CLIController() throws IOException {
-		this.view = new CLIView();
-		this.asker = new CLIAsker();
-		this.computerService = ComputerService.getInstance();
-		this.companyService = CompanyService.getInstance();
+	private CLIController() {
 	}
 
 	public CLIView getView() {
@@ -41,7 +46,7 @@ public class CLIController {//TODO passer en singleton
 		return asker;
 	}
 
-	public void executeChoice(int choiceId) throws SQLException, IOException {
+	public void executeChoice(int choiceId) throws SQLException {
 		MenuOption choice = MenuOption.values()[choiceId - 1];
 		switch (choice) {
 		case LIST_COMPUTERS:
@@ -76,7 +81,7 @@ public class CLIController {//TODO passer en singleton
 			break;
 		}
 	}
-	private void executeListComputers() throws SQLException, IOException {
+	private void executeListComputers() throws SQLException {
 		Page p = new Page(computerService.countComputers(new Page()));
 		ArrayList<Computer> coms = new ArrayList<Computer>();
 		while (p.getNumPage() <= p.getMaxPage()) {
@@ -93,12 +98,11 @@ public class CLIController {//TODO passer en singleton
 		}
 	}
 
-	private void executeListCompanies() throws SQLException, IOException {
-		CompanyDAO dao = CompanyDAO.getInstance();
-		Page p = new Page(dao.countCompanies());
+	private void executeListCompanies() throws SQLException {
+		Page p = new Page(companyService.countCompanies());
 		ArrayList<Company> coms = new ArrayList<Company>();
 		while (p.getNumPage() <= p.getMaxPage()) {
-			coms = DBCompanyMapper.getInstance().toCompanies(dao.getCompaniesPerPage(p));
+			coms = companyService.getCompaniesPerPage(p);
 			view.printCompanies(coms);
 			String choice = asker.askPage(p.getNumPage(), p.getMaxPage());
 			if ("q".equalsIgnoreCase(choice)) {
@@ -112,7 +116,7 @@ public class CLIController {//TODO passer en singleton
 		
 	}
 
-	private void executeShowDetails() throws IOException, SQLException {
+	private void executeShowDetails() throws SQLException {
 		int id = asker.askComputerId();
 		Optional<Computer> com = computerService.getComputer(id);
 		if (com.isPresent()) {
@@ -122,7 +126,7 @@ public class CLIController {//TODO passer en singleton
 		}
 	}
 	
-	private void executeInsertComputer() throws SQLException, IOException {
+	private void executeInsertComputer() throws SQLException {
 		String name = asker.askComputerName();
 		LocalDate addDate = null;
 		while (true) {
@@ -153,7 +157,7 @@ public class CLIController {//TODO passer en singleton
 		System.out.println("L'ordinateur a été créé");
 	}
 
-	private int executeUpdateComputer() throws SQLException, IOException {
+	private int executeUpdateComputer() throws SQLException {
 		int id = asker.askComputerId();
 		String name = asker.askComputerName();
 		LocalDate addDate = asker.askAddDate();
@@ -176,13 +180,13 @@ public class CLIController {//TODO passer en singleton
 		return updateCount;
 	}
 
-	private void executeDeleteComputer() throws SQLException, IOException {
+	private void executeDeleteComputer() throws SQLException {
 		int id = asker.askComputerId();
-		int deleteCount = ComputerDAO.getInstance().deleteComputer(id);
+		int deleteCount = computerService.deleteComputer(id);
 		System.out.println(deleteCount + " ligne(s) a/ont été supprimée(s)");
 	}
 	
-	private void executeDeleteCompany() throws SQLException, IOException {
+	private void executeDeleteCompany() throws SQLException {
 		String nameOrId;
 		Company company = null;
 		do {

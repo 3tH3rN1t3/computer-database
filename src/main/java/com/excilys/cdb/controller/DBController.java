@@ -1,9 +1,12 @@
 package com.excilys.cdb.controller;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.mapper.DBCompanyMapper;
 import com.excilys.cdb.mapper.DBComputerMapper;
@@ -13,31 +16,29 @@ import com.excilys.cdb.model.Page;
 import com.excilys.cdb.persistence.CompanyDAO;
 import com.excilys.cdb.persistence.ComputerDAO;
 
+@Component
+@Scope("singleton")
 public class DBController {
 	
-	private static DBController instance;
+	@Autowired
 	private ComputerDAO computerDAO;
+	
+	@Autowired
 	private CompanyDAO companyDAO;
+	
+	@Autowired
 	private DBComputerMapper computerMapper;
+	
+	@Autowired
 	private DBCompanyMapper companyMapper;
 	
-	private DBController() throws IOException {
-		this.computerDAO = ComputerDAO.getInstance();
-		this.companyDAO = CompanyDAO.getInstance();
-		this.computerMapper = DBComputerMapper.getInstance();
-		this.companyMapper = DBCompanyMapper.getInstance();
-	}
 	
-	public static DBController getInstance() throws IOException {
-		if (instance == null) {
-			instance = new DBController();
-		}
-		return instance;
+	private DBController() {
 	}
 	
 	
 	public ArrayList<Computer> search(Page page) throws SQLException {
-		return this.computerMapper.toComputers(computerDAO.search(page));
+		return this.computerMapper.toComputerArray(computerDAO.search(page));
 	}
 	
 	public int countComputers(Page page) throws SQLException{
@@ -57,16 +58,16 @@ public class DBController {
 		return computerDAO.updateComputer(computerMapper.toComputerDTO(computer));
 	}
 
-	public void deleteComputer(int id) throws SQLException {
-		computerDAO.deleteComputer(id);
+	public int deleteComputer(int id) throws SQLException {
+		return computerDAO.deleteComputer(id);
 	}
 	
 	public ArrayList<Company> getAllCompanies() throws SQLException {
-		return this.companyMapper.toCompanies(companyDAO.getAllCompanies());
+		return this.companyMapper.toCompanyArray(companyDAO.getAllCompanies());
 	}
 	
 	public ArrayList<Company> getCompaniesPerPage(Page p) throws SQLException {
-		return this.companyMapper.toCompanies(companyDAO.getCompaniesPerPage(p));
+		return this.companyMapper.toCompanyArray(companyDAO.getCompaniesPerPage(p));
 	}
 	
 	public Optional<Company> getCompanyById(int id) throws SQLException {
@@ -77,7 +78,7 @@ public class DBController {
 		return this.companyMapper.toCompany(companyDAO.getCompanyByName(name));
 	}
 	
-	public int deleteCompany(int id) throws SQLException, IOException {
+	public int deleteCompany(int id) throws SQLException {
 		return this.companyDAO.deleteCompany(id);
 	}
 	

@@ -1,31 +1,33 @@
 package com.excilys.cdb.ui;
 
-import java.io.IOException;
 import java.sql.SQLException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.controller.CLIController;
 
+@Component("cli")
+@Scope("singleton")
 public class CLI {
-	private CLIController ctrl;
 	
-	public CLI() throws IOException {
-		ctrl = new CLIController();
+	@Autowired
+	private CLIController controller;
+	
+	public CLI() {
 	}
 	
 	public void runCLI() {
 		int choice = 0;
-		try {
-			do {
-				try {
-					ctrl.getView().printMenu();
-					choice = ctrl.getAsker().askChoice();
-					ctrl.executeChoice(choice);
-				} catch (SQLException e) {
-					System.out.println(e.getMessage());
-				}
-			} while (choice != MenuOption.EXIT.getNumber());
-		}catch (IOException e) {
-			System.out.println(e.getMessage());
-		}
+		do {
+			try {
+				controller.getView().printMenu();
+				choice = controller.getAsker().askChoice();
+				controller.executeChoice(choice);
+			} catch (SQLException e) {
+				System.out.println(e.getMessage());
+			}
+		} while (choice != MenuOption.EXIT.getNumber());
 	}
 }

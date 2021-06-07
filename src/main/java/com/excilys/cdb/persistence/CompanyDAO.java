@@ -1,7 +1,6 @@
 package com.excilys.cdb.persistence;
 
 import java.sql.Statement;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,12 +10,17 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.dto.DBCompanyDTO;
 import com.excilys.cdb.exceptions.AmbiguousNameException;
 import com.excilys.cdb.mapper.DBCompanyMapper;
 import com.excilys.cdb.model.Page;
 
+@Component
+@Scope("singleton")
 public class CompanyDAO {
 	
 	private static final String GET_ALL_COMPANIES_REQUEST = "SELECT company.id, company.name FROM company";
@@ -31,34 +35,33 @@ public class CompanyDAO {
 	
 	private static final String DELETE_COMPANY_REQUEST = "DELETE FROM company WHERE id = ?";
 	
-	private static CompanyDAO companyDAO;
+	@Autowired
+	private Database database;
 	
-	private Database db;
+	@Autowired
 	private DBCompanyMapper mapper;
+	
+	@Autowired
+	private ComputerDAO computerDAO;
+	
 	private Logger logger;
 	
 	
-	public static CompanyDAO getInstance() throws IOException {
-		if (companyDAO == null)
-			companyDAO = new CompanyDAO();
-		return companyDAO;
-	}
-	
-	private CompanyDAO() throws IOException {
-		db = Database.getInstance();
-		mapper = DBCompanyMapper.getInstance();
+	public CompanyDAO() {
 		logger = LogManager.getLogger(getClass());
 	}
 	
-	//TODO passer la connection en argument?
+	public void setDatabase(Database db) {
+		this.database = db;
+	}
 	
 	public ArrayList<DBCompanyDTO> getAllCompanies() throws SQLException {
 		ArrayList<DBCompanyDTO> coms = new ArrayList<DBCompanyDTO>();
-		try (Connection conn = db.getConnection();) {
+		try (Connection conn = database.getConnection();) {
 			
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(GET_ALL_COMPANIES_REQUEST);
-			coms = mapper.toCompanyDTOs(rs);
+			coms = mapper.toCompanyDTOArray(rs);
 		} catch (SQLException e) {
 			logger.error("Error in CompanyDAO.getSomeCompanies", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
@@ -69,13 +72,13 @@ public class CompanyDAO {
 	
 	public ArrayList<DBCompanyDTO> getCompaniesPerPage(Page p) throws SQLException {
 		ArrayList<DBCompanyDTO> coms = new ArrayList<DBCompanyDTO>();
-		try (Connection conn = db.getConnection();) {
+		try (Connection conn = database.getConnection();) {
 
 			PreparedStatement stmt = conn.prepareStatement(GET_COMPANIES_PER_PAGE_REQUEST);
 			stmt.setInt(1, p.getMaxItems());
 			stmt.setInt(2, (p.getNumPage()-1)*p.getMaxItems());
 			ResultSet rs = stmt.executeQuery();
-			coms = DBCompanyMapper.getInstance().toCompanyDTOs(rs);
+			coms = mapper.toCompanyDTOArray(rs);
 		} catch (SQLException e) {
 			logger.error("Error in CompanyDAO.getSomeCompanies", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
@@ -86,7 +89,7 @@ public class CompanyDAO {
 
 	public Optional<DBCompanyDTO> getCompanyById(int id) throws SQLException{
 		Optional<DBCompanyDTO> com;
-		try (Connection conn = db.getConnection();){
+		try (Connection conn = database.getConnection();){
 
 			PreparedStatement stmt = conn.prepareStatement(GET_COMPANY_BY_ID);
 			stmt.setInt(1, id);
@@ -106,12 +109,12 @@ public class CompanyDAO {
 
 	public Optional<DBCompanyDTO> getCompanyByName(String name) throws SQLException{
 		Optional<DBCompanyDTO> com;
-		try (Connection conn = db.getConnection();){
+		try (Connection conn = database.getConnection();){
 
 			PreparedStatement stmt = conn.prepareStatement(GET_COMPANY_BY_NAME);
 			stmt.setString(1, name);
 			ResultSet rs = stmt.executeQuery();
-			ArrayList<DBCompanyDTO> coms = mapper.toCompanyDTOs(rs);
+			ArrayList<DBCompanyDTO> coms = mapper.toCompanyDTOArray(rs);
 			switch(coms.size()) {
 				case 0:
 					com = Optional.empty();
@@ -136,7 +139,7 @@ public class CompanyDAO {
 	
 	public int countCompanies() throws SQLException {
 		int count = 0;
-		try (Connection conn = db.getConnection();){
+		try (Connection conn = database.getConnection();){
 
 			Statement stmt = conn.createStatement();
 			ResultSet rs = stmt.executeQuery(COUNT_COMPANIES_REQUEST);
@@ -149,12 +152,12 @@ public class CompanyDAO {
 		return count;
 	}
 	
-	public synchronized int deleteCompany(int id) throws SQLException, IOException {
+	public synchronized int deleteCompany(int id) throws SQLException {
 		int deletionCount = 0;
-		try (Connection conn = db.getConnection();) {
+		try (Connection conn = database.getConnection();) {
 			try {
 				conn.setAutoCommit(false);
-				deletionCount = ComputerDAO.getInstance().deleteComputerBunch(id, conn);
+				deletionCount = computerDAO.deleteComputerBunch(id, conn);
 				PreparedStatement stmt = conn.prepareStatement(DELETE_COMPANY_REQUEST);
 				stmt.setInt(1, id);
 				deletionCount += stmt.executeUpdate();

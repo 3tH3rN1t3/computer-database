@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
- <%@   taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
+<%@   taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
 <!DOCTYPE html>
 <html>
 <head>
@@ -80,18 +80,58 @@
 							</span>
 						</th>
 						<th>
-							<a href="dashboard?orderby=${page.orderBy.column ne 'computer.name' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.column eq 'computer.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Computer name</a>
+							<a href="dashboard?orderby=${page.orderBy.column ne 'computer.name' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.column eq 'computer.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+								Computer name
+								<c:choose>
+									<c:when test="${page.orderBy.column eq 'computer.name' and page.order eq 'ASC'}">
+										 ∧
+									</c:when>
+									<c:when test="${page.orderBy.column eq 'computer.name' and page.order eq 'DESC'}">
+										 ∨
+									</c:when>
+								</c:choose>
+							</a>
 						</th>
 						<th>
-							<a href="dashboard?orderby=${page.orderBy.column ne 'introduced' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.column eq 'introduced' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Introduced date</a>
+							<a href="dashboard?orderby=${page.orderBy.column ne 'introduced' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.column eq 'introduced' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+								Introduced date
+								<c:choose>
+									<c:when test="${page.orderBy.column eq 'introduced' and page.order eq 'ASC'}">
+										 ∧
+									</c:when>
+									<c:when test="${page.orderBy.column eq 'introduced' and page.order eq 'DESC'}">
+										 ∨
+									</c:when>
+								</c:choose>
+							</a>
 						</th>
 						<!-- Table header for Discontinued Date -->
 						<th>
-							<a href="dashboard?orderby=${page.orderBy.column ne 'discontinued' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.column eq 'discontinued' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Discontinued date</a>
+							<a href="dashboard?orderby=${page.orderBy.column ne 'discontinued' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.column eq 'discontinued' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+								Discontinued date
+								<c:choose>
+									<c:when test="${page.orderBy.column eq 'discontinued' and page.order eq 'ASC'}">
+										 ∧
+									</c:when>
+									<c:when test="${page.orderBy.column eq 'discontinued' and page.order eq 'DESC'}">
+										 ∨
+									</c:when>
+								</c:choose>
+							</a>
 						</th>
 						<!-- Table header for Company -->
 						<th>
-							<a href="dashboard?orderby=${page.orderBy.column ne 'company.name' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.column eq 'company.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">Company</a>
+							<a href="dashboard?orderby=${page.orderBy.column ne 'company.name' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.column eq 'company.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+								Company
+								<c:choose>
+									<c:when test="${page.orderBy.column eq 'company.name' and page.order eq 'ASC'}">
+										 ∧
+									</c:when>
+									<c:when test="${page.orderBy.column eq 'company.name' and page.order eq 'DESC'}">
+										 ∨
+									</c:when>
+								</c:choose>
+							</a>
 						</th>
 
 					</tr>

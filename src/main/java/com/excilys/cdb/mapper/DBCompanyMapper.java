@@ -5,26 +5,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.excilys.cdb.dto.DBCompanyDTO;
 import com.excilys.cdb.model.Company;
 
 // id | name
-//singleton
+@Component
+@Scope("singleton")
 public class DBCompanyMapper {
 	static final String COLONNE_COMPANY_ID = "company.id";
 	
 	static final String COLONNE_COMPANY_NAME = "company.name";
-
-	private static DBCompanyMapper mapper;
 	
 	private DBCompanyMapper() {
-		
-	}
-	
-	public static DBCompanyMapper getInstance() {
-		if (mapper == null)
-			mapper = new DBCompanyMapper();
-		return mapper;
 	}
 	
 	public Optional<DBCompanyDTO> toCompanyDTO(ResultSet rs) {
@@ -50,7 +45,7 @@ public class DBCompanyMapper {
 		}
 	}
 	
-	public ArrayList<DBCompanyDTO> toCompanyDTOs(ResultSet rs) throws SQLException {
+	public ArrayList<DBCompanyDTO> toCompanyDTOArray(ResultSet rs) throws SQLException {
 		ArrayList<DBCompanyDTO> companies = new ArrayList<DBCompanyDTO>();
 		while(rs.next()) {
 			Optional<DBCompanyDTO> com = toCompanyDTO(rs);
@@ -71,7 +66,7 @@ public class DBCompanyMapper {
 		}
 	}
 	
-	public ArrayList<Company> toCompanies(ArrayList<DBCompanyDTO> dtos) throws SQLException {
+	public ArrayList<Company> toCompanyArray(ArrayList<DBCompanyDTO> dtos) throws SQLException {
 		ArrayList<Company> companies = new ArrayList<Company>();
 		for (DBCompanyDTO dto : dtos) {
 			companies.add(toCompany(Optional.of(dto)).get());

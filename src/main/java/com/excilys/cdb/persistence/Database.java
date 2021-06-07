@@ -4,16 +4,17 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.concurrent.locks.ReentrantLock;
-
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 
-//singleton
+@Component
+@Scope("singleton")
 public class Database {
 	private static Logger logger = LogManager.getLogger(Database.class);
 	
@@ -23,29 +24,15 @@ public class Database {
 	private static final String DB_PROPERTY_LOGIN = "jdbc.username";
 	private static final String DB_PROPERTY_PASSWORD = "jdbc.password";
 	
-	private static Database db = null;
 	private DataSource ds = null;
 	
-	public final ReentrantLock COMPUTER_LOCK;
-	public final ReentrantLock COMPANY_LOCK;
-	
-	private Database() throws IOException {
+	public Database() {
 		try {
 			loadProperties();
 			logger.info("Database successfully created");
 		} catch (IOException e) {
 			logger.fatal("Error during DataSource creation", e);
-			throw new IOException("Une erreur fatale est survenue");
 		}
-		COMPUTER_LOCK = new ReentrantLock();
-		COMPANY_LOCK = new ReentrantLock();
-	}
-	
-	public static Database getInstance() throws IOException {
-		if(db == null) {
-			db = new Database();
-		}
-		return db;
 	}
 	
 	public Connection getConnection() throws SQLException {

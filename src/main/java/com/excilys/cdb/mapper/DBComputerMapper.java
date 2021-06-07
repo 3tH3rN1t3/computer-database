@@ -7,10 +7,16 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.excilys.cdb.dto.DBComputerDTO;
 import com.excilys.cdb.model.Computer;
 
 //id | name | introduced | discontinued | company_id
+@Component
+@Scope("singleton")
 public class DBComputerMapper {
 	
 	static final String COLONNE_ID = "computer.id";
@@ -21,16 +27,10 @@ public class DBComputerMapper {
 	
 	static final String COLONNE_DISCONTINUED = "discontinued";
 	
-	static DBComputerMapper mapper;
+	@Autowired
+	private DBCompanyMapper companyMapper;
 	
-	private DBComputerMapper() {
-		
-	}
-	
-	public static DBComputerMapper getInstance() {
-		if (mapper == null)
-			mapper = new DBComputerMapper();
-		return mapper;
+	private DBComputerMapper() {	
 	}
 	
 	public Optional<DBComputerDTO> toComputerDTO(ResultSet rs) {
@@ -43,7 +43,7 @@ public class DBComputerMapper {
 					)
 					.withIntroduced(rs.getDate(COLONNE_INTRODUCED) == null ? null : rs.getDate(COLONNE_INTRODUCED).toString())
 					.withDiscontinued(rs.getDate(COLONNE_DISCONTINUED) == null ? null : rs.getDate(COLONNE_DISCONTINUED).toString())
-					.withCompany(DBCompanyMapper.getInstance().toCompanyDTO(rs).orElse(null))
+					.withCompany(companyMapper.toCompanyDTO(rs).orElse(null))
 					.build() );
 		} catch(SQLException e) {
 			return Optional.empty();
@@ -54,11 +54,11 @@ public class DBComputerMapper {
 		return new DBComputerDTO.ComputerDTOBuilder(com.getId()+"", com.getName())
 				.withIntroduced(com.getIntroduced().map(Date::valueOf).map(Date::toString).orElse(null))
 				.withDiscontinued(com.getDiscontinued().map(Date::valueOf).map(Date::toString).orElse(null))
-				.withCompany(DBCompanyMapper.getInstance().toCompanyDTO(com.getCompany()).orElse(null))
+				.withCompany(companyMapper.toCompanyDTO(com.getCompany()).orElse(null))
 				.build();
 	}
 	
-	public ArrayList<DBComputerDTO> toComputerDTOs(ResultSet rs) throws SQLException {
+	public ArrayList<DBComputerDTO> toComputerDTOArray(ResultSet rs) throws SQLException {
 		ArrayList<DBComputerDTO> computers = new ArrayList<DBComputerDTO>();
 		while(rs.next()) {
 			Optional<DBComputerDTO> com = toComputerDTO(rs);
@@ -79,11 +79,11 @@ public class DBComputerMapper {
 		return Optional.of(new Computer.ComputerBuilder(Integer.parseInt(dto.get().getId()), dto.get().getName())
 				.withIntroduced(dto.get().getIntroduced().map(LocalDate::parse).orElse(null))
 				.withDiscontinued(dto.get().getDiscontinued().map(LocalDate::parse).orElse(null))
-				.withCompany(DBCompanyMapper.getInstance().toCompany(dto.get().getCompany()).orElse(null))
+				.withCompany(companyMapper.toCompany(dto.get().getCompany()).orElse(null))
 				.build() );
 	}
 	
-	public ArrayList<Computer> toComputers(ArrayList<DBComputerDTO> dtos) {
+	public ArrayList<Computer> toComputerArray(ArrayList<DBComputerDTO> dtos) {
 		ArrayList<Computer> coms = new ArrayList<Computer>();
 		for (DBComputerDTO dto : dtos) {
 			coms.add(toComputer(Optional.of(dto)).get());

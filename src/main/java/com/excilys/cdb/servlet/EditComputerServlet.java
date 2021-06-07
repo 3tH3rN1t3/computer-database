@@ -1,4 +1,4 @@
-package com.excilys.cdb.servlets;
+package com.excilys.cdb.servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -11,7 +11,13 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
+import com.excilys.cdb.config.TestConfig;
 import com.excilys.cdb.dto.WebCompanyDTO;
 import com.excilys.cdb.dto.WebComputerDTO;
 import com.excilys.cdb.dto.WrongInputDTO;
@@ -32,13 +38,30 @@ import com.excilys.cdb.service.ComputerService;
 @WebServlet("/editComputer")
 public class EditComputerServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	
+	@Autowired
 	private ComputerService computerService;
+	
+	@Autowired
 	private CompanyService companyService;
+	
+	@Autowired
+	private WebComputerMapper computerMapper;
+	
+	@Autowired
+	private WebCompanyMapper companyMapper;
+	
 	private static final Logger LOGGER = LogManager.getLogger(EditComputerServlet.class);
 	
-    public EditComputerServlet() throws IOException {
-        computerService = ComputerService.getInstance();
-        companyService = CompanyService.getInstance();
+    public EditComputerServlet() {
+    }
+    
+    public void init() {
+    	ApplicationContext ctx = new AnnotationConfigApplicationContext(TestConfig.class);
+    	computerService = (ComputerService) ctx.getBean("computerService");
+    	companyService = (CompanyService) ctx.getBean("companyService");
+    	computerMapper = (WebComputerMapper) ctx.getBean("webComputerMapper");
+    	companyMapper = (WebCompanyMapper) ctx.getBean("webCompanyMapper");
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -53,9 +76,9 @@ public class EditComputerServlet extends HttpServlet {
 		}
 		
 		if (computer != null) {
-			request.setAttribute("computer", WebComputerMapper.getInstance().toComputerDTO(computer));
+			request.setAttribute("computer", computerMapper.toComputerDTO(computer));
 		}
-		request.setAttribute("companies", WebCompanyMapper.getInstance().toCompanyDTOs(companies));
+		request.setAttribute("companies", companyMapper.toCompanyDTOArray(companies));
 		if (computer == null) {
 			request.setAttribute("operation", "Add");
 		} else {
@@ -73,7 +96,7 @@ public class EditComputerServlet extends HttpServlet {
 					.withCompany(request.getParameter("companyId") == "" ? null : new WebCompanyDTO(request.getParameter("companyId"), "company"))
 					.build();
 			try {
-				Computer computer = WebComputerMapper.getInstance().toComputer(dto);
+				Computer computer = computerMapper.toComputer(dto);
 				if (computer.getId() == 0) {
 					computerService.addComputer(computer);
 				} else {

@@ -1,19 +1,26 @@
 package com.excilys.cdb.ui;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.Scanner;
 
-import com.excilys.cdb.mapper.DBCompanyMapper;
-import com.excilys.cdb.model.Company;
-import com.excilys.cdb.persistence.CompanyDAO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
-public class CLIAsker {//TODO retravailler cette daube
+import com.excilys.cdb.model.Company;
+import com.excilys.cdb.service.CompanyService;
+
+@Component("cliAsker")
+@Scope("singleton")
+public class CLIAsker {//TODO Cette classe pourrie fait trop de choses
 	
 	private Scanner scanner;
+	
+	@Autowired
+	private CompanyService companyService;
 	
 	public CLIAsker() {
 		this.scanner = new Scanner(System.in);
@@ -29,7 +36,6 @@ public class CLIAsker {//TODO retravailler cette daube
 			}
 			return choice;
 		} catch (NumberFormatException e) {
-			//TODO print exception
 			System.out.println("Veuillez entrer une option valide (1-7)");
 			return askChoice();
 		}
@@ -85,14 +91,14 @@ public class CLIAsker {//TODO retravailler cette daube
 		}
 	}
 
-	public Company askCompany() throws SQLException, IOException {
+	public Company askCompany() throws SQLException {
 		System.out.println("Veuillez entrer l'id du fabricant (optionel)");
 		String input = scanner.nextLine();
 		if (input.equals("")) {
 			return null;
 		}
 		try {
-			Optional<Company> com = DBCompanyMapper.getInstance().toCompany(CompanyDAO.getInstance().getCompanyById(Integer.valueOf(input)));
+			Optional<Company> com = companyService.getCompanyById(Integer.valueOf(input));
 			if (com.isPresent()) {
 				return com.get();
 			} else {
@@ -105,7 +111,7 @@ public class CLIAsker {//TODO retravailler cette daube
 		}
 	}
 
-	public String askCompanyNameOrId() throws SQLException, IOException {
+	public String askCompanyNameOrId() throws SQLException {
 		System.out.println("Veuillez entrer l'id ou le nom du fabricant");
 		return scanner.nextLine();
 		

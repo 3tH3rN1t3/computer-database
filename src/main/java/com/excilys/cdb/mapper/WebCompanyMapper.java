@@ -3,22 +3,18 @@ package com.excilys.cdb.mapper;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.excilys.cdb.dto.WebCompanyDTO;
 import com.excilys.cdb.model.Company;
 
 // id | name
-//singleton
+@Component
+@Scope("singleton")
 public class WebCompanyMapper {
-	private static WebCompanyMapper mapper;
 	
 	private WebCompanyMapper() {
-		
-	}
-	
-	public static WebCompanyMapper getInstance() {
-		if (mapper == null)
-			mapper = new WebCompanyMapper();
-		return mapper;
 	}
 	
 	public Optional<WebCompanyDTO> toCompanyDTO(Optional<Company> com) {
@@ -29,7 +25,7 @@ public class WebCompanyMapper {
 		}
 	}
 	
-	public ArrayList<WebCompanyDTO> toCompanyDTOs(ArrayList<Company> companies) {
+	public ArrayList<WebCompanyDTO> toCompanyDTOArray(ArrayList<Company> companies) {
 		ArrayList<WebCompanyDTO> dtos = new ArrayList<WebCompanyDTO>();
 		for (Company company : companies) {
 			dtos.add(toCompanyDTO(Optional.of(company)).get());

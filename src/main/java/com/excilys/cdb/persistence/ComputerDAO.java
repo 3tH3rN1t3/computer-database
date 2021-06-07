@@ -1,6 +1,5 @@
 package com.excilys.cdb.persistence;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,15 +10,18 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.dto.DBCompanyDTO;
 import com.excilys.cdb.dto.DBComputerDTO;
 import com.excilys.cdb.mapper.DBComputerMapper;
 import com.excilys.cdb.model.Page;
 
-
-//singleton
 //id | name | introduced | discontinued | company_id
+@Component
+@Scope("singleton")
 public class ComputerDAO {
 	
 	private static final String GET_COMPUTER_BY_ID_REQUEST = "SELECT computer.id, computer.name, "
@@ -47,36 +49,27 @@ public class ComputerDAO {
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
 			+ "WHERE %s LIKE CONCAT('%%', ?, '%%')";
 
-	private static ComputerDAO instance;
-	private Database db;
+	@Autowired
+	private Database database;
+	
+	@Autowired
+	private DBComputerMapper mapper;
+	
 	private Logger logger = LogManager.getLogger(ComputerDAO.class);
 	
-	
-	private ComputerDAO() throws IOException {
-		db = Database.getInstance();
+	private ComputerDAO() {
 	}
-	
-	public static ComputerDAO getInstance() throws IOException {
-		if (instance == null)
-			instance = new ComputerDAO();
-		return instance;
-	}
-	
 	
 	public ArrayList<DBComputerDTO> search(Page p) throws SQLException {
-		db.COMPUTER_LOCK.lock();
-		db.COMPANY_LOCK.lock();
-		db.COMPUTER_LOCK.unlock();
-		db.COMPANY_LOCK.unlock();
 		ArrayList<DBComputerDTO> coms = new ArrayList<DBComputerDTO>();
-		try (Connection conn = db.getConnection();) {
+		try (Connection conn = database.getConnection();) {
 			
 			PreparedStatement stmt = conn.prepareStatement(String.format(GET_COMPUTERS_BY_SEARCH_REQUEST,p.getSearchBy().getColumn(), p.getOrderBy().getColumn(), p.getOrder()));
 			stmt.setString(1, p.getSearch());
 			stmt.setInt(2, p.getMaxItems());
 			stmt.setInt(3, (p.getNumPage()-1)*p.getMaxItems());
 			ResultSet rs = stmt.executeQuery();
-			coms = DBComputerMapper.getInstance().toComputerDTOs(rs);
+			coms = mapper.toComputerDTOArray(rs);
 			
 		} catch (SQLException e) {
 			logger.error("Error in ComputerDAO.search", e);
@@ -88,12 +81,12 @@ public class ComputerDAO {
 
 	public Optional<DBComputerDTO> find(int id) throws SQLException {
 		Optional<DBComputerDTO> com = Optional.empty();
-		try (Connection conn = db.getConnection();) {
+		try (Connection conn = database.getConnection();) {
 
 			PreparedStatement stmt = conn.prepareStatement(GET_COMPUTER_BY_ID_REQUEST);
 			stmt.setInt(1, id);
 			ResultSet rs = stmt.executeQuery();
-			com = DBComputerMapper.getInstance().toComputerDTO(rs);
+			com = mapper.toComputerDTO(rs);
 		} catch (SQLException e) {
 			logger.error("Error in ComputerDAO.find", e);
 			throw new SQLException("Une erreur est survenue lors de l'exécution de votre requête");
@@ -108,7 +101,7 @@ public class ComputerDAO {
 	
 	public int insertComputer(DBComputerDTO dbComputerDTO) throws SQLException {
 		int id = 0;
-		try (Connection conn = db.getConnection();) {
+		try (Connection conn = database.getConnection();) {
 
 			PreparedStatement stmt = conn.prepareStatement(INSERT_COMPUTER_REQUEST, Statement.RETURN_GENERATED_KEYS);
 			stmt.setString(1, dbComputerDTO.getName());
@@ -129,7 +122,7 @@ public class ComputerDAO {
 	
 	public int updateComputer(DBComputerDTO dbComputerDTO) throws SQLException {
 		int edits = 0;
-		try (Connection conn = db.getConnection();) {
+		try (Connection conn = database.getConnection();) {
 
 			PreparedStatement stmt = conn.prepareStatement(UPDATE_COMPUTER_REQUEST);
 			stmt.setString(1, dbComputerDTO.getName());
@@ -152,7 +145,7 @@ public class ComputerDAO {
 	
 	public int deleteComputer(int id) throws SQLException {
 		int deletes = 0;
-		try (Connection conn = db.getConnection();) {
+		try (Connection conn = database.getConnection();) {
 
 			PreparedStatement stmt = conn.prepareStatement(DELETE_COMPUTER_REQUEST);
 			stmt.setInt(1, id);
@@ -178,7 +171,7 @@ public class ComputerDAO {
 	
 	public int CountComputers(Page page) throws SQLException {
 		int count = 0;
-		try (Connection conn = db.getConnection();) {
+		try (Connection conn = database.getConnection();) {
 
 			PreparedStatement stmt = conn.prepareStatement(String.format(COUNT_COMPUTERS_BY_SEARCH_REQUEST, page.getSearchBy().getColumn()));
 			stmt.setString(1, page.getSearch());

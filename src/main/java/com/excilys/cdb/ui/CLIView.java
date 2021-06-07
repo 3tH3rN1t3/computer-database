@@ -2,9 +2,14 @@ package com.excilys.cdb.ui;
 
 import java.util.ArrayList;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 
+@Component("cliView")
+@Scope("singleton")
 public class CLIView {
 	void printMenu() {
 		System.out.println("Selectionnez l'option d votre choix");

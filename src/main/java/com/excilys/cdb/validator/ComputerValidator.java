@@ -1,9 +1,12 @@
 package com.excilys.cdb.validator;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.dto.WebCompanyDTO;
 import com.excilys.cdb.dto.WebComputerDTO;
@@ -17,20 +20,17 @@ import com.excilys.cdb.exceptions.NameNotValidException;
 import com.excilys.cdb.exceptions.ValidatorException;
 import com.excilys.cdb.service.CompanyService;
 
+@Component
+@Scope("singleton")
 public class ComputerValidator {
 	
-	private static ComputerValidator instance;
+	@Autowired
+	private CompanyService companyService;
 	
-	private ComputerValidator() {}
-	
-	public static ComputerValidator getInstance() {
-		if (instance == null) {
-			instance = new ComputerValidator();
-		}
-		return instance;
+	private ComputerValidator() {
 	}
 	
-	public void validate(WebComputerDTO dto) throws SQLException, IOException {
+	public void validate(WebComputerDTO dto) throws SQLException {
 		ValidatorException ex = new ValidatorException();
 		try {
 			this.validateId(dto.getId());
@@ -108,12 +108,12 @@ public class ComputerValidator {
 		}
 	}
 
-	private void validateCompany(Optional<WebCompanyDTO> company) throws SQLException, IOException {
+	private void validateCompany(Optional<WebCompanyDTO> company) throws SQLException {
 		if (company.isPresent()) {
 			try {
 				this.validateId(company.get().getId());
 				int id = Integer.parseInt(company.get().getId());
-				if (!CompanyService.getInstance().getCompanyById(id).isPresent()) {
+				if (!companyService.getCompanyById(id).isPresent()) {
 					throw new CompanyIdNotValidException("Company Id not valid : " + id);
 				}
 			} catch (IdNotValidException e) {
