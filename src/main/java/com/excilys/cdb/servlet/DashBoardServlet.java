@@ -13,7 +13,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.logging.log4j.LogManager;
 import  org.apache.logging.log4j.Logger;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.excilys.cdb.config.TestConfig;
@@ -39,9 +38,10 @@ public class DashBoardServlet extends HttpServlet {
     }
     
     public void init() {
-    	ApplicationContext ctx = new AnnotationConfigApplicationContext(TestConfig.class);
+    	AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(TestConfig.class);
     	service = (ComputerService) ctx.getBean("computerService");
     	computerMapper = (WebComputerMapper) ctx.getBean("webComputerMapper");
+    	ctx.close();
     }
     
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

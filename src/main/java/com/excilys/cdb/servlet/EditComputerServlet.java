@@ -12,11 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
 import com.excilys.cdb.config.TestConfig;
 import com.excilys.cdb.dto.WebCompanyDTO;
 import com.excilys.cdb.dto.WebComputerDTO;
@@ -57,11 +53,12 @@ public class EditComputerServlet extends HttpServlet {
     }
     
     public void init() {
-    	ApplicationContext ctx = new AnnotationConfigApplicationContext(TestConfig.class);
+    	AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(TestConfig.class);
     	computerService = (ComputerService) ctx.getBean("computerService");
     	companyService = (CompanyService) ctx.getBean("companyService");
     	computerMapper = (WebComputerMapper) ctx.getBean("webComputerMapper");
     	companyMapper = (WebCompanyMapper) ctx.getBean("webCompanyMapper");
+    	ctx.close();
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
