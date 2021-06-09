@@ -5,10 +5,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.dto.DBComputerDTO;
@@ -17,7 +19,7 @@ import com.excilys.cdb.model.Computer;
 //id | name | introduced | discontinued | company_id
 @Component
 @Scope("singleton")
-public class DBComputerMapper {
+public class DBComputerMapper implements RowMapper<DBComputerDTO> {
 	
 	static final String COLONNE_ID = "computer.id";
 	
@@ -32,21 +34,19 @@ public class DBComputerMapper {
 	
 	private DBComputerMapper() {	
 	}
-	
-	public Optional<DBComputerDTO> toComputerDTO(ResultSet rs) {
-		try {
-			if (rs.isBeforeFirst()) {
-				rs.next();
-			}
-			return Optional.of(new DBComputerDTO.ComputerDTOBuilder(
+
+	@Override
+	public DBComputerDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+		if (rs.isAfterLast()) {
+			return null;
+		} else {
+			return new DBComputerDTO.ComputerDTOBuilder(
 					rs.getString(COLONNE_ID), rs.getString(COLONNE_NAME)
 					)
 					.withIntroduced(rs.getDate(COLONNE_INTRODUCED) == null ? null : rs.getDate(COLONNE_INTRODUCED).toString())
 					.withDiscontinued(rs.getDate(COLONNE_DISCONTINUED) == null ? null : rs.getDate(COLONNE_DISCONTINUED).toString())
-					.withCompany(companyMapper.toCompanyDTO(rs).orElse(null))
-					.build() );
-		} catch(SQLException e) {
-			return Optional.empty();
+					.withCompany(companyMapper.mapRow(rs, rowNum))
+					.build();
 		}
 	}
 	
@@ -56,19 +56,6 @@ public class DBComputerMapper {
 				.withDiscontinued(com.getDiscontinued().map(Date::valueOf).map(Date::toString).orElse(null))
 				.withCompany(companyMapper.toCompanyDTO(com.getCompany()).orElse(null))
 				.build();
-	}
-	
-	public ArrayList<DBComputerDTO> toComputerDTOArray(ResultSet rs) throws SQLException {
-		ArrayList<DBComputerDTO> computers = new ArrayList<DBComputerDTO>();
-		while(rs.next()) {
-			Optional<DBComputerDTO> com = toComputerDTO(rs);
-			if(com.isPresent()) {
-				computers.add(com.get());
-			} else {
-				break;
-			}
-		}
-		return computers;
 	}
 	
 	public Optional<Computer> toComputer(Optional<DBComputerDTO> dto) {
@@ -83,7 +70,7 @@ public class DBComputerMapper {
 				.build() );
 	}
 	
-	public ArrayList<Computer> toComputerArray(ArrayList<DBComputerDTO> dtos) {
+	public ArrayList<Computer> toComputerArray(List<DBComputerDTO> dtos) {
 		ArrayList<Computer> coms = new ArrayList<Computer>();
 		for (DBComputerDTO dto : dtos) {
 			coms.add(toComputer(Optional.of(dto)).get());

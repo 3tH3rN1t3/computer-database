@@ -3,9 +3,11 @@ package com.excilys.cdb.mapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.dto.DBCompanyDTO;
@@ -14,7 +16,7 @@ import com.excilys.cdb.model.Company;
 // id | name
 @Component
 @Scope("singleton")
-public class DBCompanyMapper {
+public class DBCompanyMapper implements RowMapper<DBCompanyDTO> {
 	static final String COLONNE_COMPANY_ID = "company.id";
 	
 	static final String COLONNE_COMPANY_NAME = "company.name";
@@ -22,18 +24,11 @@ public class DBCompanyMapper {
 	private DBCompanyMapper() {
 	}
 	
-	public Optional<DBCompanyDTO> toCompanyDTO(ResultSet rs) {
-		try {
-			if (rs.isBeforeFirst()) {
-				rs.next();
-			}
-			if (rs.getString(COLONNE_COMPANY_ID) != null) {
-				return Optional.of(new DBCompanyDTO(rs.getString(COLONNE_COMPANY_ID), rs.getString(COLONNE_COMPANY_NAME)));
-			} else {
-				return Optional.empty();
-			}
-		} catch (SQLException e) {
-			return Optional.empty();
+	public DBCompanyDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+		if (rs.isAfterLast() || rs.getString(COLONNE_COMPANY_ID) == null) {
+			return null;
+		} else {
+			return new DBCompanyDTO(rs.getString(COLONNE_COMPANY_ID), rs.getString(COLONNE_COMPANY_NAME));
 		}
 	}
 	
@@ -45,19 +40,6 @@ public class DBCompanyMapper {
 		}
 	}
 	
-	public ArrayList<DBCompanyDTO> toCompanyDTOArray(ResultSet rs) throws SQLException {
-		ArrayList<DBCompanyDTO> companies = new ArrayList<DBCompanyDTO>();
-		while(rs.next()) {
-			Optional<DBCompanyDTO> com = toCompanyDTO(rs);
-			if(com.isPresent()) {
-				companies.add(com.get());
-			} else {
-				break;
-			}
-		}
-		return companies;
-	}
-	
 	public Optional<Company> toCompany(Optional<DBCompanyDTO> dto) {
 		if (!dto.isPresent()) {
 			return Optional.empty();
@@ -66,7 +48,7 @@ public class DBCompanyMapper {
 		}
 	}
 	
-	public ArrayList<Company> toCompanyArray(ArrayList<DBCompanyDTO> dtos) throws SQLException {
+	public ArrayList<Company> toCompanyArray(List<DBCompanyDTO> dtos) throws SQLException {
 		ArrayList<Company> companies = new ArrayList<Company>();
 		for (DBCompanyDTO dto : dtos) {
 			companies.add(toCompany(Optional.of(dto)).get());

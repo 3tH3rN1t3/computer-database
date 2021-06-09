@@ -13,8 +13,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan(basePackages = { "com.excilys.cdb.persistence"
-		, "com.excilys.cdb.mapper"
+@ComponentScan(basePackages = { "com.excilys.cdb.mapper"
 		, "com.excilys.cdb.validator"
 		, "com.excilys.cdb.controller"
 		, "com.excilys.cdb.service"

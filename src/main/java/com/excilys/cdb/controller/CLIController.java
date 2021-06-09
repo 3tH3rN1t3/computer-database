@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.excilys.cdb.exceptions.AmbiguousNameException;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
@@ -99,21 +98,7 @@ public class CLIController {
 	}
 
 	private void executeListCompanies() throws SQLException {
-		Page p = new Page(companyService.countCompanies());
-		ArrayList<Company> coms = new ArrayList<Company>();
-		while (p.getNumPage() <= p.getMaxPage()) {
-			coms = companyService.getCompaniesPerPage(p);
-			view.printCompanies(coms);
-			String choice = asker.askPage(p.getNumPage(), p.getMaxPage());
-			if ("q".equalsIgnoreCase(choice)) {
-				break;
-			} else if ("a".equalsIgnoreCase(choice)) {
-				p.setNumPage(((p.getNumPage() + p.getMaxPage() - 2) % p.getMaxPage()) + 1);
-			} else {
-				p.setNumPage((p.getNumPage() % p.getMaxPage()) + 1);
-			}
-		}
-		
+		view.printCompanies(companyService.getAllCompanies());
 	}
 
 	private void executeShowDetails() throws SQLException {
@@ -191,15 +176,11 @@ public class CLIController {
 		Company company = null;
 		do {
 			nameOrId = asker.askCompanyNameOrId();
+			//TODO remplacer par un scanner
 			try {
 				int id = Integer.parseInt(nameOrId);
 				company = companyService.getCompanyById(id).orElse(null);
 			} catch (NumberFormatException e){
-				try {
-					company = companyService.getCompanyByName(nameOrId).orElse(null);
-				} catch (AmbiguousNameException ex) {
-					System.out.println(ex.getMessage());
-				}
 			}
 			if (company == null) {
 				System.out.println("Aucune companie n'a été trouvée");

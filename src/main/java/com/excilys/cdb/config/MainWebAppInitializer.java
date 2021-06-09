@@ -9,7 +9,7 @@ public class MainWebAppInitializer extends AbstractDispatcherServletInitializer 
 	@Override
 	protected WebApplicationContext createRootApplicationContext() {
 		AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-		rootContext.register(WebConfig.class);
+		rootContext.register(DBConfig.class, WebConfig.class);
 		return rootContext;
 	}
 

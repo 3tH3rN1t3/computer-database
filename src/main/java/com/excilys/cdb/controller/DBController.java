@@ -66,23 +66,11 @@ public class DBController {
 		return this.companyMapper.toCompanyArray(companyDAO.getAllCompanies());
 	}
 	
-	public ArrayList<Company> getCompaniesPerPage(Page p) throws SQLException {
-		return this.companyMapper.toCompanyArray(companyDAO.getCompaniesPerPage(p));
-	}
-	
 	public Optional<Company> getCompanyById(int id) throws SQLException {
 		return this.companyMapper.toCompany(companyDAO.getCompanyById(id));
 	}
 	
-	public Optional<Company> getCompanyByName(String name) throws SQLException {
-		return this.companyMapper.toCompany(companyDAO.getCompanyByName(name));
-	}
-	
 	public int deleteCompany(int id) throws SQLException {
 		return this.companyDAO.deleteCompany(id);
-	}
-	
-	public int countCompanies() throws SQLException {
-		return companyDAO.countCompanies();
 	}
 }

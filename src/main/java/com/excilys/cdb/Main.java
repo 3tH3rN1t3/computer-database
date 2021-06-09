@@ -10,7 +10,7 @@ import com.excilys.cdb.ui.CLI;
 public class Main {
 
 	private static ApplicationContext applicationContext;
-
+	
 	public static void main(String... args) throws SQLException {
 		//applicationContext = new ClassPathXmlApplicationContext("/applicationContext.xml");
 		applicationContext = new AnnotationConfigApplicationContext(SpringConfig.class);

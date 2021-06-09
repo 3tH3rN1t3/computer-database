@@ -26,23 +26,11 @@ public class CompanyService {
 		return controller.getAllCompanies();
 	}
 	
-	public ArrayList<Company> getCompaniesPerPage(Page p) throws SQLException {
-		return controller.getCompaniesPerPage(p);
-	}
-	
 	public Optional<Company> getCompanyById(int id) throws SQLException {
 		return controller.getCompanyById(id);
 	}
 	
-	public Optional<Company> getCompanyByName(String name) throws SQLException {
-		return controller.getCompanyByName(name);
-	}
-	
 	public int deleteCompany(int id) throws SQLException {
 		return controller.deleteCompany(id);
-	}
-	
-	public int countCompanies() throws SQLException {
-		return controller.countCompanies();
 	}
 }

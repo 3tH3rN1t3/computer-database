@@ -10,14 +10,8 @@ import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 @Configuration
-@ComponentScan(basePackages = { "com.excilys.cdb.persistence"
-		, "com.excilys.cdb.mapper"
-		, "com.excilys.cdb.validator"
-		, "com.excilys.cdb.controller"
-		, "com.excilys.cdb.service"
-		, "com.excilys.cdb.ui"
-})
-public class SpringConfig {
+@ComponentScan(basePackages = { "com.excilys.cdb.persistence" })
+public class DBConfig {
 	@Bean
 	public DataSource HikariDataSource() {
 		return new HikariDataSource(new HikariConfig("/database.properties"));
