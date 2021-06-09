@@ -1,19 +1,20 @@
-package com.excilys.cdb.servlet;
+package com.excilys.cdb.web.controller;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+
+import javax.servlet.ServletRequest;
 
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import  org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import com.excilys.cdb.config.TestConfig;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.excilys.cdb.dto.WebCompanyDTO;
 import com.excilys.cdb.dto.WebComputerDTO;
 import com.excilys.cdb.dto.WrongInputDTO;
@@ -31,39 +32,32 @@ import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
 
-@WebServlet("/editComputer")
-public class EditComputerServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+@Controller
+@Scope("request")
+public class EditComputerController {
 	
 	@Autowired
 	private ComputerService computerService;
 	
 	@Autowired
 	private CompanyService companyService;
-	
+
 	@Autowired
 	private WebComputerMapper computerMapper;
-	
+
 	@Autowired
 	private WebCompanyMapper companyMapper;
 	
-	private static final Logger LOGGER = LogManager.getLogger(EditComputerServlet.class);
+	private static final Logger LOGGER = LogManager.getLogger(EditComputerController.class);
 	
-    public EditComputerServlet() {
+    public EditComputerController() {
     }
     
-    public void init() {
-    	AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(TestConfig.class);
-    	computerService = (ComputerService) ctx.getBean("computerService");
-    	companyService = (CompanyService) ctx.getBean("companyService");
-    	computerMapper = (WebComputerMapper) ctx.getBean("webComputerMapper");
-    	companyMapper = (WebCompanyMapper) ctx.getBean("webCompanyMapper");
-    	ctx.close();
-    }
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		Computer computer = null;
+    @GetMapping("/editComputer")
+    @ResponseBody
+    public ModelAndView getEditComputer(ServletRequest request) {
+    	
+    	Computer computer = null;
 		ArrayList<Company> companies = new ArrayList<Company>();
 		try {
 			computer = getComputer(request.getParameter("id"));
@@ -72,21 +66,22 @@ public class EditComputerServlet extends HttpServlet {
 			LOGGER.error("Oups erreur SQL");
 		}
 		
-		if (computer != null) {
-			request.setAttribute("computer", computerMapper.toComputerDTO(computer));
-		}
-		request.setAttribute("companies", companyMapper.toCompanyDTOArray(companies));
+		ModelAndView response = new ModelAndView("editComputer");
+		
+		response.addObject("companies", companyMapper.toCompanyDTOArray(companies));
 		if (computer == null) {
-			request.setAttribute("operation", "Add");
+			response.addObject("operation", "Add");
 		} else {
-			request.setAttribute("operation", "Edit");
+			response.addObject("operation", "Edit");
+			response.addObject("computer", computerMapper.toComputerDTO(computer));
 		}
 		
-		this.getServletContext().getRequestDispatcher("/WEB-INF/jsp/editComputer.jsp").forward(request, response);
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		try {
+		return response;
+    }
+    
+    @PostMapping("/editComputer")
+    public ModelAndView editComputer(ServletRequest request) {
+    	try {
 			WebComputerDTO dto = new WebComputerDTO.ComputerDTOBuilder(request.getParameter("id"), request.getParameter("computerName"))
 					.withIntroduced(request.getParameter("introduced") == "" ? null : request.getParameter("introduced"))
 					.withDiscontinued(request.getParameter("discontinued") == "" ? null : request.getParameter("discontinued"))
@@ -99,7 +94,6 @@ public class EditComputerServlet extends HttpServlet {
 				} else {
 					computerService.updateComputer(computer);
 				}
-				response.sendRedirect("dashboard");
 				
 			} catch (ValidatorException e) {
 				
@@ -117,7 +111,7 @@ public class EditComputerServlet extends HttpServlet {
 					} else if (error.getClass().equals(DiscontinuedNotValidException.class)) {
 						fails.setDiscontinued(true);
 					} else if (error.getClass().equals(DateIntervalNotValidException.class)) {
-						fails.setDiscontinued(true);
+						fails.setInterval(true);
 					} else if (error.getClass().equals(CompanyIdNotValidException.class)) {
 						fails.setCompany(true);
 					}
@@ -130,25 +124,27 @@ public class EditComputerServlet extends HttpServlet {
 					LOGGER.error("Oups erreur SQL");
 				}
 				
-				if (dto.getId().equals("0")) {
-					request.setAttribute("operation", "Add");
-				} else {
-					request.setAttribute("operation", "Edit");
-				}
-				request.setAttribute("companies", companies);
-				request.setAttribute("computer", dto);
-				request.setAttribute("errors", fails);
+				ModelAndView response = new ModelAndView("editComputer");
 				
-				this.getServletContext().getRequestDispatcher("/WEB-INF/jsp/editComputer.jsp").forward(request, response);
+				if (dto.getId().equals("0")) {
+					response.addObject("operation", "Add");
+				} else {
+					response.addObject("operation", "Edit");
+				}
+				response.addObject("companies", companies);
+				response.addObject("computer", dto);
+				response.addObject("errors", fails);
+				
+				return response;
 			}
 		} catch (SQLException sqle) {
 			LOGGER.error(sqle);
-		} catch (IOException ioe) {
-			LOGGER.fatal(ioe);
 		}
-	}
+    	
+		return new ModelAndView("redirect:/dashboard");
+    }
 	
-	private Computer getComputer(String string) throws SQLException {
+    private Computer getComputer(String string) throws SQLException {
 		try {
 			int id = Integer.parseInt(string);
 			return computerService.getComputer(id).orElse(null);

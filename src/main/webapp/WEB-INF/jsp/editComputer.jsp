@@ -9,9 +9,9 @@
 <meta charset="utf-8">
 <!-- Bootstrap -->
 
-<link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="${pageContext.request.contextPath}/css/font-awesome.css" rel="stylesheet" media="screen">
-<link href="${pageContext.request.contextPath}/css/main.css" rel="stylesheet" media="screen">
+<link href="<c:url value="/resources/css/bootstrap.min.css" />" rel="stylesheet" media="screen">
+<link href="<c:url value="/resources/css/font-awesome.css" />" rel="stylesheet" media="screen">
+<link href="<c:url value="/resources/css/main.css" />" rel="stylesheet" media="screen">
 </head>
 <body>
 
@@ -64,7 +64,7 @@
 								</c:if>
 								<c:if test="${errors ne null and errors.interval}">
 									<br/>
-									Les dates d'ajout est antérieure à la date de retrait
+									La date d'ajout doit être antérieure à la date de retrait
 								</c:if>
 								<c:choose>
 									<c:when test="${computer ne null and computer.introduced.isPresent()}">
@@ -83,7 +83,7 @@
 								</c:if>
 								<c:if test="${errors ne null and errors.interval}">
 									<br/>
-									Les dates d'ajout est antérieure à la date de retrait
+									La date d'ajout doit être antérieure à la date de retrait
 								</c:if>
 								<c:choose>
 									<c:when test="${computer ne null and computer.discontinued.isPresent()}">
@@ -126,9 +126,9 @@
 		</div>
 	</section>
     
-<script src="${pageContext.request.contextPath}/js/jquery.min.js"></script>
-<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
-<script src="${pageContext.request.contextPath}/js/editComputer.js"></script>
+	<script src="<c:url value="/resources/js/jquery.min.js" />"></script>
+	<script src="<c:url value="/resources/js/bootstrap.min.js" />"></script>
+	<script src="<c:url value="/resources/js/editComputer.js" />"></script>
 
 </body>
 </html>

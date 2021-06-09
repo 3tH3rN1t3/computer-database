@@ -9,9 +9,9 @@
 <meta charset="utf-8">
 <!-- Bootstrap -->
 
-<link href="${pageContext.request.contextPath}/css/bootstrap.min.css" rel="stylesheet" media="screen">
-<link href="${pageContext.request.contextPath}/css/font-awesome.css" rel="stylesheet" media="screen">
-<link href="${pageContext.request.contextPath}/css/main.css" rel="stylesheet" media="screen">
+<link href="<c:url value="/resources/css/bootstrap.min.css" />" rel="stylesheet" media="screen">
+<link href="<c:url value="/resources/css/font-awesome.css" />" rel="stylesheet" media="screen">
+<link href="<c:url value="/resources/css/main.css" />" rel="stylesheet" media="screen">
 </head>
 <body>
 	<header class="navbar navbar-inverse navbar-fixed-top">
@@ -28,7 +28,7 @@
 						<c:out value="${page.totalItems}" /> Computers found
 					</c:when>
 					<c:otherwise>
-						<c:out value="${page.totalItems}" /> Computers found for &laquo<c:out value="${page.search}" />&raquo
+						<c:out value="${page.totalItems}" /> Computers found for <c:out value="${page.searchBy.toString().toLowerCase()}"/> &laquo<c:out value="${page.search}" />&raquo
 					</c:otherwise>
 				</c:choose>
 			</h1>
@@ -232,9 +232,9 @@
 	</div>
 	</footer>
     
-<script src="${pageContext.request.contextPath}/js/jquery.min.js"></script>
-<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
-<script src="${pageContext.request.contextPath}/js/dashboard.js"></script>
+	<script src="<c:url value="/resources/js/jquery.min.js" />"></script>
+	<script src="<c:url value="/resources/js/bootstrap.min.js" />"></script>
+	<script src="<c:url value="/resources/js/dashboard.js" />"></script>
 
 
 </body>

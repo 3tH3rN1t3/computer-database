@@ -1,21 +1,20 @@
-package com.excilys.cdb.servlet;
+package com.excilys.cdb.web.controller;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.ServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import  org.apache.logging.log4j.Logger;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
-import com.excilys.cdb.config.TestConfig;
 import com.excilys.cdb.mapper.WebComputerMapper;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Order;
@@ -24,34 +23,35 @@ import com.excilys.cdb.model.Page;
 import com.excilys.cdb.model.SearchBy;
 import com.excilys.cdb.service.ComputerService;
 
-@WebServlet("/dashboard")
-public class DashBoardServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+@Controller
+@Scope("session")
+public class DashBoardController {
 	
+	@Autowired
 	private ComputerService service;
 	
+	@Autowired
 	private WebComputerMapper computerMapper;
 	
-	private static final Logger LOGGER = LogManager.getLogger(DashBoardServlet.class);
+	private Page page;
 	
-    public DashBoardServlet() {
+	private static final Logger LOGGER = LogManager.getLogger(DashBoardController.class);
+	
+    public DashBoardController() {
+    	page = new Page();
     }
     
-    public void init() {
-    	AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(TestConfig.class);
-    	service = (ComputerService) ctx.getBean("computerService");
-    	computerMapper = (WebComputerMapper) ctx.getBean("webComputerMapper");
-    	ctx.close();
+    @RequestMapping(value="/test")
+    @ResponseBody
+    public String test() {
+    	System.out.println("YESSS");
+    	return "Test ok";
     }
     
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		try {
-			HttpSession session = request.getSession(true);
-			
-			Page page = (Page) session.getAttribute("page");
-			if (page == null) {
-				page = new Page();
-			}
+    @GetMapping(value="/dashboard")
+    @ResponseBody
+    public ModelAndView dashboard(ServletRequest request) {
+    	try {
 			
 			this.setSearch(page, request.getParameter("searchby"), request.getParameter("search"));
 			this.setItemsPerPage(page, request.getParameter("itemsPerPage"));
@@ -61,18 +61,16 @@ public class DashBoardServlet extends HttpServlet {
 			ArrayList<Computer> computers = new ArrayList<Computer>();
 			computers = this.getComputers(page);
 			
-			session.setAttribute("page", page);
-			
-			request.setAttribute( "nombrePageMax", page.getMaxPage() );
-			request.setAttribute( "computers", computerMapper.toComputerDTOArray(computers));
-			request.setAttribute( "page", page);//Trnasformation en DTO?
-			request.setAttribute("searches", SearchBy.values());
-			
-			this.getServletContext().getRequestDispatcher("/WEB-INF/jsp/dashboard.jsp").forward(request, response);
+			ModelAndView response = new ModelAndView("dashboard");
+			response.addObject( "computers", computerMapper.toComputerDTOArray(computers));
+			response.addObject( "page", page);
+			response.addObject("searches", SearchBy.values());
+			return response;
 		} catch (SQLException e) {
-			LOGGER.error("Oups erreur SQL", e);;
+			LOGGER.error("Oups erreur SQL", e);
+			return new ModelAndView("500");
 		}
-	}
+    }
 	
 	private void setSearch(Page p, String searchBy, String search) throws SQLException {
 		if (searchBy != null) {
