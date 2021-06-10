@@ -1,6 +1,5 @@
 package com.excilys.cdb.service;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -22,27 +21,27 @@ public class ComputerService {
 	private ComputerService() {
 	}
 	
-	public ArrayList<Computer>  search(Page page) throws SQLException {
+	public ArrayList<Computer>  search(Page page) {
 		return controller.search(page);		
 	}
 	
-	public int countComputers(Page p) throws SQLException{
+	public int countComputers(Page p) {
 		return controller.countComputers(p);
 	}
 	
-	public Optional<Computer> getComputer(int id) throws SQLException {
+	public Optional<Computer> getComputer(int id) {
 		return controller.getComputer(id);	
 	}
 	
-	public void addComputer(Computer computer) throws SQLException {
+	public void addComputer(Computer computer) {
 		controller.addComputer(computer);
 	}
 		
-	public int updateComputer(Computer computer) throws SQLException {
+	public int updateComputer(Computer computer) {
 		return controller.updateComputer(computer);
 	}
 	
-	public int deleteComputer(int id) throws SQLException {
+	public int deleteComputer(int id) {
 		return controller.deleteComputer(id);
 	}
 }

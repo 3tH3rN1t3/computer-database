@@ -1,6 +1,5 @@
 package com.excilys.cdb.persistence;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,8 +13,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.cdb.dto.DBCompanyDTO;
-import com.excilys.cdb.mapper.DBCompanyMapper;
+import com.excilys.cdb.persistence.dto.DBCompanyDTO;
+import com.excilys.cdb.persistence.mapper.DBCompanyMapper;
 
 @Component
 @Scope("singleton")
@@ -41,16 +40,20 @@ public class CompanyDAO {
 		template.setDataSource(datasource);
 	}
 	
-	public List<DBCompanyDTO> getAllCompanies() throws SQLException {
+	public List<DBCompanyDTO> getAllCompanies() {
 		return template.query(GET_ALL_COMPANIES_REQUEST, mapper);
 	}
 
-	public Optional<DBCompanyDTO> getCompanyById(int id) throws SQLException{
-		return Optional.ofNullable(template.queryForObject(GET_COMPANY_BY_ID, mapper, id));
+	public Optional<DBCompanyDTO> getCompanyById(int id) {
+		try {
+			return Optional.of(template.query(GET_COMPANY_BY_ID, mapper, id).get(0));
+		} catch (IndexOutOfBoundsException e) {
+			return Optional.empty();
+		}
 	}
 	
 	@Transactional
-	public int deleteCompany(int id) throws SQLException {
+	public int deleteCompany(int id) {
 		int deletionCount = 0;
 		deletionCount += template.update(DELETE_COMPUTERS_REQUEST, id);
 		deletionCount += template.update(DELETE_COMPANY_REQUEST, id);

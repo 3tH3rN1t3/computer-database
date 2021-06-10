@@ -1,15 +1,15 @@
-package com.excilys.cdb.dto;
+package com.excilys.cdb.persistence.dto;
 
 import java.util.Optional;
 
-public class WebComputerDTO {
+public class DBComputerDTO {
 	private String id;
 	private String name;
 	private String introduced;
 	private String discontinued;
-	private WebCompanyDTO company;
+	private DBCompanyDTO company;
 	
-	private WebComputerDTO (ComputerDTOBuilder builder) {
+	private DBComputerDTO(ComputerDTOBuilder builder) {
 		this.id = builder.id;
 		this.name = builder.name;
 		this.introduced = builder.introduced;
@@ -33,7 +33,7 @@ public class WebComputerDTO {
 		return Optional.ofNullable(discontinued);
 	}
 	
-	public Optional<WebCompanyDTO> getCompany() {
+	public Optional<DBCompanyDTO> getCompany() {
 		return Optional.ofNullable(company);
 	}
 	
@@ -42,7 +42,7 @@ public class WebComputerDTO {
 		private String name;
 		private String introduced;
 		private String discontinued;
-		private WebCompanyDTO company;
+		private DBCompanyDTO company;
 		
 		public ComputerDTOBuilder(String id, String name) {
 			this.id = id;
@@ -59,13 +59,13 @@ public class WebComputerDTO {
 			return this;
 		}
 		
-		public ComputerDTOBuilder withCompany(WebCompanyDTO company) {
+		public ComputerDTOBuilder withCompany(DBCompanyDTO company) {
 			this.company = company;
 			return this;
 		}
 		
-		public WebComputerDTO build() {
-			return new WebComputerDTO(this);
+		public DBComputerDTO build() {
+			return new DBComputerDTO(this);
 		}
 	}
 }

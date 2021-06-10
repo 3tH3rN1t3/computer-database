@@ -13,12 +13,7 @@ import org.springframework.web.servlet.view.JstlView;
 
 @EnableWebMvc
 @Configuration
-@ComponentScan(basePackages = { "com.excilys.cdb.mapper"
-		, "com.excilys.cdb.validator"
-		, "com.excilys.cdb.controller"
-		, "com.excilys.cdb.service"
-		, "com.excilys.cdb.ui"
-})
+@ComponentScan(basePackages = { "com.excilys.cdb.web"})
 public class WebConfig implements WebMvcConfigurer {
 	@Bean
 	public ViewResolver configureViewResolver() {
@@ -32,5 +27,4 @@ public class WebConfig implements WebMvcConfigurer {
 	public void addResourceHandlers(final ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
 	}
-
 }

@@ -1,12 +1,5 @@
 package com.excilys.cdb.persistence;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,10 +12,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import com.excilys.cdb.dto.DBCompanyDTO;
-import com.excilys.cdb.dto.DBComputerDTO;
-import com.excilys.cdb.mapper.DBComputerMapper;
 import com.excilys.cdb.model.Page;
+import com.excilys.cdb.persistence.dto.DBCompanyDTO;
+import com.excilys.cdb.persistence.dto.DBComputerDTO;
+import com.excilys.cdb.persistence.mapper.DBComputerMapper;
 
 //id | name | introduced | discontinued | company_id
 @Component
@@ -63,13 +56,17 @@ public class ComputerDAO {
 		template.setDataSource(datasource);
 	}
 	
-	public List<DBComputerDTO> search(Page p) throws SQLException {
+	public List<DBComputerDTO> search(Page p) {
 		String query = String.format(GET_COMPUTERS_BY_SEARCH_REQUEST,p.getSearchBy().getColumn(), p.getOrderBy().getColumn(), p.getOrder());
 		return template.query(query, mapper, p.getSearch(), p.getMaxItems(), (p.getNumPage()-1)*p.getMaxItems());
 	}
 
 	public Optional<DBComputerDTO> find(int id) {
-		return Optional.ofNullable(template.queryForObject(GET_COMPUTER_BY_ID_REQUEST, mapper, id));
+		try {
+			return Optional.of(template.query(GET_COMPUTER_BY_ID_REQUEST, mapper, id).get(0));
+		} catch (IndexOutOfBoundsException e) {
+			return Optional.empty();
+		}
 	}
 	
 	public int insertComputer(DBComputerDTO dbComputerDTO) {
@@ -91,7 +88,7 @@ public class ComputerDAO {
 		return template.update(DELETE_COMPUTER_REQUEST, id);
 	}
 	
-	public int CountComputers(Page page) throws SQLException {
+	public int CountComputers(Page page) {
 		String query = String.format(COUNT_COMPUTERS_BY_SEARCH_REQUEST, page.getSearchBy().getColumn());
 		return template.queryForObject(query, Integer.class, page.getSearch());
 	}

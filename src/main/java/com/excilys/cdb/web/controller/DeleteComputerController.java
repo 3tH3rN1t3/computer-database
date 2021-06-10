@@ -1,6 +1,5 @@
 package com.excilys.cdb.web.controller;
 
-import java.sql.SQLException;
 import java.util.Scanner;
 
 import javax.servlet.ServletRequest;
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.cdb.service.ComputerService;
 
@@ -33,11 +31,7 @@ public class DeleteComputerController {
     	Scanner scanner = new java.util.Scanner(values).useDelimiter(",");
 		while (scanner.hasNextInt()) {
 			int id = scanner.nextInt();
-			try {
-				computerService.deleteComputer(id);
-			} catch (SQLException e) {
-				LOGGER.error("Oups, erreur SQL");
-			}
+			computerService.deleteComputer(id);
 		}
 		scanner.close();
     }

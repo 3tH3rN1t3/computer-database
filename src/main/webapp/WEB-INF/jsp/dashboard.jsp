@@ -147,18 +147,18 @@
 								<a href="editComputer?id=${computer.id}#" onclick="">${computer.name}</a>
 							</td>
 							<td>
-								<c:if test="${computer.introduced.isPresent()}" var="variable">
-									${computer.introduced.get()}
+								<c:if test="${computer.introduced ne null}" var="variable">
+									${computer.introduced}
 								</c:if>
 							</td>
 							<td>
-								<c:if test="${computer.discontinued.isPresent()}" var="variable">
-									${computer.discontinued.get()}
+								<c:if test="${computer.discontinued ne null}" var="variable">
+									${computer.discontinued}
 								</c:if>
 							</td>
 							<td>
-								<c:if test="${computer.company.isPresent()}" var="variable">
-									${computer.company.get().name}
+								<c:if test="${computer.companyId ne null}" var="variable">
+									${computer.companyName}
 								</c:if>
 							</td>
 						</tr>

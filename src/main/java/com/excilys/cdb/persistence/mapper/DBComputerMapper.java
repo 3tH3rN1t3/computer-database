@@ -1,4 +1,4 @@
-package com.excilys.cdb.mapper;
+package com.excilys.cdb.persistence.mapper;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -13,8 +13,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import com.excilys.cdb.dto.DBComputerDTO;
 import com.excilys.cdb.model.Computer;
+import com.excilys.cdb.persistence.dto.DBComputerDTO;
 
 //id | name | introduced | discontinued | company_id
 @Component

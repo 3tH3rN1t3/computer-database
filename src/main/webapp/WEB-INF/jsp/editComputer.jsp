@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@   taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -25,102 +26,70 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-xs-8 col-xs-offset-2 box">
-					<c:if test="${computer ne null and computer.id ne '0'}">
-						<div class="label label-default pull-right">
+					<c:if test="${computer.id ne '0'}">
+						<div class="form:label form:label-default pull-right">
 							id: <c:out value="${computer.id}" />
 						</div>
 					</c:if>
 					<h1><c:out value="${operation}" /> Computer</h1>
-					<form action="editComputer" method="POST">
-						<c:choose>
-							<c:when test="${computer ne null}">
-								<input type="hidden" value="${computer.id}" id="id" name="id"/>
-							</c:when>
-							<c:otherwise>
-								<input type="hidden" value=0 id="id" name="id"/>
-							</c:otherwise>
-						</c:choose>
+					<form:form action="editComputer" method="POST" modelAttribute="computer">
+						<form:input type="hidden" path="id"/>
 						<fieldset>
 							<div class="form-group">
-								<label for="computerName">Computer name (required)</label>
-								<c:if test="${errors ne null and errors.name}">
-									<br/>
-									Le nom doit être renseigné
-								</c:if>
-								<c:choose>
-									<c:when test="${computer ne null}">
-										<input type="text" class="form-control" id="computerName" name="computerName" value="${computer.name}" required="required" >
-									</c:when>
-									<c:otherwise>
-										<input type="text" class="form-control" id="computerName" name="computerName" placeholder="Computer name" required="required" >
-									</c:otherwise>
-								</c:choose>
+								<form:label path="name">Computer name (required)</form:label>
+								<c:forEach var="error" items="${errors}">
+									<c:if test="${error.field eq 'name'}">
+										<br/>
+										<c:out value="${error.defaultMessage}" />
+									</c:if>
+								</c:forEach>
+								<form:input type="text" class="form-control" path="name" placeholder="Computer name" required="required" />
 							</div>
+							
 							<div class="form-group">
-								<label for="introduced">Introduced date</label>
-								<c:if test="${errors ne null and errors.introduced}">
-									<br/>
-									La date doit être comprise entre le 01/01/1970 et le 19/01/2038 inclus
-								</c:if>
-								<c:if test="${errors ne null and errors.interval}">
-									<br/>
-									La date d'ajout doit être antérieure à la date de retrait
-								</c:if>
-								<c:choose>
-									<c:when test="${computer ne null and computer.introduced.isPresent()}">
-										<input type="date" class="form-control" id="introduced" name="introduced" value="${computer.introduced.get().toString()}">
-									</c:when>
-									<c:otherwise>
-										<input type="date" class="form-control" id="introduced" name="introduced" placeholder="Introduced date">
-									</c:otherwise>
-								</c:choose>
+								<form:label path="introduced">Introduced date</form:label>
+								<c:forEach var="error" items="${errors}">
+									<c:if test="${error.field eq 'introduced'}">
+										<br/>
+										<c:out value="${error.defaultMessage}" />
+									</c:if>
+								</c:forEach>
+								<form:input type="date" class="form-control" path="introduced" />
 							</div>
+							
 							<div class="form-group">
-								<label for="discontinued">Discontinued date</label>
-								<c:if test="${errors ne null and errors.discontinued}">
-									<br/>
-									La date doit être comprise entre le 01/01/1970 et le 19/01/2038 inclus
-								</c:if>
-								<c:if test="${errors ne null and errors.interval}">
-									<br/>
-									La date d'ajout doit être antérieure à la date de retrait
-								</c:if>
-								<c:choose>
-									<c:when test="${computer ne null and computer.discontinued.isPresent()}">
-										<input type="date" class="form-control" id="discontinued" name="discontinued" value="${computer.discontinued.get().toString()}">
-									</c:when>
-									<c:otherwise>
-										<input type="date" class="form-control" id="discontinued" name="discontinued" placeholder="Discontinued date">
-									</c:otherwise>
-								</c:choose>
+								<form:label path="discontinued">Discontinued date</form:label>
+								<c:forEach var="error" items="${errors}">
+									<c:if test="${error.field eq 'discontinued'}">
+										<br/>
+										<c:out value="${error.defaultMessage}" />
+									</c:if>
+								</c:forEach>
+								<form:input type="date" class="form-control" path="discontinued" />
 							</div>
+							
 							<div class="form-group">
-								<label for="companyId">Company</label>
-								<c:if test="${errors ne null and errors.company}">
-									<br/>
-									La companie choisie n'existe pas
-								</c:if>
-								<select class="form-control" id="companyId" name="companyId" >
-									<option value="">--</option>
-									<c:forEach var = "company" items = "${companies}">
-										<c:choose>
-											<c:when test="${computer ne null and computer.company.isPresent() and company.id eq computer.company.get().id}">
-												<option value="${company.id}" selected>${company.name}</option>
-											</c:when>
-											<c:otherwise>
-												<option value="${company.id}">${company.name}</option>
-											</c:otherwise>
-										</c:choose>
+								<form:label path="companyId">Company</form:label>
+								<c:forEach var="error" items="${errors}">
+									<c:if test="${error.field eq 'companyId'}">
+										<br/>
+										<c:out value="${error.defaultMessage}" />
+									</c:if>
+								</c:forEach>
+								<form:select class="form-control" path="companyId" >
+									<form:option value="">--</form:option>
+									<c:forEach var="company" items = "${companies}">
+										<form:option value="${company.id}">${company.name}</form:option>
 									</c:forEach>
-						 		</select>
+						 		</form:select>
 							</div>				  
 						</fieldset>
 						<div class="actions pull-right">
-							<input  type="submit" value="${operation}" class="btn btn-primary">
+							<input  type="submit" value="${operation}" class="btn btn-primary" />
 							or
 							<a href="dashboard" class="btn btn-default">Cancel</a>
 						</div>
-					</form>
+					</form:form>
 				</div>
 			</div>
 		</div>

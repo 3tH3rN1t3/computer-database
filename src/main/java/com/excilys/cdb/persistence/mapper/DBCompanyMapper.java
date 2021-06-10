@@ -1,4 +1,4 @@
-package com.excilys.cdb.mapper;
+package com.excilys.cdb.persistence.mapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
-import com.excilys.cdb.dto.DBCompanyDTO;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.persistence.dto.DBCompanyDTO;
 
 // id | name
 @Component
@@ -48,7 +48,7 @@ public class DBCompanyMapper implements RowMapper<DBCompanyDTO> {
 		}
 	}
 	
-	public ArrayList<Company> toCompanyArray(List<DBCompanyDTO> dtos) throws SQLException {
+	public ArrayList<Company> toCompanyArray(List<DBCompanyDTO> dtos) {
 		ArrayList<Company> companies = new ArrayList<Company>();
 		for (DBCompanyDTO dto : dtos) {
 			companies.add(toCompany(Optional.of(dto)).get());

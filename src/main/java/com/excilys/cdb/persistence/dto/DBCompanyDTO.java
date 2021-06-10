@@ -1,4 +1,4 @@
-package com.excilys.cdb.dto;
+package com.excilys.cdb.persistence.dto;
 
 public class DBCompanyDTO {
 	private String id;

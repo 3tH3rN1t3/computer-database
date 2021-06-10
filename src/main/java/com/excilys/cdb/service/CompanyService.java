@@ -1,6 +1,5 @@
 package com.excilys.cdb.service;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -10,7 +9,6 @@ import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.controller.DBController;
 import com.excilys.cdb.model.Company;
-import com.excilys.cdb.model.Page;
 
 @Component
 @Scope("singleton")
@@ -22,15 +20,15 @@ public class CompanyService {
 	private CompanyService() {
 	}
 	
-	public ArrayList<Company> getAllCompanies() throws SQLException {
+	public ArrayList<Company> getAllCompanies() {
 		return controller.getAllCompanies();
 	}
 	
-	public Optional<Company> getCompanyById(int id) throws SQLException {
+	public Optional<Company> getCompanyById(int id) {
 		return controller.getCompanyById(id);
 	}
 	
-	public int deleteCompany(int id) throws SQLException {
+	public int deleteCompany(int id) {
 		return controller.deleteCompany(id);
 	}
 }

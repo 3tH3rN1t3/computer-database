@@ -1,6 +1,5 @@
 package com.excilys.cdb.web.controller;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.servlet.ServletRequest;
@@ -15,13 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.excilys.cdb.mapper.WebComputerMapper;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Order;
 import com.excilys.cdb.model.OrderBy;
 import com.excilys.cdb.model.Page;
 import com.excilys.cdb.model.SearchBy;
 import com.excilys.cdb.service.ComputerService;
+import com.excilys.cdb.web.mapper.WebComputerMapper;
 
 @Controller
 @Scope("session")
@@ -51,28 +50,22 @@ public class DashBoardController {
     @GetMapping(value="/dashboard")
     @ResponseBody
     public ModelAndView dashboard(ServletRequest request) {
-    	try {
-			
-			this.setSearch(page, request.getParameter("searchby"), request.getParameter("search"));
-			this.setItemsPerPage(page, request.getParameter("itemsPerPage"));
-			this.setOrder(page, request.getParameter("orderby"), request.getParameter("order"));
-			this.setPage(page, request.getParameter("page"));
-			
-			ArrayList<Computer> computers = new ArrayList<Computer>();
-			computers = this.getComputers(page);
-			
-			ModelAndView response = new ModelAndView("dashboard");
-			response.addObject( "computers", computerMapper.toComputerDTOArray(computers));
-			response.addObject( "page", page);
-			response.addObject("searches", SearchBy.values());
-			return response;
-		} catch (SQLException e) {
-			LOGGER.error("Oups erreur SQL", e);
-			return new ModelAndView("500");
-		}
+		this.setSearch(page, request.getParameter("searchby"), request.getParameter("search"));
+		this.setItemsPerPage(page, request.getParameter("itemsPerPage"));
+		this.setOrder(page, request.getParameter("orderby"), request.getParameter("order"));
+		this.setPage(page, request.getParameter("page"));
+		
+		ArrayList<Computer> computers = new ArrayList<Computer>();
+		computers = this.getComputers(page);
+		
+		ModelAndView response = new ModelAndView("dashboard");
+		response.addObject( "computers", computerMapper.toComputerDTOArray(computers));
+		response.addObject( "page", page);
+		response.addObject("searches", SearchBy.values());
+		return response;
     }
 	
-	private void setSearch(Page p, String searchBy, String search) throws SQLException {
+	private void setSearch(Page p, String searchBy, String search) {
 		if (searchBy != null) {
 			p.setNumPage(1);
 			try {
@@ -110,7 +103,7 @@ public class DashBoardController {
 		}
 	}
 	
-	private ArrayList<Computer> getComputers(Page p) throws SQLException {
+	private ArrayList<Computer> getComputers(Page p) {
 		ArrayList<Computer> listcomputer = new ArrayList<Computer>();
 		listcomputer = service.search(p);
 		return listcomputer;
