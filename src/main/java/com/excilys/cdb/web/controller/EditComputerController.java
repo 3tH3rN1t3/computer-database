@@ -61,9 +61,9 @@ public class EditComputerController {
 		
 		response.addObject("companies", companyMapper.toCompanyDTOArray(companies));
 		if (computer.getId() == 0) {
-			response.addObject("operation", "Add");
+			response.addObject("operation", "add");
 		} else {
-			response.addObject("operation", "Edit");
+			response.addObject("operation", "edit");
 		}
 		response.addObject("computer", computerMapper.toComputerDTO(computer));
 		
@@ -84,13 +84,13 @@ public class EditComputerController {
 			ModelAndView response = new ModelAndView("editComputer");
 			
 			if (dto.getId().equals("0")) {
-				response.addObject("operation", "Add");
+				response.addObject("operation", "add");
 			} else {
-				response.addObject("operation", "Edit");
+				response.addObject("operation", "edit");
 			}
 			response.addObject("companies", companies);
 			response.addObject("computer", dto);
-			response.addObject("errors", result.getFieldErrors());
+			response.addObject("errors", result);
 			return response;
 		} else {
 	    	Computer computer = computerMapper.toComputer(dto);

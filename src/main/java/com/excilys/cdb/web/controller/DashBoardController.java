@@ -3,6 +3,7 @@ package com.excilys.cdb.web.controller;
 import java.util.ArrayList;
 
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import  org.apache.logging.log4j.Logger;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.excilys.cdb.model.Computer;
@@ -20,6 +22,7 @@ import com.excilys.cdb.model.OrderBy;
 import com.excilys.cdb.model.Page;
 import com.excilys.cdb.model.SearchBy;
 import com.excilys.cdb.service.ComputerService;
+import com.excilys.cdb.web.dto.Locale;
 import com.excilys.cdb.web.mapper.WebComputerMapper;
 
 @Controller
@@ -31,6 +34,9 @@ public class DashBoardController {
 	
 	@Autowired
 	private WebComputerMapper computerMapper;
+	
+	@Autowired
+	private LocaleResolver locales;
 	
 	private Page page;
 	
@@ -62,6 +68,8 @@ public class DashBoardController {
 		response.addObject( "computers", computerMapper.toComputerDTOArray(computers));
 		response.addObject( "page", page);
 		response.addObject("searches", SearchBy.values());
+		response.addObject("languages", Locale.values());
+		response.addObject("lang", getLocale(request));
 		return response;
     }
 	
@@ -87,7 +95,10 @@ public class DashBoardController {
 			p.setNumPage(page);
 		} catch (Exception e) {
 		}
-		if (p.getNumPage() <= 0 || p.getNumPage() > p.getMaxPage()) {
+		if (p.getNumPage() > p.getMaxPage()) {
+			p.setNumPage(p.getMaxPage());
+		}
+		if (p.getNumPage() <= 0) {
 			p.setNumPage(1);
 		}
 	}
@@ -125,6 +136,14 @@ public class DashBoardController {
 			} catch (IllegalArgumentException e) {
 				p.setOrder(Order.ASC);
 			}
+		}
+	}
+	
+	private Locale getLocale(ServletRequest request) {
+		try {
+			return Locale.valueOf(locales.resolveLocale((HttpServletRequest) request).toString().toUpperCase());
+		} catch (IllegalArgumentException e) {
+			return Locale.FR;
 		}
 	}
 

@@ -35,7 +35,7 @@ public class ComputerValidator implements Validator {
 		
 		this.validateId(dto, errors);
 		
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "", "Empty name");
+		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", "", "name");
 		
 		this.validateIntroduced(dto, errors);
 		
@@ -50,10 +50,10 @@ public class ComputerValidator implements Validator {
 		try {
 			int id = Integer.parseInt(dto.getId());
 			if (id <= 0) {
-				errors.rejectValue("id", "", "Id not valid");
+				errors.rejectValue("id", "", "id");
 			}
 		} catch (NumberFormatException e) {
-			errors.rejectValue("id", "", "Id not valid");
+			errors.rejectValue("id", "", "id");
 		}
 	}
 
@@ -63,10 +63,10 @@ public class ComputerValidator implements Validator {
 			try {
 				LocalDate lDate = LocalDate.parse(introduced);
 				if (lDate.isBefore(LocalDate.parse("1970-01-01")) || lDate.isAfter(LocalDate.parse("2038-01-19"))) {
-					errors.rejectValue("introduced", "", "Introduction date must be between 01/01/1970 and 19/01/2038");
+					errors.rejectValue("introduced", "", "introduced");
 				}
 			} catch (DateTimeParseException e) {
-				errors.rejectValue("introduced", "", "Introduction date must be between 01/01/1970 and 19/01/2038");
+				errors.rejectValue("introduced", "", "introduced");
 			}
 		}
 	}
@@ -77,10 +77,10 @@ public class ComputerValidator implements Validator {
 			try {
 				LocalDate lDate = LocalDate.parse(discontinued);
 				if (lDate.isBefore(LocalDate.parse("1970-01-01")) || lDate.isAfter(LocalDate.parse("2038-01-19"))) {
-					errors.rejectValue("discontinued", "", "Discontinuation date must be between 01/01/1970 and 19/01/2038");
+					errors.rejectValue("discontinued", "", "discontinued");
 				}
 			} catch (DateTimeParseException e) {
-				errors.rejectValue("discontinued", "", "Discontinuation date must be between 01/01/1970 and 19/01/2038");
+				errors.rejectValue("discontinued", "", "discontinued");
 			}
 		}
 	}
@@ -88,7 +88,7 @@ public class ComputerValidator implements Validator {
 	private void validateDateInterval(WebComputerDTO dto, Errors errors) {
 		if (dto.getIntroduced() != null && !dto.getIntroduced().isBlank() && dto.getDiscontinued() != null && !dto.getDiscontinued().isBlank() ) {
 			if (!LocalDate.parse(dto.getIntroduced()).isBefore(LocalDate.parse(dto.getDiscontinued()))) {
-				errors.rejectValue("discontinued", "", "Discontinuation date cannot be before introduction date");
+				errors.rejectValue("discontinued", "", "interval");
 			}
 		}
 	}
@@ -98,10 +98,10 @@ public class ComputerValidator implements Validator {
 			try {
 				int id = Integer.parseInt(dto.getCompanyId());
 				if (!companyService.getCompanyById(id).isPresent()) {
-					errors.rejectValue("companyId", "", "Company id not valid");
+					errors.rejectValue("companyId", "", "companyId");
 				}
 			} catch (IdNotValidException | NumberFormatException e) {
-				errors.rejectValue("companyId", "", "Company id not valid");
+				errors.rejectValue("companyId", "", "companyId");
 			}
 		}
 	}

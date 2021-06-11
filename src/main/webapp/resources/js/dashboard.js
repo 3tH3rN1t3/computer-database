@@ -1,7 +1,5 @@
 //On load
 $(function() {
-    // Default: hide edit mode
-    $(".editMode").hide();
     
     // Click on "selectall" box
     $("#selectall").click(function () {
@@ -21,11 +19,6 @@ $(function() {
             $("#deleteSelected").disable();
         }
     });
-	
-	$("input#searchsubmit").attr("value", "Search by "+$("#searchby option:selected").text());
-	$("#searchby").change(function() {
-		$("input#searchsubmit").attr("value", "Search by "+$("#searchby option:selected").text());
-	})
 
 });
 

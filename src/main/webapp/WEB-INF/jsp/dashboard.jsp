@@ -1,10 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@   taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <!DOCTYPE html>
 <html>
 <head>
-<title>Computer Database</title>
+<title><spring:message code="text.title" /></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta charset="utf-8">
 <!-- Bootstrap -->
@@ -16,7 +17,7 @@
 <body>
 	<header class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
-			<a class="navbar-brand" href="dashboard.html"> Application - Computer Database </a>
+			<a class="navbar-brand" href="dashboard"><spring:message code="text.navbar" /></a>
 		</div>
 	</header>
 
@@ -25,37 +26,38 @@
 			<h1 id="homeTitle">
 				<c:choose>
 					<c:when test="${page.search == null || page.search.isEmpty()}">
-						<c:out value="${page.totalItems}" /> Computers found
+						<c:out value="${page.totalItems}" /> <spring:message code="text.found" />
 					</c:when>
 					<c:otherwise>
-						<c:out value="${page.totalItems}" /> Computers found for <c:out value="${page.searchBy.toString().toLowerCase()}"/> &laquo<c:out value="${page.search}" />&raquo
+						<c:out value="${page.totalItems}" /> <spring:message code="text.found" /> <spring:message code="text.for" /> <spring:message code="${'label.'.concat(page.searchBy.toString().toLowerCase())}" /> &laquo<c:out value="${page.search}" />&raquo
 					</c:otherwise>
 				</c:choose>
 			</h1>
 			<div id="actions" class="form-horizontal">
 				<div class="pull-left">
 					<form id="searchForm" action="#" method="GET" class="form-inline">
-						<input type="search" id="searchbox" name="search" class="form-control" placeholder="Search" />
-						<label for="searchby"> by </label>
+						<spring:message code="text.search" var="searchText" />
+						<input type="search" id="searchbox" name="search" class="form-control" placeholder="${searchText}" />
+						<label for="searchby"> <spring:message code="text.by" /> </label>
 						<select class="form-control" id="searchby" name="searchby" onchange="$.fn.updateSearch();">
 							<c:forEach var = "search" items = "${searches}">
 								<c:choose>
 									<c:when test="${page.searchBy eq search}">
-										<option value="${search.toString()}" selected>${search.toString().toLowerCase()}</option>
+										<option value="${search.toString()}" selected><spring:message code="${'label.'.concat(search.toString().toLowerCase())}" /></option>
 									</c:when>
 									<c:otherwise>
-										<option value="${search.toString()}">${search.toString().toLowerCase()}</option>
+										<option value="${search.toString()}"><spring:message code="${'label.'.concat(search.toString().toLowerCase())}" /></option>
 									</c:otherwise>
 								</c:choose>
 							</c:forEach>
 						</select>
-                        <input type="submit" id="searchsubmit" value="Search"
+                        <input type="submit" id="searchsubmit" value="${searchText}"
                         class="btn btn-primary" />
 					</form>
 				</div>
 				<div class="pull-right">
-					<a class="btn btn-success" id="addComputer" href="editComputer">Add Computer</a> 
-					<a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();">Edit</a>
+					<a class="btn btn-success" id="addComputer" href="editComputer"><spring:message code="text.addComputer" /></a> 
+					<a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="text.edit" /></a>
 				</div>
 			</div>
 		</div>
@@ -71,7 +73,7 @@
 						<!-- Variable declarations for passing labels as parameters -->
 						<!-- Table header for Computer Name -->
 
-						<th class="editMode" style="width: 60px; height: 22px;">
+						<th class="editMode" style="width: 60px; height: 22px;" hidden="true">
 							<input type="checkbox" id="selectall" /> 
 							<span style="vertical-align: top;">
 								<a href="" id="deleteSelected" onclick="$.fn.deleteSelected();">
@@ -81,7 +83,7 @@
 						</th>
 						<th>
 							<a href="dashboard?orderby=${page.orderBy.column ne 'computer.name' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.column eq 'computer.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
-								Computer name
+								<spring:message code="label.name" />
 								<c:choose>
 									<c:when test="${page.orderBy.column eq 'computer.name' and page.order eq 'ASC'}">
 										 ∧
@@ -94,7 +96,7 @@
 						</th>
 						<th>
 							<a href="dashboard?orderby=${page.orderBy.column ne 'introduced' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.column eq 'introduced' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
-								Introduced date
+								<spring:message code="label.introduced" />
 								<c:choose>
 									<c:when test="${page.orderBy.column eq 'introduced' and page.order eq 'ASC'}">
 										 ∧
@@ -108,7 +110,7 @@
 						<!-- Table header for Discontinued Date -->
 						<th>
 							<a href="dashboard?orderby=${page.orderBy.column ne 'discontinued' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.column eq 'discontinued' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
-								Discontinued date
+								<spring:message code="label.discontinued" />
 								<c:choose>
 									<c:when test="${page.orderBy.column eq 'discontinued' and page.order eq 'ASC'}">
 										 ∧
@@ -122,7 +124,7 @@
 						<!-- Table header for Company -->
 						<th>
 							<a href="dashboard?orderby=${page.orderBy.column ne 'company.name' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.column eq 'company.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
-								Company
+								<spring:message code="label.company" />
 								<c:choose>
 									<c:when test="${page.orderBy.column eq 'company.name' and page.order eq 'ASC'}">
 										 ∧
@@ -140,7 +142,7 @@
 				<tbody id="results">
 					<c:forEach var = "computer" items = "${computers}">
 						<tr>
-							<td class="editMode">
+							<td class="editMode" hidden="true">
 								<input type="checkbox" name="cb" class="cb" value="${computer.id}">
 							</td>
 							<td>
@@ -170,6 +172,22 @@
 
 	<footer class="navbar-fixed-bottom">
 		<div class="container text-center">
+			<div class="btn-group btn-group-sm pull-left" role="group" >
+				<form id="langForm" action="#" method="GET" >
+					<select class="form-control" name="lang" id="lang" onchange="this.form.submit();" >
+						<c:forEach var="language" items="${languages}" >
+							<c:choose>
+								<c:when test="${lang.getLang() eq language.getLang()}">
+									<option type="submit" class="btn btn-default" name="lang" value="${language.toString()}" selected>${language.getLang()}</option>
+								</c:when>
+								<c:otherwise>
+									<option type="submit" class="btn btn-default" name="lang" value="${language.toString()}">${language.getLang()}</option>
+								</c:otherwise>
+							</c:choose>
+						</c:forEach>
+					</select>
+				</form>
+			</div>
 			<ul class="pagination">
 				<li>
 					<a href="?page=1" aria-label="Previous">
@@ -222,19 +240,20 @@
 				</li>
 			</ul>
 
-		<div class="btn-group btn-group-sm pull-right" role="group" >
-		<form id="nombreElementPage" action="#" method="GET" >
-			<button type="submit" class="btn btn-default" name="itemsPerPage" value="10">10</button>
-			<button type="submit" class="btn btn-default" name="itemsPerPage" value="50">50</button>
-			<button type="submit" class="btn btn-default" name="itemsPerPage" value="100">100</button>
-		</form>
+			<div class="btn-group btn-group-sm pull-right" role="group" >
+			<form id="nombreElementPage" action="#" method="GET" >
+				<button type="submit" class="btn btn-default" name="itemsPerPage" value="10">10</button>
+				<button type="submit" class="btn btn-default" name="itemsPerPage" value="50">50</button>
+				<button type="submit" class="btn btn-default" name="itemsPerPage" value="100">100</button>
+			</form>
+			</div>
 		</div>
-	</div>
 	</footer>
     
 	<script src="<c:url value="/resources/js/jquery.min.js" />"></script>
 	<script src="<c:url value="/resources/js/bootstrap.min.js" />"></script>
 	<script src="<c:url value="/resources/js/dashboard.js" />"></script>
+	<script src="<c:url value="/resources/js/lang.js" />"></script>
 
 
 </body>
