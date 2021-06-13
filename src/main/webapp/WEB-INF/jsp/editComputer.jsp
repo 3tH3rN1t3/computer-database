@@ -20,6 +20,23 @@
 	<header class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
 			<a class="navbar-brand" href="dashboard"> <spring:message code="text.navbar" /> </a>
+			<div class="btn-group pull-right">
+				<button type="button" class="btn btn-primary navbar-btn dropdown-toggle" style="background-color: black; border-color: black;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<spring:message code="label.lang" /> <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<c:forEach var="language" items="${languages}" >
+						<c:choose>
+							<c:when test="${lang.getLang() eq language.getLang()}">
+								<li class="disabled"><a href="?lang=${language.toString()}">${language.getLang()}</a></li>
+							</c:when>
+							<c:otherwise>
+								<li><a href="?lang=${language.toString()}">${language.getLang()}</a></li>
+							</c:otherwise>
+						</c:choose>
+					</c:forEach>
+				</ul>
+			</div>
 		</div>
 	</header>
 

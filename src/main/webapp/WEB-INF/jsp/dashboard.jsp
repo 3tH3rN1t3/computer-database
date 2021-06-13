@@ -18,6 +18,23 @@
 	<header class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
 			<a class="navbar-brand" href="dashboard"><spring:message code="text.navbar" /></a>
+			<div class="btn-group pull-right">
+				<button type="button" class="btn btn-primary navbar-btn dropdown-toggle" style="background-color: black; border-color: black;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<spring:message code="label.lang" /> <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<c:forEach var="language" items="${languages}" >
+						<c:choose>
+							<c:when test="${lang.getLang() eq language.getLang()}">
+								<li class="disabled"><a href="?lang=${language.toString()}">${language.getLang()}</a></li>
+							</c:when>
+							<c:otherwise>
+								<li><a href="?lang=${language.toString()}">${language.getLang()}</a></li>
+							</c:otherwise>
+						</c:choose>
+					</c:forEach>
+				</ul>
+			</div>
 		</div>
 	</header>
 
@@ -172,22 +189,6 @@
 
 	<footer class="navbar-fixed-bottom">
 		<div class="container text-center">
-			<div class="btn-group btn-group-sm pull-left" role="group" >
-				<form id="langForm" action="#" method="GET" >
-					<select class="form-control" name="lang" id="lang" onchange="this.form.submit();" >
-						<c:forEach var="language" items="${languages}" >
-							<c:choose>
-								<c:when test="${lang.getLang() eq language.getLang()}">
-									<option type="submit" class="btn btn-default" name="lang" value="${language.toString()}" selected>${language.getLang()}</option>
-								</c:when>
-								<c:otherwise>
-									<option type="submit" class="btn btn-default" name="lang" value="${language.toString()}">${language.getLang()}</option>
-								</c:otherwise>
-							</c:choose>
-						</c:forEach>
-					</select>
-				</form>
-			</div>
 			<ul class="pagination">
 				<li>
 					<a href="?page=1" aria-label="Previous">

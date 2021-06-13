@@ -36,7 +36,7 @@ public class DashBoardController {
 	private WebComputerMapper computerMapper;
 	
 	@Autowired
-	private LocaleResolver locales;
+	private LocaleResolver localeResolver;
 	
 	private Page page;
 	
@@ -141,7 +141,7 @@ public class DashBoardController {
 	
 	private Locale getLocale(ServletRequest request) {
 		try {
-			return Locale.valueOf(locales.resolveLocale((HttpServletRequest) request).toString().toUpperCase());
+			return Locale.valueOf(localeResolver.resolveLocale((HttpServletRequest) request).toString().toUpperCase());
 		} catch (IllegalArgumentException e) {
 			return Locale.FR;
 		}
