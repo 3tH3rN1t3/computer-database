@@ -88,34 +88,30 @@
 
 		<div class="container" style="margin-top: 10px;">
 		
-			<div class="pull-left">
-				<a href="?includeNull=${!page.includeNull}">
-					<c:choose>
-						<c:when test="${page.includeNull}">
-							<input type="checkbox" checked>
-						</c:when>
-						<c:otherwise>
-							<input type="checkbox">
-						</c:otherwise>
-					</c:choose>
+			<div class="pull-left input-group">
+				<a href="?includeNull=${!page.includeNull}" class="form-control">
+					 <input type="checkbox" ${page.includeNull ? 'checked' : ''} />
+				</a>
+				<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;">
+				</span>
+				<a href="?includeNull=${!page.includeNull}" class="form-control">
 					 <spring:message code="text.includeNull" />
 				</a>
 			</div>
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
-						<!-- Variable declarations for passing labels as parameters -->
-						<!-- Table header for Computer Name -->
-
 						<th class="editMode" style="width: 60px; height: 22px;" hidden="true">
-							<input type="checkbox" id="selectall" /> 
-							<span style="vertical-align: top;">
-								<a href="" id="deleteSelected" onclick="$.fn.deleteSelected();">
+							<div class="input-group">
+								<span class="input-group-addon">
+									<input type="checkbox" id="selectall">
+								</span>
+								<a href="" id="deleteSelected" class=" form-control" onclick="$.fn.deleteSelected();">
 									<i class="fa fa-trash-o fa-lg"></i>
 								</a>
-							</span>
+							</div>
 						</th>
-						<th>
+						<th style="width: 35%">
 							<a href="dashboard?orderby=${page.orderBy.column ne 'computer.name' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.column eq 'computer.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.name" />
 								<c:if test="${page.orderBy.column eq 'computer.name'}">
@@ -123,7 +119,7 @@
 								</c:if>
 							</a>
 						</th>
-						<th>
+						<th style="width: 15%">
 							<a href="dashboard?orderby=${page.orderBy.column ne 'introduced' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.column eq 'introduced' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.introduced" />
 								<c:if test="${page.orderBy.column eq 'introduced'}">
@@ -131,8 +127,7 @@
 								</c:if>
 							</a>
 						</th>
-						<!-- Table header for Discontinued Date -->
-						<th>
+						<th style="width: 15%">
 							<a href="dashboard?orderby=${page.orderBy.column ne 'discontinued' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.column eq 'discontinued' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.discontinued" />
 								<c:if test="${page.orderBy.column eq 'discontinued'}">
@@ -140,8 +135,7 @@
 								</c:if>
 							</a>
 						</th>
-						<!-- Table header for Company -->
-						<th>
+						<th style="width: 35%">
 							<a href="dashboard?orderby=${page.orderBy.column ne 'company.name' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.column eq 'company.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.company" />
 								<c:if test="${page.orderBy.column eq 'company.name'}">

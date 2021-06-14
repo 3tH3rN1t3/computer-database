@@ -49,7 +49,7 @@
 							id: <c:out value="${computer.id}" />
 						</div>
 					</c:if>
-					<h1><spring:message code="text.${operation)}Computer" /></h1>
+					<h1><spring:message code="text.${operation}Computer" /></h1>
 					<form:form action="editComputer" method="POST" modelAttribute="computer">
 						<form:input type="hidden" path="id"/>
 						<fieldset>
@@ -91,7 +91,7 @@
 									</div>
 								</c:if>
 								<form:select class="form-control" path="companyId" >
-									<form:option value="">--</form:option>
+									<option value="">--</option>
 									<c:forEach var="company" items="${companies}">
 										<form:option value="${company.id}">${company.name}</form:option>
 									</c:forEach>
@@ -100,9 +100,11 @@
 						</fieldset>
 						<div class="actions pull-right">
 							<spring:message code="text.${operation}" var="operationText" />
-							<input  type="submit" value="${operationText}" class="btn btn-primary" />
-							<spring:message code="text.or" />
-							<a href="dashboard" class="btn btn-default"><spring:message code="text.cancel" /></a>
+							<div class="input-group">
+								<input  type="submit" id="computerSubmit" value="${operationText}" class="form-control btn btn-primary" />
+								<span class="input-group-addon"> <spring:message code="text.or" /> </span>
+								<a href="dashboard" class=" form-control btn btn-default"><spring:message code="text.cancel" /></a>
+							</div>
 						</div>
 					</form:form>
 				</div>
