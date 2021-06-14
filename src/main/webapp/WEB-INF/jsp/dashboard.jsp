@@ -111,7 +111,7 @@
 								</a>
 							</div>
 						</th>
-						<th style="width: 35%">
+						<th style="width: 35%; text-align: center; vertical-align: middle;">
 							<a href="dashboard?orderby=${page.orderBy.column ne 'computer.name' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.column eq 'computer.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.name" />
 								<c:if test="${page.orderBy.column eq 'computer.name'}">
@@ -119,7 +119,7 @@
 								</c:if>
 							</a>
 						</th>
-						<th style="width: 15%">
+						<th style="width: 15%; text-align: center; vertical-align: middle;">
 							<a href="dashboard?orderby=${page.orderBy.column ne 'introduced' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.column eq 'introduced' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.introduced" />
 								<c:if test="${page.orderBy.column eq 'introduced'}">
@@ -127,7 +127,7 @@
 								</c:if>
 							</a>
 						</th>
-						<th style="width: 15%">
+						<th style="width: 15%; text-align: center; vertical-align: middle;">
 							<a href="dashboard?orderby=${page.orderBy.column ne 'discontinued' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.column eq 'discontinued' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.discontinued" />
 								<c:if test="${page.orderBy.column eq 'discontinued'}">
@@ -135,7 +135,7 @@
 								</c:if>
 							</a>
 						</th>
-						<th style="width: 35%">
+						<th style="width: 35%; text-align: center; vertical-align: middle;">
 							<a href="dashboard?orderby=${page.orderBy.column ne 'company.name' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.column eq 'company.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.company" />
 								<c:if test="${page.orderBy.column eq 'company.name'}">
@@ -150,7 +150,7 @@
 				<tbody id="results">
 					<c:forEach var = "computer" items = "${computers}">
 						<tr>
-							<td class="editMode" hidden="true">
+							<td class="editMode" style="text-align: center; vertical-align: middle;" hidden="true">
 								<input type="checkbox" name="cb" class="cb" value="${computer.id}">
 							</td>
 							<td>

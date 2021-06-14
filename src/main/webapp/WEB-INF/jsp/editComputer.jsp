@@ -67,7 +67,7 @@
 								<form:label path="introduced"><spring:message code="label.introduced" /></form:label>
 								<c:if test="${errors.hasFieldErrors('introduced')}">
 									<div class="alert alert-danger">
-										<spring:message code="errors.name" />
+										<spring:message code="errors.introduced" />
 									</div>
 								</c:if>
 								<form:input type="date" class="form-control" path="introduced" />
