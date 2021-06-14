@@ -229,11 +229,17 @@
 			</ul>
 
 			<div class="pull-right" >
-				<form id="nombreElementPage" action="#" method="GET" >
-					<div class="btn-group btn-group-sm" role="group" >
-						<button type="submit" class="btn btn-default" name="itemsPerPage" value="10">10</button>
-						<button type="submit" class="btn btn-default" name="itemsPerPage" value="50">50</button>
-						<button type="submit" class="btn btn-default" name="itemsPerPage" value="100">100</button>
+				<form id="nombreElementPage" action="#" method="GET" class="navbar-form" >
+					<div class="form-group" role="group" >
+						<div class="input-group">
+							<span class="input-group-addon"> <spring:message code="text.itemsPerPage"/> </span>
+							<a href="?itemsPerPage=10" class="form-control">10</a>
+							<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;"></span>
+							<a href="?itemsPerPage=50" class="form-control">50</a>
+							<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;"></span>
+							<a href="?itemsPerPage=100" class="form-control">100</a>
+							<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;"></span>
+						</div>
 					</div>
 				</form>
 			</div>
