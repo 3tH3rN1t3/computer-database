@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.excilys.cdb.logger.LoggerCDB;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Order;
 import com.excilys.cdb.model.OrderBy;
@@ -51,9 +52,9 @@ public class DashBoardController {
     @GetMapping(value="/dashboard")
     @ResponseBody
     public ModelAndView dashboard(ServletRequest request) {
-		this.setSearch(page, request.getParameter("searchby"), request.getParameter("search"));
+    	this.setSearch(page, request.getParameter("searchby"), request.getParameter("search"));
+    	this.setOrder(page, request.getParameter("orderby"), request.getParameter("order"), request.getParameter("includeNull"));
 		this.setItemsPerPage(page, request.getParameter("itemsPerPage"));
-		this.setOrder(page, request.getParameter("orderby"), request.getParameter("order"));
 		this.setPage(page, request.getParameter("page"));
 		
 		ArrayList<Computer> computers = new ArrayList<Computer>();
@@ -80,6 +81,9 @@ public class DashBoardController {
 		if (search != null) {
 			p.setNumPage(1);
 			p.setSearch(search);
+			if (search.isEmpty()) {
+				p.setSearchBy(SearchBy.NAME);
+			}
 		}
 		p.setTotalItems(computerService.countComputers(p));
 	}
@@ -116,7 +120,7 @@ public class DashBoardController {
 	
 	}
 	
-	private void setOrder(Page p, String orderBy, String order) {
+	private void setOrder(Page p, String orderBy, String order, String include) {
 		if (orderBy != null && !p.getOrderBy().toString().equalsIgnoreCase(orderBy)) {
 			p.setNumPage(1);
 			try {
@@ -131,6 +135,14 @@ public class DashBoardController {
 			} catch (IllegalArgumentException e) {
 				p.setOrder(Order.ASC);
 			}
+		}
+		if (include != null) {
+			try {
+				p.setIncludeNull(Boolean.parseBoolean(include));
+			} catch (IllegalArgumentException e) {
+				p.setIncludeNull(false);
+			}
+			System.out.println(p.isIncludeNull());
 		}
 	}
 	

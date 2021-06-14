@@ -54,25 +54,28 @@
 				<div class="pull-left">
 					<form id="searchForm" action="#" method="GET" class="form-inline">
 						<spring:message code="text.search" var="searchText" />
-						<input type="search" id="searchbox" name="search" class="form-control" placeholder="${searchText}" />
-						<label for="searchby"> <spring:message code="text.by" /> </label>
-						<select class="form-control" id="searchby" name="searchby" onchange="$.fn.updateSearch();">
-							<c:forEach var = "search" items = "${searches}">
-								<c:choose>
-									<c:when test="${page.searchBy eq search}">
-										<option value="${search.toString()}" selected><spring:message code="label.${search.toString().toLowerCase()}" /></option>
-									</c:when>
-									<c:otherwise>
-										<option value="${search.toString()}"><spring:message code="label.${search.toString().toLowerCase()}" /></option>
-									</c:otherwise>
-								</c:choose>
-							</c:forEach>
-						</select>
-                        <input type="submit" id="searchsubmit" value="${searchText}"
-                        class="btn btn-primary" />
+						<div class="input-group">
+							<input type="search" id="searchbox" name="search" class="form-control" placeholder="${searchText}" />
+							<span class="input-group-addon"> <spring:message code="text.by" /> </span>
+							<select class="form-control" id="searchby" name="searchby">
+								<c:forEach var = "search" items = "${searches}">
+									<c:choose>
+										<c:when test="${page.searchBy eq search}">
+											<option value="${search.toString()}" selected><spring:message code="label.${search.toString().toLowerCase()}" /></option>
+										</c:when>
+										<c:otherwise>
+											<option value="${search.toString()}"><spring:message code="label.${search.toString().toLowerCase()}" /></option>
+										</c:otherwise>
+									</c:choose>
+								</c:forEach>
+							</select>
+							<span class="input-group-addon" style="border-width: 1px; padding: 0px;"></span>
+							<input type="submit" id="searchsubmit" value="${searchText}" class="form-control btn btn-primary" />
+						</div>
+						
 					</form>
 				</div>
-				<div class="pull-right">
+				<div class="btn-group pull-right" role="group">
 					<a class="btn btn-success" id="addComputer" href="editComputer"><spring:message code="text.addComputer" /></a> 
 					<a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="text.edit" /></a>
 				</div>
@@ -84,6 +87,20 @@
 		</form>
 
 		<div class="container" style="margin-top: 10px;">
+		
+			<div class="pull-left">
+				<a href="?includeNull=${!page.includeNull}">
+					<c:choose>
+						<c:when test="${page.includeNull}">
+							<input type="checkbox" checked>
+						</c:when>
+						<c:otherwise>
+							<input type="checkbox">
+						</c:otherwise>
+					</c:choose>
+					 <spring:message code="text.includeNull" />
+				</a>
+			</div>
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
@@ -176,10 +193,8 @@
 					</a>
 				</li>
 				
-				<li>
-					<c:if test="${page.numPage-1 > 0}" var="variable">
-						<a href="?page=${page.numPage-1}">&lt;</a>
-					</c:if>
+				<li class="${page.numPage-1 > 0 ? '' : 'disabled'}">
+					<a href="?page=${page.numPage-1}">&lt;</a>
 				</li>
 				
 				<li>
@@ -194,7 +209,7 @@
 					</c:if>
 				</li>
 				
-				<li><a href="?page=${page.numPage}"> ..  </a></li>
+				<li class="active"><a href="?page=${page.numPage}"> ..  </a></li>
 				
 				<li>
 					<c:if test="${page.numPage+1 <= page.getMaxPage()}" var="variable">
@@ -208,10 +223,8 @@
 					</c:if>
 				</li>
 				
-				<li>
-					<c:if test="${page.numPage+1 <= page.getMaxPage()}" var="variable">
-						<a href="?page=${page.numPage+1}">&gt;</a>
-					</c:if>
+				<li class="${page.numPage+1 <= page.getMaxPage() ? '' : 'disabled'}">
+					<a href="?page=${page.numPage+1}">&gt;</a>
 				</li>
 				
 				<li>
@@ -221,12 +234,14 @@
 				</li>
 			</ul>
 
-			<div class="btn-group btn-group-sm pull-right" role="group" >
-			<form id="nombreElementPage" action="#" method="GET" >
-				<button type="submit" class="btn btn-default" name="itemsPerPage" value="10">10</button>
-				<button type="submit" class="btn btn-default" name="itemsPerPage" value="50">50</button>
-				<button type="submit" class="btn btn-default" name="itemsPerPage" value="100">100</button>
-			</form>
+			<div class="pull-right" >
+				<form id="nombreElementPage" action="#" method="GET" >
+					<div class="btn-group btn-group-sm" role="group" >
+						<button type="submit" class="btn btn-default" name="itemsPerPage" value="10">10</button>
+						<button type="submit" class="btn btn-default" name="itemsPerPage" value="50">50</button>
+						<button type="submit" class="btn btn-default" name="itemsPerPage" value="100">100</button>
+					</div>
+				</form>
 			</div>
 		</div>
 	</footer>
