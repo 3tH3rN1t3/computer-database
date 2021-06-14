@@ -5,9 +5,6 @@ import java.util.ArrayList;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.logging.log4j.LogManager;
-import  org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,20 +26,18 @@ import com.excilys.cdb.web.mapper.WebComputerMapper;
 @Scope("session")
 public class DashBoardController {
 	
-	@Autowired
-	private ComputerService service;
+	private ComputerService computerService;
 	
-	@Autowired
 	private WebComputerMapper computerMapper;
 	
-	@Autowired
 	private LocaleResolver localeResolver;
 	
 	private Page page;
 	
-	private static final Logger LOGGER = LogManager.getLogger(DashBoardController.class);
-	
-    public DashBoardController() {
+    public DashBoardController(ComputerService computerService, WebComputerMapper computerMapper, LocaleResolver localeResolver) {
+    	this.computerService = computerService;
+    	this.computerMapper = computerMapper;
+    	this.localeResolver = localeResolver;
     	page = new Page();
     }
     
@@ -86,7 +81,7 @@ public class DashBoardController {
 			p.setNumPage(1);
 			p.setSearch(search);
 		}
-		p.setTotalItems(service.countComputers(p));
+		p.setTotalItems(computerService.countComputers(p));
 	}
 	
 	private void setPage(Page p, String pageNumber) {
@@ -116,7 +111,7 @@ public class DashBoardController {
 	
 	private ArrayList<Computer> getComputers(Page p) {
 		ArrayList<Computer> listcomputer = new ArrayList<Computer>();
-		listcomputer = service.search(p);
+		listcomputer = computerService.search(p);
 		return listcomputer;
 	
 	}

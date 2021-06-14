@@ -6,9 +6,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.apache.logging.log4j.LogManager;
-import  org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -33,27 +30,25 @@ import com.excilys.cdb.web.validator.ComputerValidator;
 @Scope("request")
 public class EditComputerController {
 	
-	@Autowired
 	private ComputerService computerService;
 	
-	@Autowired
 	private CompanyService companyService;
 
-	@Autowired
 	private WebComputerMapper computerMapper;
 
-	@Autowired
 	private WebCompanyMapper companyMapper;
 	
-	@Autowired
 	private ComputerValidator validator;
 	
-	@Autowired
 	private LocaleResolver localeResolver;
 	
-	private static final Logger LOGGER = LogManager.getLogger(EditComputerController.class);
-	
-    public EditComputerController() {
+    public EditComputerController(ComputerService computerService, CompanyService companyService, WebComputerMapper computerMapper, WebCompanyMapper companyMapper, ComputerValidator validator, LocaleResolver localeResolver) {
+    	this.computerService = computerService;
+    	this.companyService = companyService;
+    	this.computerMapper = computerMapper;
+    	this.companyMapper = companyMapper;
+    	this.validator = validator;
+    	this.localeResolver = localeResolver;
     }
     
     @GetMapping("/editComputer")

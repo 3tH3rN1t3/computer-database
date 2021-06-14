@@ -3,7 +3,6 @@ package com.excilys.cdb.service;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -14,10 +13,10 @@ import com.excilys.cdb.model.Company;
 @Scope("singleton")
 public class CompanyService {
 	
-	@Autowired
 	private DBController controller;
 		
-	private CompanyService() {
+	private CompanyService(DBController controller) {
+		this.controller = controller;
 	}
 	
 	public ArrayList<Company> getAllCompanies() {

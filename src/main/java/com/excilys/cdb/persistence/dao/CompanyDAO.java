@@ -1,13 +1,10 @@
-package com.excilys.cdb.persistence;
+package com.excilys.cdb.persistence.dao;
 
 import java.util.List;
 import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -30,13 +27,11 @@ public class CompanyDAO {
 	
 	private JdbcTemplate template = new JdbcTemplate();
 	
-	@Autowired
 	private DBCompanyMapper mapper;
 	
-	private Logger logger = LogManager.getLogger(getClass());;
 	
-	
-	public CompanyDAO(DataSource datasource) {
+	public CompanyDAO(DBCompanyMapper companyMapper, DataSource datasource) {
+		this.mapper = companyMapper;
 		template.setDataSource(datasource);
 	}
 	

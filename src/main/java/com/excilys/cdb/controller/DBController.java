@@ -3,15 +3,14 @@ package com.excilys.cdb.controller;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
 import com.excilys.cdb.model.Page;
-import com.excilys.cdb.persistence.CompanyDAO;
-import com.excilys.cdb.persistence.ComputerDAO;
+import com.excilys.cdb.persistence.dao.CompanyDAO;
+import com.excilys.cdb.persistence.dao.ComputerDAO;
 import com.excilys.cdb.persistence.mapper.DBCompanyMapper;
 import com.excilys.cdb.persistence.mapper.DBComputerMapper;
 
@@ -19,20 +18,21 @@ import com.excilys.cdb.persistence.mapper.DBComputerMapper;
 @Scope("singleton")
 public class DBController {
 	
-	@Autowired
 	private ComputerDAO computerDAO;
 	
-	@Autowired
 	private CompanyDAO companyDAO;
 	
-	@Autowired
 	private DBComputerMapper computerMapper;
 	
-	@Autowired
+
 	private DBCompanyMapper companyMapper;
 	
 	
-	private DBController() {
+	private DBController(ComputerDAO computerDAO, CompanyDAO companyDAO, DBComputerMapper computerMapper, DBCompanyMapper companyMapper) {
+		this.computerDAO = computerDAO;
+		this.companyDAO = companyDAO;
+		this.computerMapper = computerMapper;
+		this.companyMapper = companyMapper;
 	}
 	
 	

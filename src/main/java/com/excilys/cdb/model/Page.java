@@ -3,7 +3,7 @@ package com.excilys.cdb.model;
 public class Page {
 	
 	private int maxItems = 10;
-	private int numPage = 0;
+	private int numPage = 1;
 	private int totalItems = 0;
 	private SearchBy searchBy = SearchBy.NAME;
 	private String search = "";

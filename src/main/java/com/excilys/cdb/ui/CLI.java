@@ -2,7 +2,6 @@ package com.excilys.cdb.ui;
 
 import java.sql.SQLException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -12,10 +11,10 @@ import com.excilys.cdb.controller.CLIController;
 @Scope("singleton")
 public class CLI {
 	
-	@Autowired
 	private CLIController controller;
 	
-	public CLI() {
+	public CLI(CLIController controller) {
+		this.controller = controller;
 	}
 	
 	public void runCLI() {

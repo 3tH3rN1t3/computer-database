@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
@@ -29,10 +28,10 @@ public class DBComputerMapper implements RowMapper<DBComputerDTO> {
 	
 	static final String COLONNE_DISCONTINUED = "discontinued";
 	
-	@Autowired
 	private DBCompanyMapper companyMapper;
 	
-	private DBComputerMapper() {	
+	private DBComputerMapper(DBCompanyMapper companyMapper) {
+		this.companyMapper = companyMapper;
 	}
 
 	@Override

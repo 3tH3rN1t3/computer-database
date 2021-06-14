@@ -49,7 +49,7 @@
 							id: <c:out value="${computer.id}" />
 						</div>
 					</c:if>
-					<h1><spring:message code="${'text.'.concat(operation).concat('Computer')}" /></h1>
+					<h1><spring:message code="text.${operation)}Computer" /></h1>
 					<form:form action="editComputer" method="POST" modelAttribute="computer">
 						<form:input type="hidden" path="id"/>
 						<fieldset>
@@ -77,7 +77,7 @@
 								<form:label path="discontinued"><spring:message code="label.discontinued" /></form:label>
 								<c:forEach var="error" items="${errors.getFieldErrors('discontinued')}" >
 									<div class="alert alert-danger">
-										<spring:message code="${'errors.'.concat(error.getDefaultMessage())}" />
+										<spring:message code="errors.${error.getDefaultMessage()}" />
 									</div>
 								</c:forEach>
 								<form:input type="date" class="form-control" path="discontinued" />
@@ -99,7 +99,7 @@
 							</div>				  
 						</fieldset>
 						<div class="actions pull-right">
-							<spring:message code="${'text.'.concat(operation)}" var="operationText" />
+							<spring:message code="text.${operation}" var="operationText" />
 							<input  type="submit" value="${operationText}" class="btn btn-primary" />
 							<spring:message code="text.or" />
 							<a href="dashboard" class="btn btn-default"><spring:message code="text.cancel" /></a>

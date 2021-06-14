@@ -18,8 +18,8 @@
 		<mysql.version>8.0.25</mysql.version>
     	<hikaricp.version>4.0.3</hikaricp.version>
 		
+		<logback.version>1.2.3</logback.version>
 		<slf4j.version>1.7.30</slf4j.version>
-		<log4j.version>2.13.3</log4j.version>
 		
 		<junit.version>4.12</junit.version>
 		<h2.version>1.4.199</h2.version>
@@ -30,6 +30,7 @@
 		<jstl.version>1.2</jstl.version>
 		<validation-api.version>2.0.1.Final</validation-api.version>
 		<hibernate-validator.version>7.0.1.Final</hibernate-validator.version>
+		<aspectjweaver.version>1.9.7.M3</aspectjweaver.version>
 		
     	<spring.version>5.3.7</spring.version>
 	</properties>
@@ -69,27 +70,21 @@
 		
 		
 		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback.version}</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-		</dependency>
-		
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
 		</dependency>
 		
 		
@@ -160,6 +155,17 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+        </dependency>
+        
+        <dependency>
+        	<groupId>org.aspectj</groupId>
+        	<artifactId>aspectjweaver</artifactId>
+        	<version>${aspectjweaver.version}</version>
         </dependency>
 		
 	</dependencies>

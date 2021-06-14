@@ -3,14 +3,12 @@ package com.excilys.cdb.web.validator;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import com.excilys.cdb.exceptions.IdNotValidException;
 import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.web.dto.WebComputerDTO;
 
@@ -18,10 +16,10 @@ import com.excilys.cdb.web.dto.WebComputerDTO;
 @Scope("singleton")
 public class ComputerValidator implements Validator {
 	
-	@Autowired
 	private CompanyService companyService;
 	
-	private ComputerValidator() {
+	private ComputerValidator(CompanyService companyService) {
+		this.companyService = companyService;
 	}
 
 	@Override
@@ -100,7 +98,7 @@ public class ComputerValidator implements Validator {
 				if (!companyService.getCompanyById(id).isPresent()) {
 					errors.rejectValue("companyId", "", "companyId");
 				}
-			} catch (IdNotValidException | NumberFormatException e) {
+			} catch (NumberFormatException e) {
 				errors.rejectValue("companyId", "", "companyId");
 			}
 		}

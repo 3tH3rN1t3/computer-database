@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -22,19 +21,19 @@ import com.excilys.cdb.ui.MenuOption;
 @Scope("singleton")
 public class CLIController {
 	
-	@Autowired
 	private CLIView view;
 	
-	@Autowired
 	private CLIAsker asker;
 	
-	@Autowired
 	private ComputerService computerService;
 	
-	@Autowired
 	private CompanyService companyService;
 
-	private CLIController() {
+	private CLIController(CLIView view, CLIAsker asker, ComputerService computerService, CompanyService companyService) {
+		this.view = view;
+		this.asker = asker;
+		this.computerService = computerService;
+		this.companyService = companyService;
 	}
 
 	public CLIView getView() {

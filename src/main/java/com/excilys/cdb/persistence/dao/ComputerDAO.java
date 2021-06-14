@@ -1,17 +1,15 @@
-package com.excilys.cdb.persistence;
+package com.excilys.cdb.persistence.dao;
 
 import java.util.List;
 import java.util.Optional;
 
 import javax.sql.DataSource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import com.excilys.cdb.annotation.TrackExecutionTime;
 import com.excilys.cdb.model.Page;
 import com.excilys.cdb.persistence.dto.DBCompanyDTO;
 import com.excilys.cdb.persistence.dto.DBComputerDTO;
@@ -27,10 +25,15 @@ public class ComputerDAO {
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
 			+ "WHERE computer.id = ?";
 	
-	private static final String GET_COMPUTERS_BY_SEARCH_REQUEST = "SELECT computer.id, computer.name, "
+	private static final String GET_COMPUTERS_BY_SEARCH_ORDER_BY_NOT_NULL_REQUEST = "SELECT computer.id, computer.name, "
 			+ "introduced, discontinued, company.id, company.name "
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
-			+ "WHERE %s LIKE CONCAT('%%', ?, '%%') ORDER BY %s %s LIMIT ? OFFSET ?";
+			+ "WHERE %s LIKE CONCAT('%%', ?, '%%') AND %s IS NOT NULL ORDER BY %s %s LIMIT ? OFFSET ?";
+	
+	private static final String GET_COMPUTERS_BY_SEARCH_ORDER_BY_NULL_REQUEST = "SELECT computer.id, computer.name, "
+			+ "introduced, discontinued, company.id, company.name "
+			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
+			+ "WHERE %s LIKE CONCAT('%%', ?, '%%') AND %s IS NULL LIMIT ? OFFSET ?";
 	
 	private static final String INSERT_COMPUTER_REQUEST = "INSERT INTO computer "
 			+ "(name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
@@ -47,18 +50,22 @@ public class ComputerDAO {
 	
 	private JdbcTemplate template = new JdbcTemplate();
 	
-	@Autowired
 	private DBComputerMapper mapper;
 	
-	private Logger logger = LogManager.getLogger(ComputerDAO.class);
-	
-	private ComputerDAO(DataSource datasource) {
+	public ComputerDAO(DataSource datasource, DBComputerMapper mapper) {
 		template.setDataSource(datasource);
+		this.mapper = mapper;
 	}
 	
+	@TrackExecutionTime
 	public List<DBComputerDTO> search(Page p) {
-		String query = String.format(GET_COMPUTERS_BY_SEARCH_REQUEST,p.getSearchBy().getColumn(), p.getOrderBy().getColumn(), p.getOrder());
-		return template.query(query, mapper, p.getSearch(), p.getMaxItems(), (p.getNumPage()-1)*p.getMaxItems());
+		if (p.getOrder().toString() == "NULL") {
+			String query = String.format(GET_COMPUTERS_BY_SEARCH_ORDER_BY_NULL_REQUEST,p.getSearchBy().getColumn(), p.getOrderBy().getColumn());
+			return template.query(query, mapper, p.getSearch(), p.getMaxItems(), (p.getNumPage()-1)*p.getMaxItems());
+		} else {
+			String query = String.format(GET_COMPUTERS_BY_SEARCH_ORDER_BY_NOT_NULL_REQUEST,p.getSearchBy().getColumn(), p.getOrderBy().getColumn(), p.getOrderBy().getColumn(), p.getOrder());
+			return template.query(query, mapper, p.getSearch(), p.getMaxItems(), (p.getNumPage()-1)*p.getMaxItems());
+		}
 	}
 
 	public Optional<DBComputerDTO> find(int id) {

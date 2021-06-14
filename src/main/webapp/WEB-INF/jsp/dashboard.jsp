@@ -46,7 +46,7 @@
 						<c:out value="${page.totalItems}" /> <spring:message code="text.found" />
 					</c:when>
 					<c:otherwise>
-						<c:out value="${page.totalItems}" /> <spring:message code="text.found" /> <spring:message code="text.for" /> <spring:message code="${'label.'.concat(page.searchBy.toString().toLowerCase())}" /> &laquo<c:out value="${page.search}" />&raquo
+						<c:out value="${page.totalItems}" /> <spring:message code="text.found" /> <spring:message code="text.for" /> <spring:message code="label.${page.searchBy.toString().toLowerCase()}" /> &laquo<c:out value="${page.search}" />&raquo
 					</c:otherwise>
 				</c:choose>
 			</h1>
@@ -60,10 +60,10 @@
 							<c:forEach var = "search" items = "${searches}">
 								<c:choose>
 									<c:when test="${page.searchBy eq search}">
-										<option value="${search.toString()}" selected><spring:message code="${'label.'.concat(search.toString().toLowerCase())}" /></option>
+										<option value="${search.toString()}" selected><spring:message code="label.${search.toString().toLowerCase()}" /></option>
 									</c:when>
 									<c:otherwise>
-										<option value="${search.toString()}"><spring:message code="${'label.'.concat(search.toString().toLowerCase())}" /></option>
+										<option value="${search.toString()}"><spring:message code="label.${search.toString().toLowerCase()}" /></option>
 									</c:otherwise>
 								</c:choose>
 							</c:forEach>
@@ -101,55 +101,35 @@
 						<th>
 							<a href="dashboard?orderby=${page.orderBy.column ne 'computer.name' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.column eq 'computer.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.name" />
-								<c:choose>
-									<c:when test="${page.orderBy.column eq 'computer.name' and page.order eq 'ASC'}">
-										 ∧
-									</c:when>
-									<c:when test="${page.orderBy.column eq 'computer.name' and page.order eq 'DESC'}">
-										 ∨
-									</c:when>
-								</c:choose>
+								<c:if test="${page.orderBy.column eq 'computer.name'}">
+									<spring:message code="text.${page.order.toLowerCase()}" />
+								</c:if>
 							</a>
 						</th>
 						<th>
 							<a href="dashboard?orderby=${page.orderBy.column ne 'introduced' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.column eq 'introduced' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.introduced" />
-								<c:choose>
-									<c:when test="${page.orderBy.column eq 'introduced' and page.order eq 'ASC'}">
-										 ∧
-									</c:when>
-									<c:when test="${page.orderBy.column eq 'introduced' and page.order eq 'DESC'}">
-										 ∨
-									</c:when>
-								</c:choose>
+								<c:if test="${page.orderBy.column eq 'introduced'}">
+									<spring:message code="text.${page.order.toLowerCase()}" />
+								</c:if>
 							</a>
 						</th>
 						<!-- Table header for Discontinued Date -->
 						<th>
 							<a href="dashboard?orderby=${page.orderBy.column ne 'discontinued' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.column eq 'discontinued' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.discontinued" />
-								<c:choose>
-									<c:when test="${page.orderBy.column eq 'discontinued' and page.order eq 'ASC'}">
-										 ∧
-									</c:when>
-									<c:when test="${page.orderBy.column eq 'discontinued' and page.order eq 'DESC'}">
-										 ∨
-									</c:when>
-								</c:choose>
+								<c:if test="${page.orderBy.column eq 'discontinued'}">
+									<spring:message code="text.${page.order.toLowerCase()}" />
+								</c:if>
 							</a>
 						</th>
 						<!-- Table header for Company -->
 						<th>
 							<a href="dashboard?orderby=${page.orderBy.column ne 'company.name' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.column eq 'company.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.company" />
-								<c:choose>
-									<c:when test="${page.orderBy.column eq 'company.name' and page.order eq 'ASC'}">
-										 ∧
-									</c:when>
-									<c:when test="${page.orderBy.column eq 'company.name' and page.order eq 'DESC'}">
-										 ∨
-									</c:when>
-								</c:choose>
+								<c:if test="${page.orderBy.column eq 'company.name'}">
+									<spring:message code="text.${page.order.toLowerCase()}" />
+								</c:if>
 							</a>
 						</th>
 

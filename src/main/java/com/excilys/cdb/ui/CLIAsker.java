@@ -6,7 +6,6 @@ import java.time.format.DateTimeParseException;
 import java.util.Optional;
 import java.util.Scanner;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -19,10 +18,10 @@ public class CLIAsker {//TODO Cette classe pourrie fait trop de choses
 	
 	private Scanner scanner;
 	
-	@Autowired
 	private CompanyService companyService;
 	
-	public CLIAsker() {
+	public CLIAsker(CompanyService companyService) {
+		this.companyService = companyService;
 		this.scanner = new Scanner(System.in);
 	}
 	
