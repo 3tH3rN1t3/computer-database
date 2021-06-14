@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.annotation.TrackExecutionTime;
+import com.excilys.cdb.logger.LoggerCDB;
 import com.excilys.cdb.model.Page;
 import com.excilys.cdb.persistence.dto.DBCompanyDTO;
 import com.excilys.cdb.persistence.dto.DBComputerDTO;
@@ -25,15 +26,15 @@ public class ComputerDAO {
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
 			+ "WHERE computer.id = ?";
 	
-	private static final String GET_COMPUTERS_BY_SEARCH_ORDER_BY_NOT_NULL_REQUEST = "SELECT computer.id, computer.name, "
+	private static final String GET_COMPUTERS_BY_SEARCH_INCLUDE_NULL_REQUEST = "SELECT computer.id, computer.name, "
+			+ "introduced, discontinued, company.id, company.name "
+			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
+			+ "WHERE %s LIKE CONCAT('%%', ?, '%%') ORDER BY %s %s LIMIT ? OFFSET ?";
+	
+	private static final String GET_COMPUTERS_BY_SEARCH_NO_INCLUDE_NULL_REQUEST = "SELECT computer.id, computer.name, "
 			+ "introduced, discontinued, company.id, company.name "
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
 			+ "WHERE %s LIKE CONCAT('%%', ?, '%%') AND %s IS NOT NULL ORDER BY %s %s LIMIT ? OFFSET ?";
-	
-	private static final String GET_COMPUTERS_BY_SEARCH_ORDER_BY_NULL_REQUEST = "SELECT computer.id, computer.name, "
-			+ "introduced, discontinued, company.id, company.name "
-			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
-			+ "WHERE %s LIKE CONCAT('%%', ?, '%%') AND %s IS NULL LIMIT ? OFFSET ?";
 	
 	private static final String INSERT_COMPUTER_REQUEST = "INSERT INTO computer "
 			+ "(name, introduced, discontinued, company_id) VALUES (?, ?, ?, ?)";
@@ -44,9 +45,13 @@ public class ComputerDAO {
 	
 	private static final String DELETE_COMPUTER_REQUEST = "DELETE FROM computer WHERE id = ?";
 	
-	private static final String COUNT_COMPUTERS_BY_SEARCH_REQUEST = "SELECT COUNT(computer.id) AS count "
+	private static final String COUNT_COMPUTERS_BY_SEARCH_INCLUDE_NULL_REQUEST = "SELECT COUNT(computer.id) AS count "
 			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
 			+ "WHERE %s LIKE CONCAT('%%', ?, '%%')";
+	
+	private static final String COUNT_COMPUTERS_BY_SEARCH_NO_INCLUDE_NULL_REQUEST = "SELECT COUNT(computer.id) AS count "
+			+ "FROM computer LEFT JOIN company ON computer.company_id = company.id "
+			+ "WHERE %s LIKE CONCAT('%%', ?, '%%') AND %s IS NOT NULL";
 	
 	private JdbcTemplate template = new JdbcTemplate();
 	
@@ -58,14 +63,14 @@ public class ComputerDAO {
 	}
 	
 	@TrackExecutionTime
-	public List<DBComputerDTO> search(Page p) {
-		if (p.getOrder().toString() == "NULL") {
-			String query = String.format(GET_COMPUTERS_BY_SEARCH_ORDER_BY_NULL_REQUEST,p.getSearchBy().getColumn(), p.getOrderBy().getColumn());
-			return template.query(query, mapper, p.getSearch(), p.getMaxItems(), (p.getNumPage()-1)*p.getMaxItems());
+	public List<DBComputerDTO> search(Page page) {
+		String query;
+		if (page.isIncludeNull()) {
+			query = String.format(GET_COMPUTERS_BY_SEARCH_INCLUDE_NULL_REQUEST,page.getSearchBy().getColumn(), page.getOrderBy().getColumn(), page.getOrder());
 		} else {
-			String query = String.format(GET_COMPUTERS_BY_SEARCH_ORDER_BY_NOT_NULL_REQUEST,p.getSearchBy().getColumn(), p.getOrderBy().getColumn(), p.getOrderBy().getColumn(), p.getOrder());
-			return template.query(query, mapper, p.getSearch(), p.getMaxItems(), (p.getNumPage()-1)*p.getMaxItems());
-		}
+			query = String.format(GET_COMPUTERS_BY_SEARCH_NO_INCLUDE_NULL_REQUEST,page.getSearchBy().getColumn(), page.getOrderBy().getColumn(), page.getOrderBy().getColumn(), page.getOrder());
+			}
+		return template.query(query, mapper, page.getSearch(), page.getMaxItems(), (page.getNumPage()-1)*page.getMaxItems());
 	}
 
 	public Optional<DBComputerDTO> find(int id) {
@@ -96,7 +101,13 @@ public class ComputerDAO {
 	}
 	
 	public int CountComputers(Page page) {
-		String query = String.format(COUNT_COMPUTERS_BY_SEARCH_REQUEST, page.getSearchBy().getColumn());
+		String query;
+		if (page.isIncludeNull()) {
+			query = String.format(COUNT_COMPUTERS_BY_SEARCH_INCLUDE_NULL_REQUEST, page.getSearchBy().getColumn());
+		} else {
+			query = String.format(COUNT_COMPUTERS_BY_SEARCH_NO_INCLUDE_NULL_REQUEST,page.getSearchBy().getColumn(), page.getOrderBy().getColumn());
+			
+		}
 		return template.queryForObject(query, Integer.class, page.getSearch());
 	}
 

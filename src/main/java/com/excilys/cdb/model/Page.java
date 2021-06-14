@@ -9,6 +9,7 @@ public class Page {
 	private String search = "";
 	private OrderBy orderBy = OrderBy.ID;
 	private Order order = Order.ASC;
+	private boolean includeNull = false;
 	
 	public Page() {
 		
@@ -52,6 +53,10 @@ public class Page {
 		this.order = desc;
 	}
 	
+	public void setIncludeNull(boolean includeNull) {
+		this.includeNull = includeNull;
+	}
+	
 	public int getMaxItems() {
 		return maxItems;
 	}
@@ -78,6 +83,10 @@ public class Page {
 	
 	public String getOrder() {
 		return order.toString();
+	}
+	
+	public boolean isIncludeNull() {
+		return this.includeNull;
 	}
 	
 	public int getMaxPage() {
