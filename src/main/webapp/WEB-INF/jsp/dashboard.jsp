@@ -238,7 +238,6 @@
 							<a href="?itemsPerPage=50" class="form-control">50</a>
 							<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;"></span>
 							<a href="?itemsPerPage=100" class="form-control">100</a>
-							<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;"></span>
 						</div>
 					</div>
 				</form>
