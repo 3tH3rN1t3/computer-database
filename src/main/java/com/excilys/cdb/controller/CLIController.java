@@ -3,14 +3,19 @@ package com.excilys.cdb.controller;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.Page;
+import com.excilys.cdb.model.SearchBy;
+import com.excilys.cdb.model.Session;
 import com.excilys.cdb.service.CompanyService;
 import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.ui.CLIAsker;
@@ -80,18 +85,17 @@ public class CLIController {
 		}
 	}
 	private void executeListComputers() throws SQLException {
-		Page p = new Page(computerService.countComputers(new Page()));
-		ArrayList<Computer> coms = new ArrayList<Computer>();
-		while (p.getNumPage() <= p.getMaxPage()) {
-			coms = computerService.search(p);
-			view.printComputers(coms);
-			String choice = asker.askPage(p.getNumPage(), p.getMaxPage());
+		Pageable page = PageRequest.of(0, 10);
+		Page<Computer> computers = computerService.search(page, SearchBy.NAME, "");
+		while (!page.isUnpaged()) {
+			view.printComputers(computers.getContent());
+			String choice = asker.askPage(page.getPageNumber(), computers.getTotalPages());
 			if ("q".equalsIgnoreCase(choice)) {
 				break;
 			} else if ("a".equalsIgnoreCase(choice)) {
-				p.setNumPage(((p.getNumPage() + p.getMaxPage() - 2) % p.getMaxPage()) + 1);
+				page = computers.previousOrFirstPageable();
 			} else {
-				p.setNumPage((p.getNumPage() % p.getMaxPage()) + 1);
+				page = computers.nextPageable();
 			}
 		}
 	}
@@ -141,7 +145,7 @@ public class CLIController {
 		System.out.println("L'ordinateur a été créé");
 	}
 
-	private int executeUpdateComputer() throws SQLException {
+	private void executeUpdateComputer() throws SQLException {
 		int id = asker.askComputerId();
 		String name = asker.askComputerName();
 		LocalDate addDate = asker.askAddDate();
@@ -155,19 +159,16 @@ public class CLIController {
 			}
 		}
 		Company company = asker.askCompany();
-		int updateCount = computerService.updateComputer(new Computer.ComputerBuilder(id, name)
+		computerService.updateComputer(new Computer.ComputerBuilder(id, name)
 				.withIntroduced(addDate)
 				.withDiscontinued(removeDate)
 				.withCompany(company)
 				.build());
-		System.out.println(updateCount + " ligne(s) a/ont été mise(s) à jour");
-		return updateCount;
 	}
 
 	private void executeDeleteComputer() throws SQLException {
 		int id = asker.askComputerId();
-		int deleteCount = computerService.deleteComputer(id);
-		System.out.println(deleteCount + " ligne(s) a/ont été supprimée(s)");
+		computerService.deleteComputer(id);
 	}
 	
 	private void executeDeleteCompany() throws SQLException {
@@ -185,8 +186,7 @@ public class CLIController {
 				System.out.println("Aucune companie n'a été trouvée");
 			}
 		} while (company == null);
-		int deleteCount = companyService.deleteCompany(company.getId());
-		System.out.println(deleteCount + " ligne(s) a/ont été supprimée(s)");
+		companyService.deleteCompany(company.getId());
 	}
 
 }

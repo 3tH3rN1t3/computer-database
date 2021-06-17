@@ -1,6 +1,7 @@
 package com.excilys.cdb.web.controller;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -56,7 +57,7 @@ public class EditComputerController {
     public ModelAndView getEditComputer(ServletRequest request) {
     	
     	Computer computer = getComputer(request.getParameter("id"));
-		ArrayList<Company> companies = companyService.getAllCompanies();
+		List<Company> companies = companyService.getAllCompanies();
 		
 		ModelAndView response = new ModelAndView("editComputer");
 		
@@ -77,12 +78,12 @@ public class EditComputerController {
     public ModelAndView editComputer(ServletRequest request, @Valid @ModelAttribute("computer")WebComputerDTO dto, BindingResult result) {
     	
     	validator.validate(dto, result);
-    	
+    	System.out.println("YUP");
 		if (result.hasErrors()) {
-		
+			System.out.println("ID errors: "+result.getFieldErrorCount("id"));
 		//Champs mal renseignés
 			
-			ArrayList<Company> companies = companyService.getAllCompanies();
+			List<Company> companies = companyService.getAllCompanies();
 			
 			ModelAndView response = new ModelAndView("editComputer");
 			
@@ -99,6 +100,7 @@ public class EditComputerController {
 			return response;
 		} else {
 	    	Computer computer = computerMapper.toComputer(dto);
+	    	System.out.println(computer);
 			if (computer.getId() == 0) {
 				computerService.addComputer(computer);
 			} else {

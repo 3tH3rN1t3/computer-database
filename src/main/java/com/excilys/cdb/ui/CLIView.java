@@ -1,6 +1,6 @@
 package com.excilys.cdb.ui;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -23,13 +23,13 @@ public class CLIView {
 		System.out.println("8 - quitter\n");
 	}
 	
-	public void printCompanies(ArrayList<Company> coms) {
-		for (Company com : coms) {
+	public void printCompanies(List<Company> list) {
+		for (Company com : list) {
 			System.out.println(com);
 		}
 	}
 	
-	public void printComputers(ArrayList<Computer> coms) {
+	public void printComputers(List<Computer> coms) {
 		for (Computer com : coms) {
 			System.out.println(com);
 		}

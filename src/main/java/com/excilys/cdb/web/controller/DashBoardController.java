@@ -1,23 +1,28 @@
 package com.excilys.cdb.web.controller;
 
-import java.util.ArrayList;
-
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.annotation.Scope;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.NullHandling;
+import org.springframework.data.domain.Sort.Order;
+import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.excilys.cdb.logger.LoggerCDB;
 import com.excilys.cdb.model.Computer;
-import com.excilys.cdb.model.Order;
 import com.excilys.cdb.model.OrderBy;
-import com.excilys.cdb.model.Page;
+import com.excilys.cdb.model.Session;
 import com.excilys.cdb.model.SearchBy;
 import com.excilys.cdb.service.ComputerService;
 import com.excilys.cdb.web.dto.Locale;
@@ -33,13 +38,13 @@ public class DashBoardController {
 	
 	private LocaleResolver localeResolver;
 	
-	private Page page;
+	private Session session;
 	
     public DashBoardController(ComputerService computerService, WebComputerMapper computerMapper, LocaleResolver localeResolver) {
     	this.computerService = computerService;
     	this.computerMapper = computerMapper;
     	this.localeResolver = localeResolver;
-    	page = new Page();
+    	session = new Session();
     }
     
     @RequestMapping(value="/test")
@@ -51,25 +56,37 @@ public class DashBoardController {
     
     @GetMapping(value="/dashboard")
     @ResponseBody
-    public ModelAndView dashboard(ServletRequest request) {
-    	this.setSearch(page, request.getParameter("searchby"), request.getParameter("search"));
-    	this.setOrder(page, request.getParameter("orderby"), request.getParameter("order"), request.getParameter("includeNull"));
-		this.setItemsPerPage(page, request.getParameter("itemsPerPage"));
-		this.setPage(page, request.getParameter("page"));
+    public ModelAndView dashboard( ServletRequest request
+    		, @RequestParam(required = false) String pageNum, @RequestParam(required = false) String itemsPerPage
+    		, @RequestParam(required = false) String searchBy, @RequestParam(required = false) String search
+    		, @RequestParam(required = false) String orderBy, @RequestParam(required = false) String order) {
+    	this.setSearch(session, searchBy, search);
+    	this.setOrder(session, orderBy, order);
+		this.setItemsPerPage(session, itemsPerPage);
+		this.setPage(session, pageNum);
 		
-		ArrayList<Computer> computers = new ArrayList<Computer>();
-		computers = this.getComputers(page);
+		Sort sort;
+		if (session.getOrder().equals("ASC") && session.getOrderBy() == OrderBy.ID) {
+			sort = Sort.by(Order.asc("id"));
+		} else if (session.getOrder().equals("ASC")) {
+			sort = JpaSort.unsafe(Direction.ASC, "(COALESCE("+session.getOrderBy().getColumn()+", 'zzzzzzzzzzzzzz'))", "(computer.id)");
+		} else {
+			sort = Sort.by(Order.desc(session.getOrderBy().toString().toLowerCase()), Order.asc("id"));
+		}
+		Pageable pageRequest = PageRequest.of(session.getNumPage()-1, session.getMaxItems(), sort);
+		Page<Computer> computers = this.computerService.search(pageRequest, session.getSearchBy(), session.getSearch());
 		
+		session.setTotalItems((int) computers.getTotalElements());
 		ModelAndView response = new ModelAndView("dashboard");
-		response.addObject( "computers", computerMapper.toComputerDTOArray(computers));
-		response.addObject( "page", page);
+		response.addObject("computers", computerMapper.toComputerDTOArray(computers.getContent()));
+		response.addObject("page", session);
 		response.addObject("searches", SearchBy.values());
 		response.addObject("languages", Locale.values());
 		response.addObject("lang", getLocale(request));
 		return response;
     }
 	
-	private void setSearch(Page p, String searchBy, String search) {
+	private void setSearch(Session p, String searchBy, String search) {
 		if (searchBy != null) {
 			p.setNumPage(1);
 			try {
@@ -85,64 +102,48 @@ public class DashBoardController {
 				p.setSearchBy(SearchBy.NAME);
 			}
 		}
-		p.setTotalItems(computerService.countComputers(p));
 	}
 	
-	private void setPage(Page p, String pageNumber) {
+	private void setPage(Session session, String pageNumber) {
 		try {
 			int page = Integer.parseInt(pageNumber);
-			p.setNumPage(page);
+			session.setNumPage(page);
 		} catch (Exception e) {
 		}
-		if (p.getNumPage() > p.getMaxPage()) {
-			p.setNumPage(p.getMaxPage());
+		if (session.getNumPage() > session.getMaxPage()) {
+			session.setNumPage(session.getMaxPage());
 		}
-		if (p.getNumPage() <= 0) {
-			p.setNumPage(1);
+		if (session.getNumPage() <= 0) {
+			session.setNumPage(1);
 		}
 	}
 	
-	private void setItemsPerPage(Page p, String itemsPerPage) {
+	private void setItemsPerPage(Session session, String itemsPerPage) {
 		try {
 			int items = Integer.parseInt(itemsPerPage);
 			if (items > 0) {
-				p.setNumPage(1);
-				p.setMaxItems(items);
+				session.setNumPage(1);
+				session.setMaxItems(items);
 			}
 		} catch (Exception e) {
 		}
 	}
 	
-	private ArrayList<Computer> getComputers(Page p) {
-		ArrayList<Computer> listcomputer = new ArrayList<Computer>();
-		listcomputer = computerService.search(p);
-		return listcomputer;
-	
-	}
-	
-	private void setOrder(Page p, String orderBy, String order, String include) {
-		if (orderBy != null && !p.getOrderBy().toString().equalsIgnoreCase(orderBy)) {
-			p.setNumPage(1);
+	private void setOrder(Session session, String orderBy, String order) {
+		if (orderBy != null && !session.getOrderBy().toString().equalsIgnoreCase(orderBy)) {
+			session.setNumPage(1);
 			try {
-				p.setOrderBy(OrderBy.valueOf(orderBy.toUpperCase()));
+				session.setOrderBy(OrderBy.valueOf(orderBy.toUpperCase()));
 			} catch (IllegalArgumentException e) {
-				p.setOrderBy(OrderBy.ID);
+				session.setOrderBy(OrderBy.ID);
 			}
 		}
 		if (order != null) {
 			try {
-				p.setOrder(Order.valueOf(order.toUpperCase()));
+				session.setOrder(com.excilys.cdb.model.Order.valueOf(order.toUpperCase()));
 			} catch (IllegalArgumentException e) {
-				p.setOrder(Order.ASC);
+				session.setOrder(com.excilys.cdb.model.Order.ASC);
 			}
-		}
-		if (include != null) {
-			try {
-				p.setIncludeNull(Boolean.parseBoolean(include));
-			} catch (IllegalArgumentException e) {
-				p.setIncludeNull(false);
-			}
-			System.out.println(p.isIncludeNull());
 		}
 	}
 	

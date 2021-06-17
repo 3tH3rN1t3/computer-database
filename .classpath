@@ -35,5 +35,15 @@
 			<attribute name="maven.scope" value="compile"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="/home/excilys/.m2/repository/org/springframework/data/spring-data-jpa/2.5.1/spring-data-jpa-2.5.1.jar" sourcepath="/home/excilys/.m2/repository/org/springframework/data/spring-data-jpa/2.5.1/spring-data-jpa-2.5.1-sources.jar">
+		<attributes>
+			<attribute name="maven.pomderived" value="true"/>
+			<attribute name="org.eclipse.jst.component.nondependency" value=""/>
+			<attribute name="maven.groupId" value="org.springframework.data"/>
+			<attribute name="maven.artifactId" value="spring-data-jpa"/>
+			<attribute name="maven.version" value="2.5.1"/>
+			<attribute name="maven.scope" value="build"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

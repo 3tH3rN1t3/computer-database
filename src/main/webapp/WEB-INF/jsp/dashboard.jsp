@@ -57,7 +57,7 @@
 						<div class="input-group">
 							<input type="search" id="searchbox" name="search" class="form-control" placeholder="${searchText}" />
 							<span class="input-group-addon"> <spring:message code="text.by" /> </span>
-							<select class="form-control" id="searchby" name="searchby">
+							<select class="form-control" id="searchBy" name="searchBy">
 								<c:forEach var = "search" items = "${searches}">
 									<c:choose>
 										<c:when test="${page.searchBy eq search}">
@@ -69,7 +69,7 @@
 									</c:choose>
 								</c:forEach>
 							</select>
-							<span class="input-group-addon" style="border-width: 1px; padding: 0px;"></span>
+							<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;"></span>
 							<input type="submit" id="searchsubmit" value="${searchText}" class="form-control btn btn-primary" />
 						</div>
 						
@@ -87,17 +87,6 @@
 		</form>
 
 		<div class="container" style="margin-top: 10px;">
-		
-			<div class="pull-left input-group">
-				<a href="?includeNull=${!page.includeNull}" class="form-control">
-					 <input type="checkbox" ${page.includeNull ? 'checked' : ''} />
-				</a>
-				<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;">
-				</span>
-				<a href="?includeNull=${!page.includeNull}" class="form-control">
-					 <spring:message code="text.includeNull" />
-				</a>
-			</div>
 			<table class="table table-striped table-bordered">
 				<thead>
 					<tr>
@@ -112,33 +101,33 @@
 							</div>
 						</th>
 						<th style="width: 35%; text-align: center; vertical-align: middle;">
-							<a href="dashboard?orderby=${page.orderBy.column ne 'computer.name' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.column eq 'computer.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+							<a href="dashboard?orderBy=${page.orderBy.toString() ne 'NAME' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.toString() eq 'NAME' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.name" />
-								<c:if test="${page.orderBy.column eq 'computer.name'}">
+								<c:if test="${page.orderBy.column eq 'NAME'}">
 									<spring:message code="text.${page.order.toLowerCase()}" />
 								</c:if>
 							</a>
 						</th>
 						<th style="width: 15%; text-align: center; vertical-align: middle;">
-							<a href="dashboard?orderby=${page.orderBy.column ne 'introduced' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.column eq 'introduced' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+							<a href="dashboard?orderBy=${page.orderBy.toString() ne 'INTRODUCED' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.toString() eq 'INTRODUCED' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.introduced" />
-								<c:if test="${page.orderBy.column eq 'introduced'}">
+								<c:if test="${page.orderBy.toString() eq 'INTRODUCED'}">
 									<spring:message code="text.${page.order.toLowerCase()}" />
 								</c:if>
 							</a>
 						</th>
 						<th style="width: 15%; text-align: center; vertical-align: middle;">
-							<a href="dashboard?orderby=${page.orderBy.column ne 'discontinued' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.column eq 'discontinued' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+							<a href="dashboard?orderBy=${page.orderBy.toString() ne 'DISCONTINUED' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.toString() eq 'DISCONTINUED' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.discontinued" />
-								<c:if test="${page.orderBy.column eq 'discontinued'}">
+								<c:if test="${page.orderBy.toString() eq 'DISCONTINUED'}">
 									<spring:message code="text.${page.order.toLowerCase()}" />
 								</c:if>
 							</a>
 						</th>
 						<th style="width: 35%; text-align: center; vertical-align: middle;">
-							<a href="dashboard?orderby=${page.orderBy.column ne 'company.name' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.column eq 'company.name' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+							<a href="dashboard?orderBy=${page.orderBy.toString() ne 'COMPANY' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.toString() eq 'COMPANY' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.company" />
-								<c:if test="${page.orderBy.column eq 'company.name'}">
+								<c:if test="${page.orderBy.toString() eq 'COMPANY'}">
 									<spring:message code="text.${page.order.toLowerCase()}" />
 								</c:if>
 							</a>
@@ -182,47 +171,47 @@
 		<div class="container text-center">
 			<ul class="pagination">
 				<li>
-					<a href="?page=1" aria-label="Previous">
+					<a href="?pageNum=1" aria-label="Previous">
 						<span aria-hidden="true">&laquo;</span>
 					</a>
 				</li>
 				
 				<li class="${page.numPage-1 > 0 ? '' : 'disabled'}">
-					<a href="?page=${page.numPage-1}">&lt;</a>
+					<a href="?pageNum=${page.numPage-1}">&lt;</a>
 				</li>
 				
 				<li>
 					<c:if test="${page.numPage-2 > 0}" var="variable">
-						<a href="?page=${page.numPage-2}">${page.numPage-2}</a>
+						<a href="?pageNum=${page.numPage-2}">${page.numPage-2}</a>
 					</c:if>
 				</li>
 				
 				<li>
 					<c:if test="${page.numPage-1 > 0}" var="variable">
-						<a href="?page=${page.numPage-1}">${page.numPage-1}</a>
+						<a href="?pageNum=${page.numPage-1}">${page.numPage-1}</a>
 					</c:if>
 				</li>
 				
-				<li class="active"><a href="?page=${page.numPage}"> ..  </a></li>
+				<li class="active"><a href="?pageNum=${page.numPage}"> ..  </a></li>
 				
 				<li>
 					<c:if test="${page.numPage+1 <= page.getMaxPage()}" var="variable">
-						<a href="?page=${page.numPage+1}">${page.numPage+1}</a>
+						<a href="?pageNum=${page.numPage+1}">${page.numPage+1}</a>
 					</c:if>
 				</li>
 				
 				<li>
 					<c:if test="${page.numPage+2 <= page.getMaxPage()}" var="variable">
-						<a href="?page=${page.numPage+2}">${page.numPage+2}</a>
+						<a href="?pageNum=${page.numPage+2}">${page.numPage+2}</a>
 					</c:if>
 				</li>
 				
 				<li class="${page.numPage+1 <= page.getMaxPage() ? '' : 'disabled'}">
-					<a href="?page=${page.numPage+1}">&gt;</a>
+					<a href="?pageNum=${page.numPage+1}">&gt;</a>
 				</li>
 				
 				<li>
-					<a href="?page=${page.getMaxPage()}" aria-label="Next">
+					<a href="?pageNum=${page.getMaxPage()}" aria-label="Next">
 						<span aria-hidden="true">&raquo;</span>
 					</a>
 				</li>

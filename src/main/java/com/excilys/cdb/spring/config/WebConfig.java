@@ -33,7 +33,7 @@ import org.springframework.web.servlet.view.JstlView;
 @EnableWebMvc
 @EnableTransactionManagement
 @Configuration
-@ComponentScan(basePackages = { "com.excilys.cdb.web"})
+@ComponentScan(basePackages = {"com.excilys.cdb.web"})
 public class WebConfig implements WebApplicationInitializer, WebMvcConfigurer {
 	
 	@Override
@@ -44,7 +44,7 @@ public class WebConfig implements WebApplicationInitializer, WebMvcConfigurer {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(WebConfig.class, SpringConfig.class, DBConfig.class);
+		context.register(WebConfig.class, SpringConfig.class, PersistenceJPAConfig.class);
 		context.setServletContext(servletContext);
 		Dynamic servlet = servletContext.addServlet("dispacher", new DispatcherServlet(context));
 		servlet.setLoadOnStartup(1);

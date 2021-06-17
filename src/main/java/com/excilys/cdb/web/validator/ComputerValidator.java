@@ -47,7 +47,7 @@ public class ComputerValidator implements Validator {
 	private void validateId(WebComputerDTO dto, Errors errors) {
 		try {
 			int id = Integer.parseInt(dto.getId());
-			if (id <= 0) {
+			if (id < 0) {
 				errors.rejectValue("id", "", "id");
 			}
 		} catch (NumberFormatException e) {

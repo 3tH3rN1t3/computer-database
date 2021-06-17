@@ -1,6 +1,7 @@
 package com.excilys.cdb.web.mapper;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Scope;
@@ -25,7 +26,7 @@ public class WebCompanyMapper {
 		}
 	}
 	
-	public ArrayList<WebCompanyDTO> toCompanyDTOArray(ArrayList<Company> companies) {
+	public List<WebCompanyDTO> toCompanyDTOArray(List<Company> companies) {
 		ArrayList<WebCompanyDTO> dtos = new ArrayList<WebCompanyDTO>();
 		for (Company company : companies) {
 			dtos.add(toCompanyDTO(Optional.of(company)).get());

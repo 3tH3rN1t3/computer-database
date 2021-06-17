@@ -1,6 +1,6 @@
 package com.excilys.cdb.model;
 
-public class Page {
+public class Session {
 	
 	private int maxItems = 10;
 	private int numPage = 1;
@@ -9,17 +9,16 @@ public class Page {
 	private String search = "";
 	private OrderBy orderBy = OrderBy.ID;
 	private Order order = Order.ASC;
-	private boolean includeNull = false;
 	
-	public Page() {
+	public Session() {
 		
 	}
 	
-	public Page(int totalItems) {
+	public Session(int totalItems) {
 		this.totalItems = totalItems;
 	}
 	
-	public Page(int maxItems, int numPage, int totalItems) {
+	public Session(int maxItems, int numPage, int totalItems) {
 		this.maxItems = maxItems;
 		this.numPage = numPage;
 		this.totalItems = totalItems;
@@ -53,10 +52,6 @@ public class Page {
 		this.order = desc;
 	}
 	
-	public void setIncludeNull(boolean includeNull) {
-		this.includeNull = includeNull;
-	}
-	
 	public int getMaxItems() {
 		return maxItems;
 	}
@@ -72,6 +67,10 @@ public class Page {
 	public SearchBy getSearchBy() {
 		return searchBy;
 	}
+
+	public String getSearchByString() {
+		return searchBy.toString();
+	}
 	
 	public String getSearch() {
 		return search;
@@ -85,12 +84,8 @@ public class Page {
 		return order.toString();
 	}
 	
-	public boolean isIncludeNull() {
-		return this.includeNull;
-	}
-	
 	public int getMaxPage() {
-		return totalItems/maxItems - (totalItems%maxItems==0 ? 1 : 0);
+		return totalItems/maxItems + (totalItems%maxItems==0 ? 0 : 1);
 	}
 	
 	public String toString() {

@@ -1,33 +1,33 @@
 package com.excilys.cdb.service;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import com.excilys.cdb.controller.DBController;
 import com.excilys.cdb.model.Company;
+import com.excilys.cdb.persistence.repository.CompanyRepository;
 
 @Component
 @Scope("singleton")
 public class CompanyService {
 	
-	private DBController controller;
+	private CompanyRepository repository;
 		
-	private CompanyService(DBController controller) {
-		this.controller = controller;
+	private CompanyService(CompanyRepository repository) {
+		this.repository = repository;
 	}
 	
-	public ArrayList<Company> getAllCompanies() {
-		return controller.getAllCompanies();
+	public List<Company> getAllCompanies() {
+		return repository.findAll();
 	}
 	
 	public Optional<Company> getCompanyById(int id) {
-		return controller.getCompanyById(id);
+		return repository.findById(id);
 	}
 	
-	public int deleteCompany(int id) {
-		return controller.deleteCompany(id);
+	public void deleteCompany(int id) {
+		repository.deleteById(id);
 	}
 }

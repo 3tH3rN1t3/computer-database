@@ -2,8 +2,9 @@ package com.excilys.cdb.web.mapper;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -22,19 +23,15 @@ public class WebComputerMapper {
 	
 	public WebComputerDTO toComputerDTO(Computer com) {
 		return new WebComputerDTO.WebComputerDTOBuilder(com.getId()+"", com.getName())
-				.withIntroduced(com.getIntroduced().map(Date::valueOf).map(Date::toString).orElse(null))
-				.withDiscontinued(com.getDiscontinued().map(Date::valueOf).map(Date::toString).orElse(null))
-				.withCompanyId(com.getCompany().map(Company::getId).map(String::valueOf).orElse(null))
-				.withCompanyName(com.getCompany().map(Company::getName).orElse(null))
+				.withIntroduced(Optional.ofNullable(com.getIntroduced()).map(Date::valueOf).map(Date::toString).orElse(null))
+				.withDiscontinued(Optional.ofNullable(com.getDiscontinued()).map(Date::valueOf).map(Date::toString).orElse(null))
+				.withCompanyId(Optional.ofNullable(com.getCompany()).map(Company::getId).map(String::valueOf).orElse(null))
+				.withCompanyName(Optional.ofNullable(com.getCompany()).map(Company::getName).orElse(null))
 				.build();
 	}
 	
-	public ArrayList<WebComputerDTO> toComputerDTOArray(ArrayList<Computer> computers) {
-		ArrayList<WebComputerDTO> dtos = new ArrayList<WebComputerDTO>();
-		for (Computer com : computers) {
-			dtos.add(toComputerDTO(com));
-		}
-		return dtos;
+	public List<WebComputerDTO> toComputerDTOArray(List<Computer> computers) {
+		return computers.parallelStream().map(com -> toComputerDTO(com)).collect(Collectors.toList());
 	}
 	
 	public Computer toComputer(WebComputerDTO dto) {
