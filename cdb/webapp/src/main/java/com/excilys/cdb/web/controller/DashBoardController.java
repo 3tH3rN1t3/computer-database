@@ -86,7 +86,7 @@ public class DashBoardController {
 		ModelAndView response = new ModelAndView("dashboard");
 		response.addObject("computers", computerMapper.toComputerDTOArray(computers.getContent()));
 		response.addObject("session", session);
-		response.addObject("admin", roles.size() > 0 ? roles.get(0).getAuthority().equals("ROLES_ADMIN") : false);
+		response.addObject("admin", roles.size() > 0 ? roles.get(0).getAuthority().equals("ROLE_ADMIN") : false);
 		response.addObject("searches", SearchBy.values());
 		response.addObject("languages", Locale.values());
 		response.addObject("lang", getLocale(request));
