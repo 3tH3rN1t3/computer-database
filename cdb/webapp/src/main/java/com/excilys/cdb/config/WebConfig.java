@@ -1,4 +1,4 @@
-package com.excilys.cdb.spring.config;
+package com.excilys.cdb.config;
 
 import java.util.Locale;
 
@@ -17,6 +17,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.WebApplicationInitializer;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
+import org.springframework.web.filter.DelegatingFilterProxy;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ViewResolver;
@@ -36,7 +37,6 @@ import org.springframework.web.servlet.view.JstlView;
 @ComponentScan(basePackages = {"com.excilys.cdb.persistence"
 		, "com.excilys.cdb.controller"
 		, "com.excilys.cdb.service"
-		, "com.excilys.cdb.ui"
 		, "com.excilys.cdb.spring.aspect"
 		, "com.excilys.cdb.web"})
 public class WebConfig implements WebApplicationInitializer, WebMvcConfigurer {
@@ -49,8 +49,12 @@ public class WebConfig implements WebApplicationInitializer, WebMvcConfigurer {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		AnnotationConfigWebApplicationContext context = new AnnotationConfigWebApplicationContext();
-		context.register(WebConfig.class, PersistenceJPAConfig.class);
+		context.register(WebConfig.class, SecurityConfig.class, PersistenceJPAConfig.class);
 		context.setServletContext(servletContext);
+		
+		servletContext.addFilter("securityFilter", new DelegatingFilterProxy("springSecurityFilterChain"))
+		.addMappingForUrlPatterns(null, false, "/*");
+		
 		Dynamic servlet = servletContext.addServlet("dispacher", new DispatcherServlet(context));
 		servlet.setLoadOnStartup(1);
 		servlet.addMapping("/");

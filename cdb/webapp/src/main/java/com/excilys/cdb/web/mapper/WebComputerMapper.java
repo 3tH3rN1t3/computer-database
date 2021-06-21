@@ -1,6 +1,5 @@
 package com.excilys.cdb.web.mapper;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -23,10 +22,10 @@ public class WebComputerMapper {
 	
 	public WebComputerDTO toComputerDTO(Computer com) {
 		return new WebComputerDTO.WebComputerDTOBuilder(com.getId()+"", com.getName())
-				.withIntroduced(Optional.ofNullable(com.getIntroduced()).map(Date::valueOf).map(Date::toString).orElse(null))
-				.withDiscontinued(Optional.ofNullable(com.getDiscontinued()).map(Date::valueOf).map(Date::toString).orElse(null))
-				.withCompanyId(Optional.ofNullable(com.getCompany()).map(Company::getId).map(String::valueOf).orElse(null))
-				.withCompanyName(Optional.ofNullable(com.getCompany()).map(Company::getName).orElse(null))
+				.withIntroduced(com.getIntroduced().map(LocalDate::toString).orElse(null))
+				.withDiscontinued(com.getDiscontinued().map(LocalDate::toString).orElse(null))
+				.withCompanyId(com.getCompany().map(Company::getId).map(String::valueOf).orElse(null))
+				.withCompanyName(com.getCompany().map(Company::getName).orElse(null))
 				.build();
 	}
 	

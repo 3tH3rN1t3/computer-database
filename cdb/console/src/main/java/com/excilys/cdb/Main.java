@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.excilys.cdb.spring.config.PersistenceJPAConfig;
-import com.excilys.cdb.spring.config.SpringConfig;
+import com.excilys.cdb.config.PersistenceJPAConfig;
+import com.excilys.cdb.config.SpringConfig;
 import com.excilys.cdb.ui.CLI;
 
 public class Main {
@@ -18,5 +18,5 @@ public class Main {
 		CLI cli = (CLI) applicationContext.getBean("cli");
 		cli.runCLI();
 	}
-	
-}
+
+} 

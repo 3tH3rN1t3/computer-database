@@ -1,4 +1,4 @@
-package com.excilys.cdb.spring.config;
+package com.excilys.cdb.config;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -34,8 +34,7 @@ public class PersistenceJPAConfig {
 		vendorAdapter.setDatabase(Database.MYSQL);
 		LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 		em.setDataSource(hikariDataSource());
-		//em.setPackagesToScan(new String[] { "com.excilys.cdb.persistence.dto" });
-		em.setPackagesToScan(new String[] { "com.excilys.cdb.model" });
+		em.setPackagesToScan(new String[] { "com.excilys.cdb.persistence.dto" });
 
 		em.setJpaVendorAdapter(vendorAdapter);
 

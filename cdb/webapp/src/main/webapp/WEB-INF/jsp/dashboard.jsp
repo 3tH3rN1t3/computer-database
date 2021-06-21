@@ -19,6 +19,9 @@
 		<div class="container">
 			<a class="navbar-brand" href="dashboard"><spring:message code="text.navbar" /></a>
 			<div class="btn-group pull-right">
+				<form class="navbar-form navbar-right" action="logout" method="get">
+					<input type="submit" class="btn btn-default" value="Logout" />
+				</form>
 				<button type="button" class="btn btn-primary navbar-btn dropdown-toggle" style="background-color: black; border-color: black;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 					<spring:message code="label.lang" /> <span class="caret"></span>
 				</button>
@@ -42,11 +45,11 @@
 		<div class="container">
 			<h1 id="homeTitle">
 				<c:choose>
-					<c:when test="${page.search == null || page.search.isEmpty()}">
-						<c:out value="${page.totalItems}" /> <spring:message code="text.found" />
+					<c:when test="${session.search == null || session.search.isEmpty()}">
+						<c:out value="${session.totalItems}" /> <spring:message code="text.found" />
 					</c:when>
 					<c:otherwise>
-						<c:out value="${page.totalItems}" /> <spring:message code="text.found" /> <spring:message code="text.for" /> <spring:message code="label.${page.searchBy.toString().toLowerCase()}" /> &laquo<c:out value="${page.search}" />&raquo
+						<c:out value="${session.totalItems}" /> <spring:message code="text.found" /> <spring:message code="text.for" /> <spring:message code="label.${session.searchBy.toString().toLowerCase()}" /> &laquo<c:out value="${session.search}" />&raquo
 					</c:otherwise>
 				</c:choose>
 			</h1>
@@ -60,7 +63,7 @@
 							<select class="form-control" id="searchBy" name="searchBy">
 								<c:forEach var = "search" items = "${searches}">
 									<c:choose>
-										<c:when test="${page.searchBy eq search}">
+										<c:when test="${session.searchBy eq search}">
 											<option value="${search.toString()}" selected><spring:message code="label.${search.toString().toLowerCase()}" /></option>
 										</c:when>
 										<c:otherwise>
@@ -75,10 +78,12 @@
 						
 					</form>
 				</div>
-				<div class="btn-group pull-right" role="group">
-					<a class="btn btn-success" id="addComputer" href="editComputer"><spring:message code="text.addComputer" /></a> 
-					<a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="text.edit" /></a>
-				</div>
+				<c:if test="${admin}" >
+					<div class="btn-group pull-right" role="group">
+						<a class="btn btn-success" id="addComputer" href="editComputer"><spring:message code="text.addComputer" /></a> 
+						<a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="text.edit" /></a>
+					</div>
+				</c:if>
 			</div>
 		</div>
 
@@ -101,34 +106,34 @@
 							</div>
 						</th>
 						<th style="width: 35%; text-align: center; vertical-align: middle;">
-							<a href="dashboard?orderBy=${page.orderBy.toString() ne 'NAME' or page.order eq 'ASC' ? 'name' : 'id'}&order=${page.orderBy.toString() eq 'NAME' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+							<a href="dashboard?orderBy=${session.orderBy.toString() ne 'NAME' or session.order eq 'ASC' ? 'name' : 'id'}&order=${session.orderBy.toString() eq 'NAME' and session.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.name" />
-								<c:if test="${page.orderBy.toString() eq 'NAME'}">
-									<spring:message code="text.${page.order.toLowerCase()}" />
+								<c:if test="${session.orderBy.toString() eq 'NAME'}">
+									<spring:message code="text.${session.order.toLowerCase()}" />
 								</c:if>
 							</a>
 						</th>
 						<th style="width: 15%; text-align: center; vertical-align: middle;">
-							<a href="dashboard?orderBy=${page.orderBy.toString() ne 'INTRODUCED' or page.order eq 'ASC' ? 'introduced' : 'id'}&order=${page.orderBy.toString() eq 'INTRODUCED' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+							<a href="dashboard?orderBy=${session.orderBy.toString() ne 'INTRODUCED' or session.order eq 'ASC' ? 'introduced' : 'id'}&order=${session.orderBy.toString() eq 'INTRODUCED' and session.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.introduced" />
-								<c:if test="${page.orderBy.toString() eq 'INTRODUCED'}">
-									<spring:message code="text.${page.order.toLowerCase()}" />
+								<c:if test="${session.orderBy.toString() eq 'INTRODUCED'}">
+									<spring:message code="text.${session.order.toLowerCase()}" />
 								</c:if>
 							</a>
 						</th>
 						<th style="width: 15%; text-align: center; vertical-align: middle;">
-							<a href="dashboard?orderBy=${page.orderBy.toString() ne 'DISCONTINUED' or page.order eq 'ASC' ? 'discontinued' : 'id'}&order=${page.orderBy.toString() eq 'DISCONTINUED' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+							<a href="dashboard?orderBy=${session.orderBy.toString() ne 'DISCONTINUED' or session.order eq 'ASC' ? 'discontinued' : 'id'}&order=${session.orderBy.toString() eq 'DISCONTINUED' and session.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.discontinued" />
-								<c:if test="${page.orderBy.toString() eq 'DISCONTINUED'}">
-									<spring:message code="text.${page.order.toLowerCase()}" />
+								<c:if test="${session.orderBy.toString() eq 'DISCONTINUED'}">
+									<spring:message code="text.${session.order.toLowerCase()}" />
 								</c:if>
 							</a>
 						</th>
 						<th style="width: 35%; text-align: center; vertical-align: middle;">
-							<a href="dashboard?orderBy=${page.orderBy.toString() ne 'COMPANY' or page.order eq 'ASC' ? 'company' : 'id'}&order=${page.orderBy.toString() eq 'COMPANY' and page.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
+							<a href="dashboard?orderBy=${session.orderBy.toString() ne 'COMPANY' or session.order eq 'ASC' ? 'company' : 'id'}&order=${session.orderBy.toString() eq 'COMPANY' and session.order eq 'ASC' ? 'DESC' : 'ASC'}" onclick="">
 								<spring:message code="label.company" />
-								<c:if test="${page.orderBy.toString() eq 'COMPANY'}">
-									<spring:message code="text.${page.order.toLowerCase()}" />
+								<c:if test="${session.orderBy.toString() eq 'COMPANY'}">
+									<spring:message code="text.${session.order.toLowerCase()}" />
 								</c:if>
 							</a>
 						</th>
@@ -143,7 +148,14 @@
 								<input type="checkbox" name="cb" class="cb" value="${computer.id}">
 							</td>
 							<td>
-								<a href="editComputer?id=${computer.id}#" onclick="">${computer.name}</a>
+								<c:choose>
+									<c:when test="${admin}" >
+										<a href="editComputer?id=${computer.id}#" onclick="">${computer.name}</a>
+									</c:when>
+									<c:otherwise>
+										${computer.name}
+									</c:otherwise>
+								</c:choose>
 							</td>
 							<td>
 								<c:if test="${computer.introduced ne null}" var="variable">
@@ -176,68 +188,64 @@
 					</a>
 				</li>
 				
-				<li class="${page.numPage-1 > 0 ? '' : 'disabled'}">
-					<a href="?pageNum=${page.numPage-1}">&lt;</a>
+				<li class="${session.numPage-1 > 0 ? '' : 'disabled'}">
+					<a href="?pageNum=${session.numPage-1}">&lt;</a>
 				</li>
 				
 				<li>
-					<c:if test="${page.numPage-2 > 0}" var="variable">
-						<a href="?pageNum=${page.numPage-2}">${page.numPage-2}</a>
+					<c:if test="${session.numPage-2 > 0}" var="variable">
+						<a href="?pageNum=${session.numPage-2}">${session.numPage-2}</a>
 					</c:if>
 				</li>
 				
 				<li>
-					<c:if test="${page.numPage-1 > 0}" var="variable">
-						<a href="?pageNum=${page.numPage-1}">${page.numPage-1}</a>
+					<c:if test="${session.numPage-1 > 0}" var="variable">
+						<a href="?pageNum=${session.numPage-1}">${session.numPage-1}</a>
 					</c:if>
 				</li>
 				
-				<li class="active"><a href="?pageNum=${page.numPage}"> ..  </a></li>
+				<li class="active"><a href="?pageNum=${session.numPage}"> ..  </a></li>
 				
 				<li>
-					<c:if test="${page.numPage+1 <= page.getMaxPage()}" var="variable">
-						<a href="?pageNum=${page.numPage+1}">${page.numPage+1}</a>
+					<c:if test="${session.numPage+1 <= session.getMaxPage()}" var="variable">
+						<a href="?pageNum=${session.numPage+1}">${session.numPage+1}</a>
 					</c:if>
 				</li>
 				
 				<li>
-					<c:if test="${page.numPage+2 <= page.getMaxPage()}" var="variable">
-						<a href="?pageNum=${page.numPage+2}">${page.numPage+2}</a>
+					<c:if test="${session.numPage+2 <= session.getMaxPage()}" var="variable">
+						<a href="?pageNum=${session.numPage+2}">${session.numPage+2}</a>
 					</c:if>
 				</li>
 				
-				<li class="${page.numPage+1 <= page.getMaxPage() ? '' : 'disabled'}">
-					<a href="?pageNum=${page.numPage+1}">&gt;</a>
+				<li class="${session.numPage+1 <= session.getMaxPage() ? '' : 'disabled'}">
+					<a href="?pageNum=${session.numPage+1}">&gt;</a>
 				</li>
 				
 				<li>
-					<a href="?pageNum=${page.getMaxPage()}" aria-label="Next">
+					<a href="?pageNum=${session.getMaxPage()}" aria-label="Next">
 						<span aria-hidden="true">&raquo;</span>
 					</a>
 				</li>
 			</ul>
-
-			<div class="pull-right" >
-				<form id="nombreElementPage" action="#" method="GET" class="navbar-form" >
-					<div class="form-group" role="group" >
-						<div class="input-group">
-							<span class="input-group-addon"> <spring:message code="text.itemsPerPage"/> </span>
-							<a href="?itemsPerPage=10" class="form-control">10</a>
-							<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;"></span>
-							<a href="?itemsPerPage=50" class="form-control">50</a>
-							<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;"></span>
-							<a href="?itemsPerPage=100" class="form-control">100</a>
-						</div>
+			<form id="nombreElementPage" action="#" method="GET" class="navbar-form navbar-right" >
+				<div class="form-group" role="group" >
+					<div class="input-group">
+						<span class="input-group-addon"> <spring:message code="text.itemsPerPage"/> </span>
+						<a href="?itemsPerPage=10" class="form-control">10</a>
+						<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;"></span>
+						<a href="?itemsPerPage=50" class="form-control">50</a>
+						<span class="input-group-addon" style="border-width: 0px; width: 0px; padding: 0px;"></span>
+						<a href="?itemsPerPage=100" class="form-control">100</a>
 					</div>
-				</form>
-			</div>
+				</div>
+			</form>
 		</div>
 	</footer>
     
 	<script src="<c:url value="/resources/js/jquery.min.js" />"></script>
 	<script src="<c:url value="/resources/js/bootstrap.min.js" />"></script>
 	<script src="<c:url value="/resources/js/dashboard.js" />"></script>
-	<script src="<c:url value="/resources/js/lang.js" />"></script>
 
 
 </body>

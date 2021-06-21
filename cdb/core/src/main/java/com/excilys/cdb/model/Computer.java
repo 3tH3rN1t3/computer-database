@@ -3,68 +3,25 @@ package com.excilys.cdb.model;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Convert;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
-import com.excilys.cdb.persistence.converter.LocalDateConverter;
-
-
-@Entity
-@Table(name = "computer")
 public class Computer {
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
 	private String name;
 	
-	@Convert(converter = LocalDateConverter.class)
-	private String introduced;
-
-	@Convert(converter = LocalDateConverter.class)
-	private String discontinued;
+	private LocalDate introduced;
 	
-	@ManyToOne(cascade = CascadeType.REMOVE)
-	@JoinColumn(name = "company_id")
+	private LocalDate discontinued;
+	
 	private Company company;
-	
-	private Computer() {}
 	
 	private Computer(ComputerBuilder builder) {
 		this.id = builder.id;
 		this.name = builder.name;
-		System.out.println(builder.introduced.orElse(null));
-		this.introduced = builder.introduced.map(LocalDate::toString).orElse(null);
-		this.discontinued = builder.discontinued.map(LocalDate::toString).orElse(null);
+		this.introduced = builder.introduced;
+		this.discontinued = builder.discontinued;
 		this.company = builder.company;
-	}
-	
-	public void setId(int id) {
-		this.id = id;
-	}
-	
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	public void setIntroduced(LocalDate introduced) {
-		this.introduced = introduced.toString();
-	}
-	
-	public void setDiscontinued(LocalDate discontinued) {
-		this.discontinued = discontinued.toString();
-	}
-	
-	public void setCompany(Company company) {
-		this.company = company;
 	}
 	
 	public int getId() {
@@ -75,24 +32,16 @@ public class Computer {
 		return name;
 	}
 	
-	public String getIntroduced() {
-		return introduced;
+	public Optional<LocalDate> getIntroduced() {
+		return Optional.ofNullable(introduced);
 	}
 	
-	public LocalDate getIntroducedDate() {
-		return LocalDate.parse(introduced);
+	public Optional<LocalDate> getDiscontinued() {
+		return Optional.ofNullable(discontinued);
 	}
 	
-	public String getDiscontinued() {
-		return discontinued;
-	}
-	
-	public LocalDate getDiscontinuedDate() {
-		return LocalDate.parse(discontinued);
-	}
-	
-	public Company getCompany() {
-		return company;
+	public Optional<Company> getCompany() {
+		return Optional.ofNullable(company);
 	}
 	
 	public String toString() {
@@ -122,8 +71,8 @@ public class Computer {
 	public static class ComputerBuilder {
 		private int id;
 		private String name;
-		private Optional<LocalDate> introduced = Optional.empty();
-		private Optional<LocalDate> discontinued = Optional.empty();
+		private LocalDate introduced;
+		private LocalDate discontinued;
 		private Company company;
 		
 		public ComputerBuilder(int id, String name) {
@@ -132,12 +81,12 @@ public class Computer {
 		}
 		
 		public ComputerBuilder withIntroduced(LocalDate introduced) {
-			this.introduced = Optional.ofNullable(introduced);
+			this.introduced = introduced;
 			return this;
 		}
 		
 		public ComputerBuilder withDiscontinued(LocalDate discontinued) {
-			this.discontinued = Optional.ofNullable(discontinued);
+			this.discontinued = discontinued;
 			return this;
 		}
 		

@@ -15,9 +15,11 @@
 
 		<dependency>
 			<groupId>com.excilys.cdb</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>binding</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		
+		
 		
 		<dependency>
 			<groupId>mysql</groupId>

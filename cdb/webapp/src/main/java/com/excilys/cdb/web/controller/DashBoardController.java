@@ -1,6 +1,8 @@
 package com.excilys.cdb.web.controller;
 
-import javax.servlet.ServletRequest;
+import java.util.Collection;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.context.annotation.Scope;
@@ -9,9 +11,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.domain.Sort.NullHandling;
-import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.domain.JpaSort;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -56,22 +58,26 @@ public class DashBoardController {
     
     @GetMapping(value="/dashboard")
     @ResponseBody
-    public ModelAndView dashboard( ServletRequest request
+    public ModelAndView dashboard( HttpServletRequest request
     		, @RequestParam(required = false) String pageNum, @RequestParam(required = false) String itemsPerPage
     		, @RequestParam(required = false) String searchBy, @RequestParam(required = false) String search
     		, @RequestParam(required = false) String orderBy, @RequestParam(required = false) String order) {
+    	
+    	List<SimpleGrantedAuthority> roles = (List<SimpleGrantedAuthority>) SecurityContextHolder.getContext().getAuthentication().getAuthorities();
     	this.setSearch(session, searchBy, search);
     	this.setOrder(session, orderBy, order);
 		this.setItemsPerPage(session, itemsPerPage);
 		this.setPage(session, pageNum);
 		
 		Sort sort;
-		if (session.getOrder().equals("ASC") && session.getOrderBy() == OrderBy.ID) {
-			sort = Sort.by(Order.asc("id"));
-		} else if (session.getOrder().equals("ASC")) {
-			sort = JpaSort.unsafe(Direction.ASC, "(COALESCE("+session.getOrderBy().getColumn()+", 'zzzzzzzzzzzzzz'))", "(computer.id)");
+		if (session.getOrderBy() == OrderBy.ID) {
+			sort = Sort.by(Direction.valueOf(session.getOrder().toUpperCase()), "id");
 		} else {
-			sort = Sort.by(Order.desc(session.getOrderBy().toString().toLowerCase()), Order.asc("id"));
+			if (session.getOrder().equals("ASC")) {
+				sort = JpaSort.unsafe(Direction.ASC, "(COALESCE("+session.getOrderBy().getColumn()+", 'zzzzzzzzzzzzzz'))", "(computer.id)");
+			} else {
+				sort = JpaSort.unsafe(Direction.DESC, "("+session.getOrderBy().getColumn()+")", "(-computer.id)");
+			}
 		}
 		Pageable pageRequest = PageRequest.of(session.getNumPage()-1, session.getMaxItems(), sort);
 		Page<Computer> computers = this.computerService.search(pageRequest, session.getSearchBy(), session.getSearch());
@@ -79,7 +85,8 @@ public class DashBoardController {
 		session.setTotalItems((int) computers.getTotalElements());
 		ModelAndView response = new ModelAndView("dashboard");
 		response.addObject("computers", computerMapper.toComputerDTOArray(computers.getContent()));
-		response.addObject("page", session);
+		response.addObject("session", session);
+		response.addObject("admin", roles.size() > 0 ? roles.get(0).getAuthority().equals("ROLES_ADMIN") : false);
 		response.addObject("searches", SearchBy.values());
 		response.addObject("languages", Locale.values());
 		response.addObject("lang", getLocale(request));
@@ -147,9 +154,9 @@ public class DashBoardController {
 		}
 	}
 	
-	private Locale getLocale(ServletRequest request) {
+	private Locale getLocale(HttpServletRequest request) {
 		try {
-			return Locale.valueOf(localeResolver.resolveLocale((HttpServletRequest) request).toString().toUpperCase());
+			return Locale.valueOf(localeResolver.resolveLocale(request).toString().toUpperCase());
 		} catch (IllegalArgumentException e) {
 			return Locale.FR;
 		}

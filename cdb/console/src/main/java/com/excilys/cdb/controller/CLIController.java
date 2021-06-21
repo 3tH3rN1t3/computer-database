@@ -183,7 +183,7 @@ public class CLIController {
 				System.out.println("Aucune companie n'a été trouvée");
 			}
 		} while (company == null);
-		companyService.deleteCompany(company.getId());
+		System.out.println(companyService.deleteCompany(company.getId())+" items deleted\n");
 	}
 
 }

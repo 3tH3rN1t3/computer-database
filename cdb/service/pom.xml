@@ -15,13 +15,13 @@
 
 		<dependency>
 			<groupId>com.excilys.cdb</groupId>
-			<artifactId>persistence</artifactId>
+			<artifactId>binding</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>com.excilys.cdb</groupId>
-			<artifactId>binding</artifactId>
+			<artifactId>persistence</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 

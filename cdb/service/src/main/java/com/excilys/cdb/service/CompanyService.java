@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.excilys.cdb.controller.DBController;
 import com.excilys.cdb.model.Company;
 import com.excilys.cdb.persistence.repository.CompanyRepository;
 
@@ -13,21 +14,21 @@ import com.excilys.cdb.persistence.repository.CompanyRepository;
 @Scope("singleton")
 public class CompanyService {
 	
-	private CompanyRepository repository;
+	private DBController controller;
 		
-	private CompanyService(CompanyRepository repository) {
-		this.repository = repository;
+	private CompanyService(DBController controller) {
+		this.controller = controller;
 	}
 	
 	public List<Company> getAllCompanies() {
-		return repository.findAll();
+		return controller.getAllCompanies();
 	}
 	
 	public Optional<Company> getCompanyById(int id) {
-		return repository.findById(id);
+		return controller.getCompanyById(id);
 	}
 	
-	public void deleteCompany(int id) {
-		repository.deleteById(id);
+	public int deleteCompany(int id) {
+		return controller.deleteCompany(id);
 	}
 }
