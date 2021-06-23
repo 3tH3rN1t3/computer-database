@@ -67,10 +67,6 @@ public class Session {
 	public SearchBy getSearchBy() {
 		return searchBy;
 	}
-
-	public String getSearchByString() {
-		return searchBy.toString();
-	}
 	
 	public String getSearch() {
 		return search;

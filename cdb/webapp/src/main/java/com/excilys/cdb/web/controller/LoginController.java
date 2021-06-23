@@ -9,9 +9,7 @@ import org.springframework.security.web.authentication.logout.SecurityContextLog
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class LoginController {
@@ -19,25 +17,19 @@ public class LoginController {
 		public LoginController() {
 			
 		}
-		
-		@GetMapping("/login")
-		public ModelAndView show(HttpServletRequest request) {
-			System.out.println("LOGIN");
-			return new ModelAndView("login");
-		}
 
-		@PostMapping("/login")
+		@GetMapping("/login")
 		public String loginPage(@RequestParam(value = "error", required = false) String error,
 				@RequestParam(value = "logout", required = false) String logout,
 				Model model) {
-	        String errorMessge = null;
+	        String errorMessage = null;
 	        if(error != null) {
-	            errorMessge = "Username or Password is incorrect !!";
+	            errorMessage = "Username or Password is incorrect !!";
 	        }
 	        if(logout != null) {
-	            errorMessge = "You have been successfully logged out !!";
+	            errorMessage = "You have been successfully logged out !!";
 	        }
-	        model.addAttribute("errorMessge", errorMessge);
+	        model.addAttribute("errorMessage", errorMessage);
 	        return "login";
 	    }
 		  

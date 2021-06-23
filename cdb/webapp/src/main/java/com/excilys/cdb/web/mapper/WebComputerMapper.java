@@ -37,7 +37,7 @@ public class WebComputerMapper {
 		return new Computer.ComputerBuilder(Integer.parseInt(dto.getId()), dto.getName())
 				.withIntroduced(Optional.ofNullable(dto.getIntroduced()).filter(string -> !string.isBlank()).map(LocalDate::parse).orElse(null))
 				.withDiscontinued(Optional.ofNullable(dto.getDiscontinued()).filter(string -> !string.isBlank()).map(LocalDate::parse).orElse(null))
-				.withCompany(dto.getCompanyId() == "" ? null : new Company(Integer.parseInt(dto.getCompanyId()), dto.getCompanyName()))
+				.withCompany(dto.getCompanyId().isEmpty() ? null : new Company(Integer.parseInt(dto.getCompanyId()), dto.getCompanyName()))
 				.build();
 	}
 }

@@ -1,6 +1,5 @@
 package com.excilys.cdb.persistence.dto;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -28,7 +27,7 @@ public class DBComputerDTO {
 	@Convert(converter=LocalDateConverter.class)
 	private String discontinued;
 	
-	@ManyToOne(cascade = CascadeType.REMOVE)
+	@ManyToOne
 	@JoinColumn(name = "company_id")
 	private DBCompanyDTO company;
 	

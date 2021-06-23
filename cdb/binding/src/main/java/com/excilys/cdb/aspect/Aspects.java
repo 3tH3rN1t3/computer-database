@@ -12,7 +12,7 @@ import com.excilys.cdb.logger.LoggerCDB;
 @Component
 public class Aspects {
 	
-	@Pointcut("within(com.excilys.cdb.persistence.dao..*)")
+	@Pointcut("within(com.excilys.cdb.persistence.repository..*)")
 	public void dataAccessOperation() {}
 	
 	@Around("dataAccessOperation()")

@@ -13,14 +13,22 @@ import org.springframework.stereotype.Repository;
 public interface ComputerRepository extends JpaRepository<DBComputerDTO, Integer> {
 	
 	@Query("SELECT computer FROM DBComputerDTO computer LEFT JOIN DBCompanyDTO company ON computer.company = company WHERE computer.name LIKE %:filter%")
-	Page<DBComputerDTO> findAllByName(Pageable p, @Param(value="filter") String filter);
+	Page<DBComputerDTO> findByName(Pageable p, @Param(value="filter") String filter);
 	
 	@Query("SELECT computer FROM DBComputerDTO computer LEFT JOIN DBCompanyDTO company ON computer.company = company WHERE computer.introduced LIKE %:filter%")
-	Page<DBComputerDTO> findAllByIntroduced(Pageable p, @Param(value="filter") String filter);
+	Page<DBComputerDTO> findByIntroduced(Pageable p, @Param(value="filter") String filter);
 	
 	@Query("SELECT computer FROM DBComputerDTO computer LEFT JOIN DBCompanyDTO company ON computer.company = company WHERE computer.discontinued LIKE %:filter%")
-	Page<DBComputerDTO> findAllByDiscontinued(Pageable p, @Param(value="filter") String filter);
+	Page<DBComputerDTO> findByDiscontinued(Pageable p, @Param(value="filter") String filter);
 	
 	@Query("SELECT computer FROM DBComputerDTO computer LEFT JOIN DBCompanyDTO company ON computer.company = company WHERE company.name LIKE %:filter%")
-	Page<DBComputerDTO> findAllByCompany(Pageable p, @Param(value="filter") String filter);
+	Page<DBComputerDTO> findByCompanyName(Pageable p, @Param(value="filter") String filter);
+	
+	int countByNameContaining(String filter);
+	
+	int countByIntroducedContaining(String filter);
+	
+	int countByDiscontinuedContaining(String filter);
+	
+	int countByCompanyNameContaining(String filter);
 }

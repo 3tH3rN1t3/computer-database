@@ -5,6 +5,10 @@ public enum OrderBy {
 	
 	private final String column;
 	
+	public static OrderBy getEnum(String value) {
+		return valueOf(value.toUpperCase());
+	}
+	
 	private OrderBy(String s) {
 		this.column = s;
 	}

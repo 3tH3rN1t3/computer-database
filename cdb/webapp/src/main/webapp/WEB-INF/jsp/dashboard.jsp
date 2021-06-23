@@ -80,7 +80,7 @@
 				</div>
 				<c:if test="${admin}" >
 					<div class="btn-group pull-right" role="group">
-						<a class="btn btn-success" id="addComputer" href="editComputer"><spring:message code="text.addComputer" /></a> 
+						<a class="btn btn-success" id="addComputer" href="editComputer"><spring:message code="text.addComputer" /></a>
 						<a class="btn btn-default" id="editComputer" href="#" onclick="$.fn.toggleEditMode();"><spring:message code="text.edit" /></a>
 					</div>
 				</c:if>
@@ -88,6 +88,7 @@
 		</div>
 
 		<form id="deleteForm" action="deleteComputer" method="POST">
+			<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 			<input type="hidden" name="selection" value="">
 		</form>
 
@@ -100,9 +101,7 @@
 								<span class="input-group-addon">
 									<input type="checkbox" id="selectall">
 								</span>
-								<a href="" id="deleteSelected" class=" form-control" onclick="$.fn.deleteSelected();">
-									<i class="fa fa-trash-o fa-lg"></i>
-								</a>
+								<button class="form-control" type="submit" form="deleteForm" value="Submit"><i class="fa fa-trash-o fa-lg"></i></button>
 							</div>
 						</th>
 						<th style="width: 35%; text-align: center; vertical-align: middle;">
@@ -145,7 +144,7 @@
 					<c:forEach var = "computer" items = "${computers}">
 						<tr>
 							<td class="editMode" style="text-align: center; vertical-align: middle;" hidden="true">
-								<input type="checkbox" name="cb" class="cb" value="${computer.id}">
+								<input type="checkbox" name="cb" class="cb" form="deleteForm" value="${computer.id}">
 							</td>
 							<td>
 								<c:choose>

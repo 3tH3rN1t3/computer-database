@@ -42,13 +42,13 @@ public class DBController {
 	public Page<Computer> search(Pageable p, SearchBy column, String filter) {
 		Page<DBComputerDTO> page;
 		if (column == SearchBy.INTRODUCED) {
-			page = computerRepository.findAllByIntroduced(p, filter);
+			page = computerRepository.findByIntroduced(p, filter);
 		} else if (column == SearchBy.DISCONTINUED) {
-			page = computerRepository.findAllByDiscontinued(p, filter);
+			page = computerRepository.findByDiscontinued(p, filter);
 		} else if (column == SearchBy.COMPANY) {
-			page = computerRepository.findAllByCompany(p, filter);
+			page = computerRepository.findByCompanyName(p, filter);
 		} else {
-			page = computerRepository.findAllByName(p, filter);
+			page = computerRepository.findByName(p, filter);
 		}
 		
 		return page.map(dto -> computerMapper.toComputer(Optional.of(dto)).get());
@@ -58,16 +58,28 @@ public class DBController {
 		return computerMapper.toComputer(computerRepository.findById(id));
 	}
 	
-	public int addComputer(Computer computer) {
-		return computerRepository.save(computerMapper.toComputerDTO(computer)).getId();
+	public Computer addComputer(Computer computer) {
+		return computerMapper.toComputer(computerRepository.save(computerMapper.toComputerDTO(computer)));
 	}
 		
-	public void updateComputer(Computer computer) {
-		computerRepository.save(computerMapper.toComputerDTO(computer));
+	public Computer updateComputer(Computer computer) {
+		return computerMapper.toComputer(computerRepository.save(computerMapper.toComputerDTO(computer)));
 	}
 	
 	public void deleteComputer(int id) {
 		computerRepository.deleteById(id);
+	}
+	
+	public int count(SearchBy column, String filter) {
+		if (column == SearchBy.INTRODUCED) {
+			return computerRepository.countByIntroducedContaining(filter);
+		} else if (column == SearchBy.DISCONTINUED) {
+			return computerRepository.countByDiscontinuedContaining(filter);
+		} else if (column == SearchBy.COMPANY) {
+			return computerRepository.countByCompanyNameContaining(filter);
+		} else {
+			return computerRepository.countByNameContaining(filter);
+		}
 	}
 	
 	public List<Company> getAllCompanies() {

@@ -30,6 +30,10 @@ public class DBComputerMapper {
 				.build();
 	}
 	
+	public Computer toComputer(DBComputerDTO dto) {
+		return toComputer(Optional.ofNullable(dto)).get();
+	}
+	
 	public Optional<Computer> toComputer(Optional<DBComputerDTO> dto) {
 		if (!dto.isPresent()) {
 			return Optional.empty();

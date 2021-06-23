@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -79,10 +80,10 @@ public class DashBoardController {
 				sort = JpaSort.unsafe(Direction.DESC, "("+session.getOrderBy().getColumn()+")", "(-computer.id)");
 			}
 		}
+		
 		Pageable pageRequest = PageRequest.of(session.getNumPage()-1, session.getMaxItems(), sort);
 		Page<Computer> computers = this.computerService.search(pageRequest, session.getSearchBy(), session.getSearch());
 		
-		session.setTotalItems((int) computers.getTotalElements());
 		ModelAndView response = new ModelAndView("dashboard");
 		response.addObject("computers", computerMapper.toComputerDTOArray(computers.getContent()));
 		response.addObject("session", session);
@@ -109,6 +110,7 @@ public class DashBoardController {
 				p.setSearchBy(SearchBy.NAME);
 			}
 		}
+		p.setTotalItems(computerService.count(p.getSearchBy(), p.getSearch()));
 	}
 	
 	private void setPage(Session session, String pageNumber) {

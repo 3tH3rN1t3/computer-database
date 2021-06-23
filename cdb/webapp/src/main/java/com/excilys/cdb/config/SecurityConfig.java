@@ -38,7 +38,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests().mvcMatchers("/editComputer").hasRole("ADMIN")
+		http.csrf().ignoringAntMatchers("/api/**").and()
+		.authorizeRequests().mvcMatchers("/editComputer").hasRole("ADMIN")
+		.mvcMatchers("/deleteComputer").hasRole("ADMIN")
 		.mvcMatchers("/dashboard").authenticated()
 		.mvcMatchers("/login").permitAll().and()
 		.formLogin().loginPage("/login").loginProcessingUrl("/login").defaultSuccessUrl("/dashboard", false).failureUrl("/login?error=true").and()

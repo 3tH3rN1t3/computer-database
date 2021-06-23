@@ -30,15 +30,19 @@ public class ComputerService {
 		return controller.getComputer(id);
 	}
 	
-	public int addComputer(Computer computer) {
+	public Computer addComputer(Computer computer) {
 		return controller.addComputer(computer);
 	}
 		
-	public void updateComputer(Computer computer) {
-		controller.updateComputer(computer);
+	public Computer updateComputer(Computer computer) {
+		return controller.updateComputer(computer);
 	}
 	
 	public void deleteComputer(int id) {
 		controller.deleteComputer(id);
+	}
+	
+	public int count(SearchBy column, String search) {
+		return controller.count(column, search);
 	}
 }

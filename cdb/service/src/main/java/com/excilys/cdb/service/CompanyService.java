@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 
 import com.excilys.cdb.controller.DBController;
 import com.excilys.cdb.model.Company;
-import com.excilys.cdb.persistence.repository.CompanyRepository;
 
 @Component
 @Scope("singleton")
