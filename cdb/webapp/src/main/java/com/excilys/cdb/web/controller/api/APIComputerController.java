@@ -13,6 +13,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ import com.excilys.cdb.model.Order;
 import com.excilys.cdb.model.OrderBy;
 import com.excilys.cdb.model.SearchBy;
 import com.excilys.cdb.service.ComputerService;
+import com.excilys.cdb.web.dto.WebCompanyDTO;
 import com.excilys.cdb.web.dto.WebComputerDTO;
 import com.excilys.cdb.web.mapper.WebComputerMapper;
 
@@ -64,6 +66,18 @@ public class APIComputerController {
 		Pageable pageRequest = PageRequest.of(page-1 < 0 ? 0 : page-1, items, sort);
 		Page<Computer> computers = this.computerService.search(pageRequest, searchBy, search);
 		return ResponseEntity.ok(computerMapper.toComputerDTOArray(computers.getContent()));
+	}
+	
+	@GetMapping("computer/{id}")
+	public ResponseEntity<WebComputerDTO> get(@PathVariable int id) {
+		return ResponseEntity.ok(computerMapper.toComputerDTO(computerService.getComputer(id)).orElse(null));
+	}
+	
+	@GetMapping("count")
+	public ResponseEntity<Integer> count(@RequestParam(
+			value="search", defaultValue="") String search, @RequestParam(value="searchby", defaultValue="NAME") SearchBy searchBy
+			) {
+		return ResponseEntity.ok(computerService.count(searchBy, search));
 	}
 	
 	@PutMapping("add")

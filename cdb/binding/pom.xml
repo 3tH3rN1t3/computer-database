@@ -15,7 +15,7 @@
 		
 		<dependency>
 			<groupId>com.excilys.cdb</groupId>
-			<artifactId>core</artifactId>
+			<artifactId>persistence</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		

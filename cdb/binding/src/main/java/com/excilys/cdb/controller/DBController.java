@@ -94,4 +94,8 @@ public class DBController {
 		return companyDAO.deleteById(id);
 	}
 	
+	public int countCompanies() {
+		return (int) companyRepository.count();
+	}
+	
 }

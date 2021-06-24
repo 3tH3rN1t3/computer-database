@@ -30,4 +30,8 @@ public class CompanyService {
 	public int deleteCompany(int id) {
 		return controller.deleteCompany(id);
 	}
+	
+	public int countCompanies() {
+		return controller.countCompanies();
+	}
 }

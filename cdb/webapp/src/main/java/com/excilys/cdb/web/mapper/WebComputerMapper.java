@@ -20,13 +20,21 @@ public class WebComputerMapper {
 	private WebComputerMapper() {
 	}
 	
+	public Optional<WebComputerDTO> toComputerDTO(Optional<Computer> com) {
+		if (!com.isPresent()) {
+			return Optional.empty();
+		} else {
+			return Optional.of(new WebComputerDTO.WebComputerDTOBuilder(com.get().getId()+"", com.get().getName())
+					.withIntroduced(com.get().getIntroduced().map(LocalDate::toString).orElse(null))
+					.withDiscontinued(com.get().getDiscontinued().map(LocalDate::toString).orElse(null))
+					.withCompanyId(com.get().getCompany().map(Company::getId).map(String::valueOf).orElse(null))
+					.withCompanyName(com.get().getCompany().map(Company::getName).orElse(null))
+					.build());
+		}
+	}
+	
 	public WebComputerDTO toComputerDTO(Computer com) {
-		return new WebComputerDTO.WebComputerDTOBuilder(com.getId()+"", com.getName())
-				.withIntroduced(com.getIntroduced().map(LocalDate::toString).orElse(null))
-				.withDiscontinued(com.getDiscontinued().map(LocalDate::toString).orElse(null))
-				.withCompanyId(com.getCompany().map(Company::getId).map(String::valueOf).orElse(null))
-				.withCompanyName(com.getCompany().map(Company::getName).orElse(null))
-				.build();
+		return toComputerDTO(Optional.of(com)).get();
 	}
 	
 	public List<WebComputerDTO> toComputerDTOArray(List<Computer> computers) {

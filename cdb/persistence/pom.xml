@@ -12,10 +12,10 @@
 	<packaging>jar</packaging>
 
 	<dependencies>
-
+		
 		<dependency>
 			<groupId>com.excilys.cdb</groupId>
-			<artifactId>binding</artifactId>
+			<artifactId>core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		
