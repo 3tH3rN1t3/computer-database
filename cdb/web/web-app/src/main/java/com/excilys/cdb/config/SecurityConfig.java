@@ -9,9 +9,12 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint;
+import org.springframework.security.web.authentication.www.DigestAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +22,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	DataSource dataSource;
+	
+	private DigestAuthenticationEntryPoint getDigestEntryPoint() {
+		DigestAuthenticationEntryPoint digestEntryPoint = new DigestAuthenticationEntryPoint();
+		digestEntryPoint.setRealmName("admin-realm");
+		digestEntryPoint.setKey("testKey");
+		return digestEntryPoint;
+	}
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
@@ -36,9 +46,27 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		.authoritiesByUsernameQuery("SELECT username, authority FROM authorities WHERE username=?");
 	}
 	
+	@Bean
+	public UserDetailsService userDetailsServiceBean() throws Exception {
+		return super.userDetailsServiceBean();
+	}
+	
+	private DigestAuthenticationFilter getDigestAuthFilter() throws Exception {
+		DigestAuthenticationFilter digestFilter = new DigestAuthenticationFilter();
+
+		digestFilter.setUserDetailsService(userDetailsServiceBean());
+
+
+		digestFilter.setAuthenticationEntryPoint(getDigestEntryPoint());
+		return digestFilter;
+	}
+	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().ignoringAntMatchers("/api/**").and()
+		.antMatcher("/**")
+		.addFilter(getDigestAuthFilter()).exceptionHandling()
+		.authenticationEntryPoint(getDigestEntryPoint()).and()
 		.authorizeRequests().mvcMatchers("/editComputer").hasRole("ADMIN")
 		.mvcMatchers("/deleteComputer").hasRole("ADMIN")
 		.mvcMatchers("/dashboard").authenticated()
