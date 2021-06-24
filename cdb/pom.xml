@@ -15,7 +15,7 @@
 		<module>service</module>
 		<module>console</module>
 		<module>binding</module>
-		<module>webapp</module>
+		<module>web</module>
 	</modules>
 
 	<properties>
