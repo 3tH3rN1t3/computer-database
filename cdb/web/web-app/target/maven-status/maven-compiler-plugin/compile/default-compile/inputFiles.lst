@@ -1,0 +1,12 @@
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/web/dto/WebComputerDTO.java
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/web/mapper/WebCompanyMapper.java
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/config/SecurityConfig.java
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/web/controller/DeleteComputerController.java
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/config/WebConfig.java
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/web/mapper/WebComputerMapper.java
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/web/dto/Locale.java
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/web/validator/ComputerValidator.java
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/web/controller/EditComputerController.java
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/web/controller/DashBoardController.java
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/web/dto/WebCompanyDTO.java
+/home/excilys/Bureau/cdb/cdb/webapp/src/main/java/com/excilys/cdb/web/controller/LoginController.java
