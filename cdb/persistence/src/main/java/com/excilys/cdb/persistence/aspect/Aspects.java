@@ -1,4 +1,4 @@
-package com.excilys.cdb.aspect;
+package com.excilys.cdb.persistence.aspect;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

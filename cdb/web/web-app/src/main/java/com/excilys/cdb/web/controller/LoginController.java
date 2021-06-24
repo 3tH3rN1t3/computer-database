@@ -11,6 +11,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.excilys.cdb.web.dto.Locale;
+import com.excilys.cdb.web.dto.LoginStatus;
+
 @Controller
 public class LoginController {
 
@@ -22,14 +25,15 @@ public class LoginController {
 		public String loginPage(@RequestParam(value = "error", required = false) String error,
 				@RequestParam(value = "logout", required = false) String logout,
 				Model model) {
-	        String errorMessage = null;
+	        LoginStatus status = null;
 	        if(error != null) {
-	            errorMessage = "Username or Password is incorrect !!";
+	        	status = LoginStatus.ERROR;
 	        }
 	        if(logout != null) {
-	            errorMessage = "You have been successfully logged out !!";
+	        	status = LoginStatus.LOGOUT;
 	        }
-	        model.addAttribute("errorMessage", errorMessage);
+	        model.addAttribute("status", status);
+			model.addAttribute("languages", Locale.values());
 	        return "login";
 	    }
 		  

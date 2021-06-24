@@ -28,7 +28,7 @@
 				<ul class="dropdown-menu">
 					<c:forEach var="language" items="${languages}" >
 						<c:choose>
-							<c:when test="${lang.getLang() eq language.getLang()}">
+							<c:when test="${pageContext.response.locale eq language.toString().toLowerCase()}">
 								<li class="disabled"><a href="?lang=${language.toString()}">${language.getLang()}</a></li>
 							</c:when>
 							<c:otherwise>

@@ -90,7 +90,6 @@ public class DashBoardController {
 		response.addObject("admin", roles.size() > 0 ? roles.get(0).getAuthority().equals("ROLE_ADMIN") : false);
 		response.addObject("searches", SearchBy.values());
 		response.addObject("languages", Locale.values());
-		response.addObject("lang", getLocale(request));
 		return response;
     }
 	
@@ -153,14 +152,6 @@ public class DashBoardController {
 			} catch (IllegalArgumentException e) {
 				session.setOrder(com.excilys.cdb.model.Order.ASC);
 			}
-		}
-	}
-	
-	private Locale getLocale(HttpServletRequest request) {
-		try {
-			return Locale.valueOf(localeResolver.resolveLocale(request).toString().toUpperCase());
-		} catch (IllegalArgumentException e) {
-			return Locale.FR;
 		}
 	}
 

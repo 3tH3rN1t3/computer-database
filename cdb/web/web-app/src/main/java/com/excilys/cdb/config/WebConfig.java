@@ -40,7 +40,6 @@ import com.excilys.cdb.web.converter.StringToEnumConverterFactory;
 @ComponentScan(basePackages = {"com.excilys.cdb.persistence"
 		, "com.excilys.cdb.controller"
 		, "com.excilys.cdb.service"
-		, "com.excilys.cdb.spring.aspect"
 		, "com.excilys.cdb.web"})
 public class WebConfig implements WebApplicationInitializer, WebMvcConfigurer {
 	

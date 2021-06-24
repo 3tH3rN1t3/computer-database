@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,12 +24,11 @@ import com.excilys.cdb.model.Order;
 import com.excilys.cdb.model.OrderBy;
 import com.excilys.cdb.model.SearchBy;
 import com.excilys.cdb.service.ComputerService;
-import com.excilys.cdb.web.dto.WebCompanyDTO;
 import com.excilys.cdb.web.dto.WebComputerDTO;
 import com.excilys.cdb.web.mapper.WebComputerMapper;
 
 @RestController
-@RequestMapping("api/computer")
+@RequestMapping("api/computers")
 public class APIComputerController {
 	
 	private ComputerService computerService;
@@ -70,7 +68,7 @@ public class APIComputerController {
 	
 	@GetMapping("computer/{id}")
 	public ResponseEntity<WebComputerDTO> get(@PathVariable int id) {
-		return ResponseEntity.ok(computerMapper.toComputerDTO(computerService.getComputer(id)).orElse(null));
+		return ResponseEntity.of(computerMapper.toComputerDTO(computerService.getComputer(id)));
 	}
 	
 	@GetMapping("count")

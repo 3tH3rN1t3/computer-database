@@ -15,7 +15,24 @@
 <body>
 	<header class="navbar navbar-inverse navbar-fixed-top">
 		<div class="container">
-			<a class="navbar-brand" href="dashboard"><spring:message code="text.navbar" /></a>
+			<a class="navbar-brand" href="dashboard"><spring:message code="text.navbar" /> </a>
+			<div class="btn-group pull-right">
+				<button type="button" class="btn btn-primary navbar-btn dropdown-toggle" style="background-color: black; border-color: black;" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					<spring:message code="label.lang" /> <span class="caret"></span>
+				</button>
+				<ul class="dropdown-menu">
+					<c:forEach var="language" items="${languages}" >
+						<c:choose>
+							<c:when test="${pageContext.response.locale eq language.toString().toLowerCase()}">
+								<li class="disabled"><a href="?lang=${language.toString()}">${language.getLang()}</a></li>
+							</c:when>
+							<c:otherwise>
+								<li><a href="?lang=${language.toString()}">${language.getLang()}</a></li>
+							</c:otherwise>
+						</c:choose>
+					</c:forEach>
+				</ul>
+			</div>
 		</div>
 	</header>
 	
@@ -23,12 +40,17 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-xs-4 col-xs-offset-4 box">
-					<h1>LOGIN</h1>
+					<h1><spring:message code="text.login" /></h1>
 					<form name='login' action="login" method="POST">
 						<fieldset>
-							<c:if test="${not empty errorMessage}">
+							<c:if test="${status.toString() eq 'ERROR'}">
 								<div class="alert alert-danger">
-									${errorMessage}
+									<spring:message code="text.login_error" />
+								</div>
+							</c:if>
+							<c:if test="${status.toString() eq 'LOGOUT'}">
+								<div class="alert alert-success">
+									<spring:message code="text.logout" />
 								</div>
 							</c:if>
 							<div class="form-group">
@@ -41,9 +63,8 @@
 							</div>
 							<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 						</fieldset>
-						<div class="input-group">
-							<input name="submit" type="submit" value="submit" class="form-control btn btn-primary" />
-						</div>
+						<spring:message code="text.connect" var="connectMessage" />
+						<input name="submit" type="submit" value="${connectMessage}" class="btn btn-primary" />
 					</form>
 				</div>
 			</div>
